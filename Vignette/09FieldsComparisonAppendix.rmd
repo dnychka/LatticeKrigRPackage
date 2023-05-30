@@ -1,0 +1,26 @@
+# Appendix B: Comparison with mKrig function from fields package
+
+In this section we will compare the kriging done in LatticeKrig with ordinary kriging, such as the kriging done in fields. The chief difference is that LatticeKrig assumes a particular covariance function that leads to a sparse precision matrix (the precision matrix is the inverse of the covariance matrix). However, when we do ordinary kriging with this particular covariance function, we will see that the results come out the same for both algorithms, though the ordinary kriging uses dense matrix operations so it takes much longer with large data. To investigate this, we will use \ttt{LKrig} (the function that does the computation in \ttt{LatticeKrig}) and \ttt{mKrig} to compute models for the data. To make sure the parameters match up, we use an \ttt{LKinfo} object to store the parameters for the kriging. 
+
+After loading in the data, we start by filtering out the NA values in y
+
+```{r FieldsComparison}
+data(ozone2)  
+x <- ozone2$lon.lat
+y <- ozone2$y[16,]
+good <- !is.na(y)
+x<- x[good,]
+y<- y[good]
+lambda <-  1.5
+# The covariance "parameters" are all in the list LKinfo
+# to create this special list outside of a call to LKrig use
+testInfo <- LKrigSetup(x, NC=16, nlevel=1, alpha=1.0, a.wght=5)
+obj1 <- LKrig(x, y, lambda=lambda, iseed=122, LKinfo = testInfo)
+
+# this call to mKrig should be identical to the LKrig results
+# because it uses the LKrig.cov covariance with all the right parameters.
+obj2 <- mKrig(x, y, lambda=lambda, m=2, cov.function="LKrig.cov",
+              cov.args=list( LKinfo=testInfo), iseed=122)
+```
+
+These two kriging fits produce identical predicted values and standard errors. To make \ttt{mKrig} use the same covariance function as \ttt{LKrig}, we set the parameter \ttt{cov.function="LKrig.cov"}. The \ttt{LKrig.cov} function is a top level function that computes the covariance between arbitrary sets of locations according to the model specified by the LKinfo object. Note that \ttt{LKrig} uses the (sparse) precision matrix instead of inverting the covariance matrix, which is one of the reasons that \ttt{LKrig} is much faster than \ttt{mKrig} for large data sets.

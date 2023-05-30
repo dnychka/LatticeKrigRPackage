@@ -1,0 +1,66 @@
+---
+title: "LatticeKrig Vignette"
+author: "Matthew Iverson, Douglas Nychka"
+date: "January 13, 2020"
+output: 
+  pdf_document:
+      toc: true
+      number_sections: true
+knit: (function(inputFile, encoding) { 
+          rmarkdown::render(inputFile,
+                        encoding=encoding, 
+                        output_file='LatticeKrigVignette.pdf') })
+---
+\newcommand{\ttt}{\texttt}
+<!-- This is the file that the vignette pdf is knitted from  -->
+
+```{r setup, include=FALSE}
+library(LatticeKrig)
+library(fields)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\pagebreak
+<!--
+Each chapter is in its own file to make editing easier
+-->
+
+```{r child = '01Introduction.rmd'}
+```
+\pagebreak
+
+```{r child = '02QuickStart.rmd'}
+```
+\pagebreak
+
+```{r child = '03LKrigSetup.rmd'}
+```
+\pagebreak
+
+```{r child = '04AlternateGeometries.rmd'}
+```
+\pagebreak
+
+```{r child = '05SparseMatrices.rmd'}
+```
+\pagebreak
+
+```{r child = '06KrigingFunctions.rmd'}
+```
+\pagebreak
+
+```{r child = '07CommonErrors.rmd'}
+```
+\pagebreak
+
+```{r child = '08LinearAlgebraAppendix.rmd'}
+```
+\pagebreak
+
+```{r child = '09FieldsComparisonAppendix.rmd'}
+```
+\pagebreak
+
+```{r child = '10SampleKriging.rmd'}
+```
+\pagebreak

@@ -1,0 +1,86 @@
+# \ttt{LKrigSetup}
+
+The only \textit{required} arguments for the \ttt{LatticeKrig} function are the set of locations and variable observations. However, \ttt{LatticeKrig} also allows for a variety of optional arguments to adapt the model to be more realistic. In this section we will list some of the most important optional parameters that can be passed into \ttt{LatticeKrig}; for a complete list, check the \ttt{LatticeKrig} help page. The \ttt{LKrigSetup} function is a convenient (and, in some cases, the only) way to pass in a group of parameters to \ttt{LatticeKrig} or \ttt{LKrig}. We will cover the required parameters and some of the more important optional parameters here; for full descriptions, check the help pages for \ttt{LatticeKrig} and \ttt{LKrigSetup}. This code will printout of the \ttt{LKinfo} object created by \ttt{LatticeKrig} in the quick start guide's one-dimensional example.
+```{r LKInfoPrint, eval=FALSE}
+print(kFit1D$LKinfo)
+```
+
+We could make such an LKinfo object directly from the \ttt{LKrigSetup} function as follows:
+
+```{r LKInfoConstruct, eval = FALSE}
+kFit1DInfo <- LKrigSetup(locations, nlevel = 3, NC = 6, nu = 1, a.wght = 2.01)
+```
+
+##Required Parameters for \ttt{LKrigSetup}
+
+* \ttt{x}
+
+The parameter \ttt{x} is used to find the range of the data locations in each dimension for the lattice. As such, it is often easiest to pass in the matrix of observation locations, but you can also just pass in the range directly.
+
+* \ttt{nlevel} 
+
+The parameter \ttt{nlevel} is an integer that determines the number of different lattice sizes the computation should run on. This is set to 3 by default in \ttt{LatticeKrig}. Increasing \ttt{nlevel} will increase the potential detail of the fitted surface, and will increase the computation time significantly. The coefficients at each different lattice size is computed independently, and the resulting coefficients are scaled by the weights in \ttt{alpha}. 
+
+* \ttt{NC}
+
+The parameter \ttt{NC} is an integer that determines the number of basis functions to put along the largest dimension at the first level. Recall that each basis function is centered on a lattice point, so \ttt{NC} equivalently controls the number of lattice points to set across the region in the longest dimension. Note that the actual number of basis functions may be different. By default, 5 additional basis functions (this can be changed with the optional \ttt{NC.buffer} parameter) are added outside the domain on each side. For example, if the spatial domain is a rectangle whose length is double its width and \ttt{NC = 6}, the first level of basis functions will contain 16x13 = 208 basis functions (6x3 inside the domain with 5 extended from each edge) and the second level will contain 21x15 = 315 basis functions (11x5 inside the domain with 5 extended from each edge).
+
+* \ttt{alpha} or \ttt{alphaObject} or \ttt{nu}
+
+At least one of \ttt{alpha}, \ttt{alphaObject}, and \ttt{nu} must be set. In most cases you will use \ttt{alpha} or \ttt{nu}. The parameter \ttt{alpha} should be a vector of length \ttt{nlevel} that holds the weights that scale the basis functions on each different lattice size; \ttt{nu} is a scalar that controls how quickly the values in \ttt{alpha} decay. When \ttt{nu} is set, \ttt{alpha} will be filled by setting \ttt{alpha[i] = 2\^(-2 * i * nu)}, then scaling so the sum of the weights in \ttt{alpha} is 1. This scaling should always be done before passing in \ttt{alpha} to make sure the model fits correctly. The \ttt{alphaObject} and \ttt{a.wghtObject} below can be used for nonstationary models, which are not discussed in this vignette.
+
+* \ttt{a.wght} or \ttt{a.wghtObject}
+
+At least one of \ttt{a.wght} and \ttt{a.wghtObject} must be set. In most cases you will use \ttt{a.wght}, which can be either a scalar or a vector of length \ttt{nlevel}. The minimum value for this parameter varies depending on the geometry and the number of dimenions: in the default Euclidean geometry, the minimum value is two times the number of dimensions. For example, in 2 dimensions, you might set \ttt{a.wght = 4.01}. When using the \ttt{LKSphere} geometry, the minimum value for \ttt{a.wght} is 1, and again a small decimal should be added on. 
+
+## Optional parameters
+
+* \ttt{lambda}
+
+\ttt{Lambda} is an estimate of the noise to signal ratio in the data. If not listed, \ttt{LatticeKrig} and \ttt{LKrig} will estimate it using maximum likelihood. There is a one-to-one relationship between this parameter and the effective degrees of freedom (EDF) of the curve estimate. However, EDF is more expensive to compute so lambda is preferred for computing.
+
+* \ttt{LKGeometry}
+
+The \ttt{LKGeometry} specifies the geometry used for the LK model. For example, if the dataset covers the whole earth, it would be more appropriate to base the kriging on a sphere than a rectangle. This is covered in more depth in the next section.
+
+* \ttt{distance.type}
+
+When using a different \ttt{LKGeometry} than default (Euclidean), you may also need to change the \ttt{distance.type}. This is also covered in more depth in the next section.
+
+* \ttt{NC.buffer}
+
+This parameter determines how many lattice points to add outside the range of the data on each side. The effect of changing this parameter is relatively minor compared to the effect of changing \ttt{NC}, and it usually will only affect the prediction near the edges of the data.
+
+* \ttt{normalize}
+
+This parameter determines whether or not to normalize the basis functions after computing them, making the variance 1. This is set to \ttt{TRUE} by default, sacrificing some computing time to reduce edge and lattice artifacts created by the model that aren't present in the data. 
+
+## Relationships between parameters and the covariance function
+
+The following plots show how different values of \ttt{NC}, \ttt{a.wght}, \ttt{alpha}, and \ttt{nu} affect the covariance function. These plots are all one dimensional for ease of viewing; the covariance function is radially symmetric in higher dimensions and has similar dependence on these parameters.
+
+```{r CovarianceSamples, fig.height=3.5, fig.width=6, echo=FALSE}
+basis <- function(d) {
+  return(1/3 * (1-d)^6 * (35*d^2 + 18*d + 3) * (d < 1))
+}
+xGrid = seq(0,5, length.out = 400)
+NCPlot = cbind(basis(abs(xGrid/5)), basis(abs(xGrid/2.5)), basis(abs(xGrid/1.25)))
+matplot(NCPlot, type="l", lty=1, x = xGrid, xlab = "Location", ylab = "Correlation",
+        main="Effect of NC on covariance function")
+legend("topright", c("NC = 5", "NC = 10", "NC = 20"), col=c("black", "red", "green"), lty=1)
+
+AWPlot = cbind(basis(abs(xGrid/10)), basis(abs(xGrid/2)), basis(abs(xGrid/1)))
+matplot(AWPlot, type="l", lty=1, x = xGrid, xlab = "Location", ylab = "Correlation",
+        main="Effect of a.wght on covariance function")
+legend("topright", c("a.wght = 2.1", "a.wght = 2.5", "a.wght = 3"), col=c("black", "red", "green"), lty = 1)
+
+ALPlot = cbind(basis(abs(xGrid/5)), 1/2 * basis(abs(xGrid/5)), 1/4 * basis(abs(xGrid/5)))
+matplot(ALPlot, type="l", lty=1, x = xGrid, xlab = "Location", ylab = "Correlation",
+        main="Effect of alpha on covariance function")
+legend("topright", c("alpha = 1", "alpha = 0.5", "alpha = 0.25"), col=c("black", "red", "green"), lty = 1)
+
+NuPlot = cbind(1/7 * basis(abs(xGrid/1.25)), 1/21 * basis(abs(xGrid/1.25)), 1/73 * basis(abs(xGrid/1.25)))
+matplot(NuPlot, type="l", lty=1, x = xGrid, xlab = "Location", ylab = "Correlation",
+        main="Effect of nu on covariance function (shown at 3rd level)")
+legend("topright", c("nu = 0", "nu = 0.5", "nu = 1"), col=c("black", "red", "green"), lty = 1)
+```
