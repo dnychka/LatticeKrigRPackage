@@ -106,7 +106,7 @@ The actual code uses a FORTRAN subroutine to search over distances
 less than delta and also returns the matrix in sparse format.
 
 	Part of the flexibility  in these function is to use different distance functions
-	(metrics). See \link{LKDistance} for the S4 method to find distance and 
+	(metrics). See help on \code{LKDistance} for the S4 method to find distance and 
 	\link{LKDist} for the lower level functions that actually do the work.  
 	To change the radius used for the spherical distances one add a \code{Radius}
 	attribute to the text string. For example to use kilometers for great circle 

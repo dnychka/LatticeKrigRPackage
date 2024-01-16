@@ -40,7 +40,7 @@ main reason for this "overloading".
 
 \item{\code{signature(x1 = "matrix", x2 = "matrix", delta = "numeric")}}{
 Finds pairwise distances within the radius delta between all locations
-\code{x1} and \code{x2}. Will call either \link{LKdist} or \link{LKDistComponents}. These methods also take addtional arguments that specify the distance type. See \link{LKdist} and \link{Radial.basis} for details. 
+\code{x1} and \code{x2}. Will call either \link{LKdist} or \link{LKDistComponents}. These methods also take addtional arguments that specify the distance type. See help on \code{LKdist} and \link{Radial.basis} for details. 
 }
 
 }

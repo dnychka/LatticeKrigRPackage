@@ -251,7 +251,8 @@ rbind( c( 0,0), c(1,1)) will set the domain to be the unit square.  }
 	the radial basis function (see LKrig.basis)
 	
 	Also part of this flexibility is to use different distance functions
-	(metrics). See \link{LKDistance} for the S4 method to find distance and 
+	(metrics). See help on LKDistanc} for the S4 method to find distance
+	and 
 	\link{LKDist} for the lower level functions that actually do the work. 
 	To change the radius use for the spherical distances one add a Radius
 	attribute to the text string. 

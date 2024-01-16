@@ -37,11 +37,10 @@ package to efficiently search through the LatticeKrig covariance
 parameter space.
 }
 \usage{
-LKrigFindLambda(x, y, Z=NULL, U=NULL, ..., LKinfo,
-                            use.cholesky=NULL,                          
-                            lambda.profile=TRUE,
-                            lowerBoundLogLambda=-16,tol = 0.005,
-                            verbose=FALSE)
+LKrigFindLambda(x, y, Z = NULL, U = NULL, X = NULL, ..., LKinfo,
+                 use.cholesky = NULL, lambda.profile = TRUE,
+                 lowerBoundLogLambda = -16, tol = 0.005, verbose =
+                 FALSE)
 			    
 LKrigFindLambdaAwght(x, y, ..., LKinfo, use.cholesky = NULL,
                  lowerBoundLogLambda = -16, upperBoundLogLambda = 4,
@@ -111,8 +110,15 @@ geometry.}
 the different sets of parameters to evaluate. If M is the number of
 parameter setting to evaluate llambda is a vector length M and alpha
 and a.wght are matrices with M rows and nlevel columns.  Thus, the kth
-trial has parameters par.grid\$llambda[k], par.grid\$alpha[k,] and
-par.grid\$a.wght[k,]. Currently this function does not support passing
+trial has parameters
+
+\preformatted{
+par.grid$llambda[k]
+par.grid$alpha[k,]
+par.grid$a.wght[k,]
+}
+
+Currently this function does not support passing
 a non-stationary spatial parameterization for alpha. The LKinfo object
 details the other parts of the covariance specification (e.g. number
 of levels, grid sizes) that do not change.  Note that par.grid assumes
@@ -136,7 +142,8 @@ MLE.}
 symbolic cholesky decomposition of the covariance matrix for computing
 the likelihood.}
 \item{U}{U matrix if an inverse problem model.}
-\item{x}{ The spatial locations.  }
+\item{x}{The spatial locations.}
+\item{X}{X matrix if an inverse problem model.}
 \item{y}{ The observations.  }
 \item{Z}{Matrix of additional covariates for fixe part of the model.}
 \item{\dots}{Any arguments to be passed to LKrig. E.g. \code{x},
