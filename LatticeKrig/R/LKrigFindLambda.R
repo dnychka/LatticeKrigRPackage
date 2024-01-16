@@ -19,7 +19,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # or see http://www.r-project.org/Licenses/GPL-2
 
-LKrigFindLambda <- function(x, y, Z=NULL, U=NULL, ...,  LKinfo,
+LKrigFindLambda <- function(x, y, Z=NULL, U=NULL, X=NULL, ...,  LKinfo,
                             use.cholesky=NULL, 
                  lambda.profile=TRUE,
             lowerBoundLogLambda=-16,
@@ -31,8 +31,12 @@ LKrigFindLambda <- function(x, y, Z=NULL, U=NULL, ...,  LKinfo,
 # table of fixed effect coefficients
 # 
 # parts of the LKrig call that will be fixed.  (except updates to LKinfo)  
-    LKrigArgs <- c(list(x = x, y = y), list( ...),
+    LKrigArgs <- c(list(x = x, y = y), 
+                   list( ...),
                    list( LKinfo = LKinfo,
+                         U=U,
+                         X=X,
+                         Z=Z,
                            NtrA = ifelse( lambda.profile, 0, 20),
                     getVarNames = FALSE )
                    )
@@ -64,7 +68,6 @@ LKrigFindLambda <- function(x, y, Z=NULL, U=NULL, ...,  LKinfo,
                                  return.wXandwU = TRUE,
                                          lambda = exp( llambda.start),
                                         verbose = verbose)))
-                                   
     capture.evaluations[1,] <-  c( LKrigObject$LKinfo$lambda,
                                    LKrigObject$rho.MLE.FULL,
                                    LKrigObject$sigma.MLE.FULL,
@@ -106,6 +109,7 @@ LKrigFindLambda <- function(x, y, Z=NULL, U=NULL, ...,  LKinfo,
 #    
 # the try wrapper captures cases when optim fails.   
             capture.env <- environment()
+            
             look<- try(optimize( temp.fn, interval = llambda.start+c(-8,5),
                                    maximum= TRUE, tol=tol))
             if(verbose){
@@ -174,10 +178,6 @@ LKrigFindLambda <- function(x, y, Z=NULL, U=NULL, ...,  LKinfo,
             lambda.MLE = lambda.MLE,
                lnLike.eval = capture.evaluations
                )
-# call omitted because it can substitute actual
-# values and get large
-#                  call = match.call()
-#                  )
           )        
 
 }

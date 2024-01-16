@@ -1,6 +1,6 @@
 Package: LatticeKrig
 Version: 9.0
-Date: 2022-10-08
+Date: 2023-05-30
 Title: Multi-Resolution Kriging Based on Markov Random Fields
 Authors@R: c( 
             person("Douglas", "Nychka", role = c("aut", "cre"),
@@ -43,7 +43,8 @@ Description: Methods for the interpolation of large spatial
   (e.g. an integral) of the spatial process. Included are generic
   methods for prediction, standard errors for prediction, plotting of
   the estimated surface and conditional and unconditional simulation.
-  See the 'LatticeKrig' GitHub repository for a vignette of this package.
+  See the 'LatticeKrigRPackage' GitHub repository for a vignette of this
+  package.
   Development of this package was supported in part by the National
   Science Foundation  Grant 1417857 and the National Center for
   Atmospheric Research. 
