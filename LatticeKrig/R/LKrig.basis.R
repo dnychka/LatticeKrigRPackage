@@ -25,6 +25,7 @@ LKrig.basis <- function(x1, LKinfo, verbose = FALSE)
 #    delta         <- LKinfo$latticeInfo$delta
 #    overlap       <- LKinfo$basisInfo$overlap
     normalize     <- LKinfo$normalize
+    normalizeMethod <- LKinfo$normalizeMethod
     distance.type <- LKinfo$distance.type
     fast          <-  attr( LKinfo$a.wght,"fastNormalize")
     V <- LKinfo$basisInfo$V
@@ -96,21 +97,22 @@ LKrig.basis <- function(x1, LKinfo, verbose = FALSE)
           print( t1)
         }
         if (normalize) { 
-        	t2<- system.time( 
-        	if( !fast ){
-        	# the default choice should work for all models	
-               wght<-  LKrigNormalizeBasis( LKinfo,  Level=l,  PHI=PHItemp)               
-            }
-            else{ 
-            # potentially a faster method that is likely very specific
-            # to a particular more e.g. LKrectangle with stationary first order GMF
-            # NOTE that locations are passed here rather than the basis matrix	
-               wght<- LKrigNormalizeBasisFast(LKinfo,  Level=l,  x=x1)
-            	}
+        	t2<- system.time(
+        	  
+        	  
+        	  wght <- switch(  
+        	    normalizeMethod,  
+        	    "exact"= LKrigNormalizeBasis( LKinfo,  Level=l,  PHI=PHItemp),  
+        	    "exactKronecker"= LKrigNormalizeBasisFast(LKinfo,  Level=l,  x=x1),  
+        	    "fftInterpolation"= LKrigNormalizeBasisFFTInterpolate.LKRectangle(LKinfo, Level=l, grid=x1),  
+        	      ) 
             	)
-                
+               
+        	
+        	
+        	 
             	if( verbose){
-            		cat("time for normalization", "fast=", fast,  fill=TRUE)
+            		cat("time for normalization", "Method=", normalizeMethod,  fill=TRUE)
             		print( t2)
             	}
 # now normalize the basis functions by the weights treat the case with one point separately
@@ -181,5 +183,19 @@ LKrig.basis <- function(x1, LKinfo, verbose = FALSE)
 #############    attr(PHI, which = "LKinfo") <- LKinfo
     return(PHI)
 }
+
+
+# Edits made by Antony: --------------------------------------------------------- 
+
+#Line 28: Added the extraction for normalizeMethod from LKinfo 
+#Lines 101 - 113: Implemented the switch statement to assign "wght: based 
+#                 on different values of normalizeMethod. Did not need this
+#                 many lines but kept it for the sake of keeping everything 
+#                 the same.
+#Line 114: edited the if statement to print the normalization method used 
+#          instead of printing "fast" like the old if statement did. 
+
+#--------------------------------------------------------------------------------
+
 
 
