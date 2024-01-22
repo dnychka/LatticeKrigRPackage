@@ -12,7 +12,7 @@
 
 
 # Not sure if I named this correctly with the .LKRectangle
-LKrigNormalizeBasisFFTInterpolate.LKRectangle <- function(LKinfo, Level, grid){
+LKrigNormalizeBasisFFTInterpolate <- function(LKinfo, Level, x1){
 
   
   # Extracting important information from LKinfo 
@@ -22,12 +22,23 @@ LKrigNormalizeBasisFFTInterpolate.LKRectangle <- function(LKinfo, Level, grid){
   alphaNum <- LKinfo$alpha[Level]
   awght <- LKinfo$a.wght[Level]
   
+  #dimensions of original data, also helpful for shift parameter
+  nr <- length(unique(x1[,1]))
+  nc <- length(unique(x1[,2]))
+  
+  # even number of rows or columns will result in asymmetric error due to fft assuming periodicity
+  if (nr %% 2 == 0 || nc %% 2 == 0) {
+    print("Your input has an even number of rows or columns. This will result in asymmetric error pattern, yet similar accuracy. Considering using odd numbers for symmetric error.")
+  }
+  
   # Setting up a new LKrig object using the extracted info 
   LKinfoNew <- LKrigSetup(bounds, nlevel = 1, NC = basisNum, NC.buffer = buffer, 
                           alpha = alphaNum, a.wght = awght, normalize = FALSE) 
   
-  # Setting a default coarse grid size based on the number of basis functions
-  miniGridSize <- 2 * basisNum + 2
+  # Setting a default coarse grid size based on the number of basis functions 
+  # MINIMUM VALUE is 2 * basisNum + 2
+  # NOTE can play with this for accuracy ----------------------------------------------------------- NOTE
+  miniGridSize <- 4 * basisNum + 2
   
   # Creating the actual grid
   gridList<- list( x= seq( bounds[1,1],bounds[2,1],length.out = miniGridSize),
@@ -45,9 +56,6 @@ LKrigNormalizeBasisFFTInterpolate.LKRectangle <- function(LKinfo, Level, grid){
   # Helpful dimensions and shift parameter 
   snr <- nrow(fftStep)
   snc <- ncol(fftStep)
-  
-  nr <- length(unique(grid[,1]))
-  nc <- length(unique(grid[,2]))
   
   yShift <- ceiling(((nr/snr) - 1)/2)
   xShift <- ceiling(((nc/snc) - 1)/2)
@@ -81,7 +89,6 @@ LKrigNormalizeBasisFFTInterpolate.LKRectangle <- function(LKinfo, Level, grid){
   
   
   wght <- c(wght)
-  print(dim(wght))
   
   # Returns matrix of weights (variances)
   return (wght)

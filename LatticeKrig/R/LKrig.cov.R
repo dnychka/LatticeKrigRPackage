@@ -52,13 +52,34 @@ if (!marginal) {
 #   will be already normalized so that the marginal varinace is one
 #   without the additional factor of rho.
 		PHI <- LKrig.basis(x1, LKinfo)
-		marginal.variance <- LKrig.quadraticform(LKrig.precision(LKinfo), 
-			PHI, choleskyMemory = LKinfo$choleskyMemory)
-		if (!is.null(LKinfo$rho.object)) {
-			# add in additional scaling if part of covariance model
-			marginal.variance <- marginal.variance * predict(LKinfo$rho.object, 
-				x1)
+		
+		
+		# if normalize is true, marginal variance should be all 1s
+		# if normalize is false, continue with calling quadratic form as the last version of the package did
+		
+		nr <- length(unique(x1[,1]))
+		nc <- length(unique(x1[,2]))
+
+		if(LKinfo$normalize == TRUE){
+		  marginal.variance <- rep(1, nr*nc)
 		}
+		
+		else if(LKinfo$normalize == FALSE){
+		  marginal.variance <- LKrig.quadraticform(LKrig.precision(LKinfo), 
+		                                           PHI, choleskyMemory = LKinfo$choleskyMemory)
+		  if (!is.null(LKinfo$rho.object)) {
+		    # add in additional scaling if part of covariance model
+		    marginal.variance <- marginal.variance * predict(LKinfo$rho.object, 
+		                                                     x1)
+		  }
+		}
+		
+		else{
+		  print("Impossible, normalize is set to neither true nor false.")
+		}
+		
+		
+
 		return(marginal.variance)
 	}
 	# should not get here.

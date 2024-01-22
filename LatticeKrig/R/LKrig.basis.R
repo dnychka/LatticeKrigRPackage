@@ -104,7 +104,7 @@ LKrig.basis <- function(x1, LKinfo, verbose = FALSE)
         	    normalizeMethod,  
         	    "exact"= LKrigNormalizeBasis( LKinfo,  Level=l,  PHI=PHItemp),  
         	    "exactKronecker"= LKrigNormalizeBasisFast(LKinfo,  Level=l,  x=x1),  
-        	    "fftInterpolation"= LKrigNormalizeBasisFFTInterpolate.LKRectangle(LKinfo, Level=l, grid=x1),  
+        	    "fftInterpolation"= LKrigNormalizeBasisFFTInterpolate(LKinfo, Level=l, x1=x1),  
         	      ) 
             	)
                
@@ -196,6 +196,3 @@ LKrig.basis <- function(x1, LKinfo, verbose = FALSE)
 #          instead of printing "fast" like the old if statement did. 
 
 #--------------------------------------------------------------------------------
-
-
-
