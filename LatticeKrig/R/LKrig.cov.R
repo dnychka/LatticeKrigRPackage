@@ -21,67 +21,59 @@
 
 LKrig.cov <- function(x1, x2 = NULL, LKinfo, C = NA, 
                       marginal = FALSE, theta=NULL) {
-  # theta is a dummy argument for future development where a 
-  # range parameter is specified directly 
-	PHI1 <- LKrig.basis(x1, LKinfo)
-	# sparse precision matrix for the basis coeficients	
-	Q <- LKrig.precision(LKinfo)
-	Qc <- chol(Q, memory = LKinfo$choleskyMemory)
-	# note: construction of lattice basis depends on alpha and a.wght  and normalizes
-	# the basis 
-if (!marginal) {
-		if (is.null(x2)) {
-			PHI2 <- PHI1
-		} else {
-			PHI2 <- LKrig.basis(x2, LKinfo)
-		}
-		if (is.na(C[1])) {
-			A <- forwardsolve(Qc, transpose = TRUE, t(PHI2), upper.tri = TRUE)
-			A <- backsolve(Qc, A)
-			return(PHI1 %*% A)
-		} else {
-			A <- forwardsolve(Qc, transpose = TRUE, t(PHI2) %*% C, upper.tri = TRUE)
-			A <- backsolve(Qc, A)
-			return(PHI1 %*% A)
-		}
-	} else {
-		if (!is.null(x2)) {
-			stop("x2 should not be passed to find marginal variance")
-		}
-#  NOTE: if LKinfo$normalize = TRUE then basis functions
-#   will be already normalized so that the marginal varinace is one
-#   without the additional factor of rho.
-		PHI <- LKrig.basis(x1, LKinfo)
-		
-		
-		# if normalize is true, marginal variance should be all 1s
-		# if normalize is false, continue with calling quadratic form as the last version of the package did
-		
-		nr <- length(unique(x1[,1]))
-		nc <- length(unique(x1[,2]))
-
-		if(LKinfo$normalize == TRUE){
-		  marginal.variance <- rep(1, nr*nc)
-		}
-		
-		else if(LKinfo$normalize == FALSE){
-		  marginal.variance <- LKrig.quadraticform(LKrig.precision(LKinfo), 
-		                                           PHI, choleskyMemory = LKinfo$choleskyMemory)
-		  if (!is.null(LKinfo$rho.object)) {
-		    # add in additional scaling if part of covariance model
-		    marginal.variance <- marginal.variance * predict(LKinfo$rho.object, 
-		                                                     x1)
-		  }
-		}
-		
-		else{
-		  print("Impossible, normalize is set to neither true nor false.")
-		}
-		
-		
-
-		return(marginal.variance)
-	}
-	# should not get here.
-	}
-
+  
+  nr <- length(unique(x1[,1]))
+  nc <- length(unique(x1[,2]))
+  
+  if(LKinfo$normalize == TRUE){
+    marginal.variance <- rep(1, nr*nc)
+  }
+  
+  else if(LKinfo$normalize == FALSE){
+    # theta is a dummy argument for future development where a 
+    # range parameter is specified directly 
+    PHI1 <- LKrig.basis(x1, LKinfo)
+    # sparse precision matrix for the basis coeficients	
+    Q <- LKrig.precision(LKinfo)
+    Qc <- chol(Q, memory = LKinfo$choleskyMemory)
+    # note: construction of lattice basis depends on alpha and a.wght  and normalizes
+    # the basis 
+    if (!marginal) {
+      if (is.null(x2)) {
+        PHI2 <- PHI1
+      } else {
+        PHI2 <- LKrig.basis(x2, LKinfo)
+      }
+      if (is.na(C[1])) {
+        A <- forwardsolve(Qc, transpose = TRUE, t(PHI2), upper.tri = TRUE)
+        A <- backsolve(Qc, A)
+        return(PHI1 %*% A)
+      } else {
+        A <- forwardsolve(Qc, transpose = TRUE, t(PHI2) %*% C, upper.tri = TRUE)
+        A <- backsolve(Qc, A)
+        return(PHI1 %*% A)
+      }
+    } else {
+      if (!is.null(x2)) {
+        stop("x2 should not be passed to find marginal variance")
+      }
+      #  NOTE: if LKinfo$normalize = TRUE then basis functions
+      #   will be already normalized so that the marginal varinace is one
+      #   without the additional factor of rho.
+      PHI <- LKrig.basis(x1, LKinfo)
+      marginal.variance <- LKrig.quadraticform(LKrig.precision(LKinfo), 
+                                               PHI, choleskyMemory = LKinfo$choleskyMemory)
+      if (!is.null(LKinfo$rho.object)) {
+        # add in additional scaling if part of covariance model
+        marginal.variance <- marginal.variance * predict(LKinfo$rho.object, 
+                                                         x1)
+      }
+    }
+  }
+  
+  else{
+    stop("Impossible, normalize is set to neither true nor false.")
+  }
+    return(marginal.variance)
+  # should not get here.
+}
