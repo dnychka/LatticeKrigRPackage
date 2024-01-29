@@ -43,6 +43,14 @@ LKrigNormalizeBasisFFTInterpolate <- function(LKinfo, Level, x1){
   # NOTE can play with this for accuracy ----------------------------------------------------------- NOTE
   miniGridSize <- 4 * basisNum + 2
   
+  if (miniGridSize > nr || miniGridSize > nc) {
+    stop("Warning: Minimum coarse grid based on the number of basis functions is 
+         greater than the size of the data. This method is not appropriate here,
+         or less basis functions need to be chosen. See help file on 
+         LKrigNormalizeBasisFFTInterpolate.")
+  }
+  
+  
   # Creating the actual grid
   gridList<- list( x= seq( bounds[1,1],bounds[2,1],length.out = miniGridSize),
                    y= seq( bounds[1,2],bounds[2,2],length.out = miniGridSize) )
