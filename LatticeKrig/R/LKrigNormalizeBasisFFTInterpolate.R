@@ -26,13 +26,13 @@ LKrigNormalizeBasisFFTInterpolate <- function(LKinfo, Level, x1){
   nr <- length(unique(x1[,1]))
   nc <- length(unique(x1[,2]))
   
-  # even number of rows or columns will result in asymmetric error due to fft assuming periodicity
-  if (nr %% 2 == 0 || nc %% 2 == 0) {
-    warning("Your input has an even number of rows or columns. 
-          This will result in asymmetric error pattern, yet similar accuracy. 
-          Considering using odd numbers for symmetric error.
-            See LKrigNormalizeBasisFFTInterpolate help file.")
-  }
+  # # even number of rows or columns will result in asymmetric error due to fft assuming periodicity
+  # if (nr %% 2 == 0 || nc %% 2 == 0) {
+  #   warning("Your input has an even number of rows or columns. 
+  #         This will result in asymmetric error pattern, yet similar accuracy. 
+  #         Considering using odd numbers for symmetric error.
+  #           See LKrigNormalizeBasisFFTInterpolate help file.")
+  # }
   
   # Setting up a new LKrig object using the extracted info 
   LKinfoNew <- LKrigSetup(bounds, nlevel = 1, NC = basisNum, NC.buffer = buffer, 
