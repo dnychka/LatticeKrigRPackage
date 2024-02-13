@@ -33,7 +33,9 @@ LKrigSetup <- function(x = NULL,
 # defaults for NC.buffer are set in setDefaultsLKinfo
                        NC = NULL, NC.buffer=NULL,
                        normalize=TRUE,
+# varinace parameters
                        lambda = NA, sigma = NA, rho = NA, rho.object = NULL,
+#
                        latticeInfo=NULL, basisInfo=NULL, 
 # default geometry is a rectangular domain with Euclidean distance 
 # (see NC above)

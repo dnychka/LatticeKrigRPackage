@@ -86,19 +86,18 @@ require(LatticeKrig)
         set.seed( seeds[index] )
 # generate process at grid and also on the observation locations.
         simCoefficients<- LKrig.sim(LKinfo = LKrigObj$LKinfo, just.coefficients=TRUE)
-        g.unconditional.data <-LKrigObj$wX %*%simCoefficients 
-        g.unconditional.data <- sqrt(LKrigObj$rho.MLE) * g.unconditional.data
+        g.unconditional.data <- sqrt(LKrigObj$rho.MLE) * LKrigObj$wX %*%simCoefficients 
         g.unconditional.grid <-sqrt(LKrigObj$rho.MLE) *PHIGrid%*%simCoefficients 
         # generate a synthetic data set with fixed part set to zero.
         N<- length( LKrigObj$y)
         y.synthetic.data <- g.unconditional.data + LKrigObj$sigma.MLE * 
             rnorm(N)
-# this may confusing. divide by  sqrt(weights) to cancel out this term in the
+# this may be confusing. divide by  sqrt(weights) to cancel out this term in the
 # wX matrix for  g.unconditional.data and to adjust measurement error variance         
         y.synthetic.data<- y.synthetic.data / sqrt(LKrigObj$weights)
         # use LKrig to find the predictions for the xgrid locations
         # NOTE that LKrig will still estimate the fixed part.
-        # and it is important to include this part of estimate
+        # and it is important to include this part of the estimate
         if(verbose){
            cat("simConditionalDraw Call to LKrig: ", fill=TRUE)
         }
@@ -113,14 +112,15 @@ require(LatticeKrig)
                                   verbose = verbose)      
         #
         # predict field
-        spatialPart<- (PHIGrid%*% obj.fit.synthetic$c.coef)
-        ghat.synthetic<-  spatialPart
+         
+        hHat.synthetic<-  (PHIGrid%*% obj.fit.synthetic$c.coef)
+        
         if( !is.null(LKrigObj$LKinfo$fixedFunction) ){       	
                  fixedPart<- predict(
                      obj.fit.synthetic, xnew=x.grid, Znew = Z.grid,
                      just.fixed=TRUE)
                  d.coef <- obj.fit.synthetic$d.coef
-                 ghat.synthetic<- ghat.synthetic + fixedPart
+                 ghat.synthetic<- hHat.synthetic + fixedPart
          }
          else{
          	d.coef<- NA

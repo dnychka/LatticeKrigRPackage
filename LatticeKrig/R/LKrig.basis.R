@@ -163,8 +163,9 @@ LKrig.basis <- function(x1, LKinfo, verbose = FALSE)
    
     
 # finally multiply the basis functions by sqrt(rho) to give the right
-# marginal variances. This is either a function of the locations or constant.
-# rho may not be provided when estimating a model 
+# marginal variances. This is found as a function of the locations 
+# (see use of predict below)  or set to a constant.
+
     if (!is.null( LKinfo$rho.object) ) {
       wght <- c(predict(LKinfo$rho.object, x1))
     }
@@ -178,7 +179,7 @@ LKrig.basis <- function(x1, LKinfo, verbose = FALSE)
     else{
       PHI <-sqrt(wght)*PHI
       }
-#############    attr(PHI, which = "LKinfo") <- LKinfo
+########
     return(PHI)
 }
 
