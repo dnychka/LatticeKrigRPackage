@@ -106,16 +106,17 @@ LKrigNormalizeBasisFFTInterpolate <- function(LKinfo, Level, x1){
     # extract bottom right corner (will show up as top right in imagePlot)
     bottom_right_corner <- wght[(corner_size+1):nc, (corner_size+1):nc]
     
-    # mirror and expand the bottom right corner
+    # create empty matrix to fill in
     expanded_matrix <- matrix(0, nrow = 2*corner_size, ncol = 2*corner_size)
     
     # fill in the new matrix by rotating the bottom corner around (symmetric in both x and y)
+    # can also be thought of as mirroring it across the x and then mirroring the result of that across y
     expanded_matrix[(corner_size+1):(2*corner_size), (corner_size+1):(2*corner_size)] <- bottom_right_corner  # Bottom right
     expanded_matrix[1:corner_size, (corner_size+1):(2*corner_size)] <- bottom_right_corner[corner_size:1, ]  # Top right
     expanded_matrix[(corner_size+1):(2*corner_size), 1:corner_size] <- bottom_right_corner[, corner_size:1]  # Bottom left
     expanded_matrix[1:corner_size, 1:corner_size] <- bottom_right_corner[corner_size:1, corner_size:1]  # Top left
     
-    # reassigning wght
+    # reassigning wght as the new matrix
     wght <- expanded_matrix
   }
   
