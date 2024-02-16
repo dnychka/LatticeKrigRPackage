@@ -39,9 +39,9 @@ LKrigNormalizeBasisFFTInterpolate <- function(LKinfo, Level, x1){
                           alpha = alphaNum, a.wght = awght, normalize = FALSE) 
   
   # Setting a default coarse grid size based on the number of basis functions 
-  # MINIMUM VALUE is 2 * basisNum + 2
-  # NOTE can play with this for accuracy ----------------------------------------------------------- NOTE
-  miniGridSize <- 4 * basisNum + 2
+  # MINIMUM VALUE is 2 * basisNum - 1
+  # NOTE can play with this for accuracy 
+  miniGridSize <- 4 * basisNum
   
   if (miniGridSize > nr || miniGridSize > nc) {
     stop("Warning: Minimum coarse grid based on the number of basis functions is 
@@ -99,9 +99,34 @@ LKrigNormalizeBasisFFTInterpolate <- function(LKinfo, Level, x1){
   wght <- LKrig.shift.matrix(wght, shift.row = yShift, shift.col = xShift, periodic = c(TRUE, TRUE))
   
   
+  # correcting to have symmetric error for grids with even dimensions
+  if (ncol(wght) %% 2 == 0){
+    corner_size <- nc/2
+    
+    # extract bottom right corner (will show up as top right in imagePlot)
+    bottom_right_corner <- wght[(corner_size+1):nc, (corner_size+1):nc]
+    
+    # mirror and expand the bottom right corner
+    expanded_matrix <- matrix(0, nrow = 2*corner_size, ncol = 2*corner_size)
+    
+    # fill in the new matrix by rotating the bottom corner around (symmetric in both x and y)
+    expanded_matrix[(corner_size+1):(2*corner_size), (corner_size+1):(2*corner_size)] <- bottom_right_corner  # Bottom right
+    expanded_matrix[1:corner_size, (corner_size+1):(2*corner_size)] <- bottom_right_corner[corner_size:1, ]  # Top right
+    expanded_matrix[(corner_size+1):(2*corner_size), 1:corner_size] <- bottom_right_corner[, corner_size:1]  # Bottom left
+    expanded_matrix[1:corner_size, 1:corner_size] <- bottom_right_corner[corner_size:1, corner_size:1]  # Top left
+    
+    # reassigning wght
+    wght <- expanded_matrix
+  }
+  
+  #error will already be symmetric for odd dimensions
+  if (ncol(wght) %% 2 == 1){
+    wght <- wght
+  }
+  
+  #returns the matrix in vector form
   wght <- c(wght)
   
-  # Returns matrix of weights (variances)
   return (wght)
   
 }
