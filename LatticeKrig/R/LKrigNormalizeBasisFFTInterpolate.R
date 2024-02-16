@@ -124,7 +124,7 @@ LKrigNormalizeBasisFFTInterpolate <- function(LKinfo, Level, x1){
     wght <- wght
   }
   
-  #returns the matrix in vector form
+  #vectorize the variance matrix to be compatible with LKrig.basis
   wght <- c(wght)
   
   return (wght)
