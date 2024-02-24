@@ -65,8 +65,8 @@ LKrigNormalizeBasisFFTInterpolate <- function(LKinfo, Level, x1){
   fftStep <- fftw2d((roughMat)/length(roughMat))
   
   # Helpful dimensions and shift parameter 
-  snr <- nrow(fftStep)
-  snc <- ncol(fftStep)
+  snr <- nrow(fftStep) #5
+  snc <- ncol(fftStep) #5
   
   yShift <- ceiling(((nr/snr) - 1)/2)
   xShift <- ceiling(((nc/snc) - 1)/2)
@@ -75,19 +75,19 @@ LKrigNormalizeBasisFFTInterpolate <- function(LKinfo, Level, x1){
   temp <- matrix(0, nrow = nr, ncol = nc)
   
   # Helpful for indexing later 
-  bigindY <- 1:ceiling(snr/2)
-  bigindX <- 1:ceiling(snc/2)
-  indY <- 1:(snr/2)
-  indX <- 1:(snc/2)
-  bigOffsetY <- (nr - floor(snr/2))
+  bigindY <- 1:ceiling(snr/2) 
+  bigindX <- 1:ceiling(snc/2) 
+  indY <- 1:(snr/2) 
+  indX <- 1:(snc/2) 
+  bigOffsetY <- (nr - floor(snr/2)) 
   bigOffsetX <- (nc - floor(snc/2))
-  smallOffsetY <- (snr - floor(snr/2))
+  smallOffsetY <- (snr - floor(snr/2)) 
   smallOffsetX <- (snc - floor(snc/2))
   
   # Stuffing the small FFT result into the large matrix of zeroes 
-  temp[bigindY, bigindX] <- fftStep[bigindY, bigindX] #top left corner
-  temp[indY, (indX + bigOffsetX)] <- fftStep[indY, (indX + smallOffsetX)] #top right corner
-  temp[(indY + bigOffsetY), indX] <- fftStep[(indY + smallOffsetY), indX] #bottom left corner 
+  temp[bigindY, bigindX] <- fftStep[bigindY, bigindX] #top left corner 
+  temp[bigindY, (indX + bigOffsetX)] <- fftStep[bigindY, (indX + smallOffsetX)] #top right corner
+  temp[(indY + bigOffsetY), bigindX] <- fftStep[(indY + smallOffsetY), bigindX] #bottom left corner 
   temp[(indY + bigOffsetY), (indX + bigOffsetX)] <- fftStep[(indY + smallOffsetY), (indX + smallOffsetX)] #bottom right corner
   
   
