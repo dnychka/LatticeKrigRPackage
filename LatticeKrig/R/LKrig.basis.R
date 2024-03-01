@@ -98,19 +98,21 @@ LKrig.basis <- function(x1, LKinfo, verbose = FALSE)
         }
         if (normalize) { 
         	t2<- system.time(
-        	  
-        	  
+  
+        	        	  
+# depending on option chosen, the basis functions will either be normalized by the default exact method, 
+# the fft interpolation alone, the kronecker alone, or both combined 
+# both will select fft for coarser levels, kronecker for levels where there are more basis functions
         	  wght <- switch(  
         	    normalizeMethod,  
         	    "exact"= LKrigNormalizeBasis( LKinfo,  Level=l,  PHI=PHItemp),  
         	    "exactKronecker"= LKrigNormalizeBasisFast(LKinfo,  Level=l,  x=x1),  
-        	    "fftInterpolation"= LKrigNormalizeBasisFFTInterpolate(LKinfo, Level=l, x1=x1),  
+        	    "fftInterpolation"= LKrigNormalizeBasisFFTInterpolate(LKinfo, Level=l, x1=x1),
+        	    "fast" = LKrigNormalizeBasisSelector(LKinfo, Level = l, x1 = x1)
         	      ) 
             	)
-               
         	
         	
-        	 
             	if( verbose){
             		cat("time for normalization", "Method=", normalizeMethod,  fill=TRUE)
             		print( t2)
@@ -188,7 +190,7 @@ LKrig.basis <- function(x1, LKinfo, verbose = FALSE)
 # Edits made by Antony: --------------------------------------------------------- 
 
 #Line 28: Added the extraction for normalizeMethod from LKinfo 
-#Lines 101 - 113: Implemented the switch statement to assign "wght: based 
+#Lines 103 - 113: Implemented the switch statement to assign "wght: based 
 #                 on different values of normalizeMethod. Did not need this
 #                 many lines but kept it for the sake of keeping everything 
 #                 the same.
