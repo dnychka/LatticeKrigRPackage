@@ -19,11 +19,14 @@ LKrigNormalizeBasisSelector <- function(LKinfo, Level, x1){
   miniGridSize <- 4 * basisNum
   
   #method selection
+  # if coarse grid size is less than the size of the data, use FFT
   if (miniGridSize < minDimension){
     cat("Using FFT Interpolation method for level", Level, fill = TRUE)
     wght <- LKrigNormalizeBasisFFTInterpolate(LKinfo, Level, x1)
   }
   
+  #when coarse grid size gets too big (too many basis functions)
+  #switch over to the Kronecker method
   else {
     cat("Using Kronecker method for level", Level, fill = TRUE)
     wght <- LKrigNormalizeBasisFast(LKinfo,  Level,  x1)

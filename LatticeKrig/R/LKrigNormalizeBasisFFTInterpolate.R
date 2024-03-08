@@ -8,12 +8,8 @@
 # NOTE: this function is reliant on the library(fftwtools). Needs to be installed 
 #      with the LatticeKrig package itself. 
 
-
-
-
 LKrigNormalizeBasisFFTInterpolate <- function(LKinfo, Level, x1){
 
-  
   # Extracting important information from LKinfo 
   bounds <- LKinfo$x
   basisNum <- LKinfo$latticeInfo$mxDomain[Level,2]
@@ -21,27 +17,17 @@ LKrigNormalizeBasisFFTInterpolate <- function(LKinfo, Level, x1){
   alphaNum <- LKinfo$alpha[Level]
   awght <- LKinfo$a.wght[Level]
   
-  cat("Doing FFT normalization at level", Level, "with", basisNum, "basis functions", fill = TRUE)
-  
   #dimensions of original data, also helpful for shift parameter
   nr <- length(unique(x1[,1]))
   nc <- length(unique(x1[,2]))
   
-  # # even number of rows or columns will result in asymmetric error due to fft assuming periodicity
-  # if (nr %% 2 == 0 || nc %% 2 == 0) {
-  #   warning("Your input has an even number of rows or columns. 
-  #         This will result in asymmetric error pattern, yet similar accuracy. 
-  #         Considering using odd numbers for symmetric error.
-  #           See LKrigNormalizeBasisFFTInterpolate help file.")
-  # }
-  
-  # Setting up a new LKrig object using the extracted info 
+  # Setting up a new, single level LKrig object using the extracted info 
   LKinfoNew <- LKrigSetup(bounds, nlevel = 1, NC = basisNum, NC.buffer = buffer, 
                           alpha = alphaNum, a.wght = awght, normalize = FALSE) 
   
   # Setting a default coarse grid size based on the number of basis functions 
   # MINIMUM VALUE is 2 * basisNum - 1
-  # NOTE can play with this for accuracy 
+  # NOTE: can play with this for accuracy
   miniGridSize <- 4 * basisNum
   
   if (miniGridSize >= min(c(nr, nc)) ) {
@@ -53,24 +39,24 @@ LKrigNormalizeBasisFFTInterpolate <- function(LKinfo, Level, x1){
   }
   
   else{
-  
     # Creating the actual grid
     gridList<- list( x= seq( bounds[1,1],bounds[2,1],length.out = miniGridSize),
                      y= seq( bounds[1,2],bounds[2,2],length.out = miniGridSize) )
-    
     sGrid<- make.surface.grid(gridList)
     
-    
-    # Calling LKrig.cov to evaluate the variance on our more coarse grid
+    # Calling LKrig.cov to evaluate the variance on the coarse grid
+    # this is the initial, small variance calculation that we will upsample
     roughMat <- as.surface(sGrid, LKrig.cov(sGrid, LKinfo = LKinfoNew, marginal=TRUE ))[["z"]]
     
-    # FFT step (reliant on fftwtools package)
+    # FFT step: taking the fft of the small variance
+    # reliant on fftwtools package
     fftStep <- fftw2d((roughMat)/length(roughMat))
     
-    # Helpful dimensions and shift parameter 
+    # Helpful dimensions
     snr <- nrow(fftStep) 
     snc <- ncol(fftStep) 
     
+    # Shit parameter
     yShift <- ceiling(((nr/snr) - 1)/2)
     xShift <- ceiling(((nc/snc) - 1)/2)
     
@@ -89,54 +75,28 @@ LKrigNormalizeBasisFFTInterpolate <- function(LKinfo, Level, x1){
     smallOffsetX <- (snc - floor(snc/2))
     
     # Stuffing the small FFT result into the large matrix of zeroes 
-    temp[bigindY, bigindX] <- fftStep[bigindY, bigindX] #top left corner 
+    temp[bigindY, bigindX] <- fftStep[bigindY, bigindX] #top left corner
     temp[bigindY, (indX + bigOffsetX)] <- fftStep[bigindY, (indX + smallOffsetX)] #top right corner
     temp[(indY + bigOffsetY), bigindX] <- fftStep[(indY + smallOffsetY), bigindX] #bottom left corner 
     temp[(indY + bigOffsetY), (indX + bigOffsetX)] <- fftStep[(indY + smallOffsetY), (indX + smallOffsetX)] #bottom right corner
     
-    
-    # Takes the IFFT of the modified big matrix to return a interpolated version of the input matrix
-    # Again (reliant on fftwtools package)
+    # takes the IFFT of the modified big matrix to return our interpolated/upsampled variance
+    # again reliant on fftwtools package
     wght <- Re(fftw2d(temp, inverse = 1))
     
     # Shifting due to the periodicity assumed by the FFT
     wght <- LKrig.shift.matrix(wght, shift.row = yShift, shift.col = xShift, periodic = c(TRUE, TRUE))
+
+    #the next steps are done to account for oddly sized/missing data
+    # the fft calculation will produce a full grid
+    # but only certain observations need a variance associated with them
     
+    lat_min <- min(x1[,1]) # minimum latitude
+    lat_max <- max(x1[,1]) # maximum latitude
+    lon_min <- min(x1[,2]) # minimum longitude
+    lon_max <- max(x1[,2]) # maximum longitude
     
-    # # correcting to have symmetric error for grids with even dimensions
-    # if (ncol(wght) %% 2 == 0){
-    #   corner_size <- nc/2
-    # 
-    #   # extract bottom right corner (will show up as top right in imagePlot)
-    #   bottom_right_corner <- wght[(corner_size+1):nc, (corner_size+1):nc]
-    # 
-    #   # create empty matrix to fill in
-    #   expanded_matrix <- matrix(0, nrow = 2*corner_size, ncol = 2*corner_size)
-    # 
-    #   # fill in the new matrix by rotating the bottom corner around (symmetric in both x and y)
-    #   # can also be thought of as mirroring it across the x and then mirroring the result of that across y
-    #   expanded_matrix[(corner_size+1):(2*corner_size), (corner_size+1):(2*corner_size)] <- bottom_right_corner  # Bottom right
-    #   expanded_matrix[1:corner_size, (corner_size+1):(2*corner_size)] <- bottom_right_corner[corner_size:1, ]  # Top right
-    #   expanded_matrix[(corner_size+1):(2*corner_size), 1:corner_size] <- bottom_right_corner[, corner_size:1]  # Bottom left
-    #   expanded_matrix[1:corner_size, 1:corner_size] <- bottom_right_corner[corner_size:1, corner_size:1]  # Top left
-    # 
-    #   # reassigning wght as the new matrix
-    #   wght <- expanded_matrix
-    # }
-    # 
-    # #error will already be symmetric for odd dimensions
-    # if (ncol(wght) %% 2 == 1 || nrow(wght) %% 2 == 1){
-    #   wght <- wght
-    # }
-    
-    #vectorize the variance matrix to be compatible with LKrig.basis
-  
-    lat_min <- min(x1[,1]) # Define your minimum latitude
-    lat_max <- max(x1[,1]) # Define your maximum latitude
-    lon_min <- min(x1[,2]) # Define your minimum longitude
-    lon_max <- max(x1[,2]) # Define your maximum longitude
-    
-    # The grid resolution is known, but if you need to calculate steps based on nr and nc:
+    # the grid resolution is known, but if one needs to calculate steps based on nr and nc:
     lat_step <- (lat_max - lat_min) / (nr - 1)
     lon_step <- (lon_max - lon_min) / (nc - 1)
     
@@ -144,19 +104,17 @@ LKrigNormalizeBasisFFTInterpolate <- function(LKinfo, Level, x1){
     row_indices <- round((x1[,1] - lat_min) / lat_step) + 1
     col_indices <- round((x1[,2] - lon_min) / lon_step) + 1
     
-    # Ensure indices are within the bounds of `wght` and adjust if needed
+    # Ensure indices are within the bounds and adjust if needed
     row_indices <- pmin(pmax(row_indices, 1), nr)
     col_indices <- pmin(pmax(col_indices, 1), nc)
     
-    # Extract the values using the indices
+    # Extract the actual values associated with existing data using the indices
     values <- wght[cbind(row_indices, col_indices)]
     
+    # vectorize the output matrix to be compatible with LKrig.basis
     wght <- c(values)
   }
   
   return (wght)
   
 }
-
-
-

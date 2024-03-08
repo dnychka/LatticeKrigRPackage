@@ -6,6 +6,7 @@ importFrom("methods", "new")
 importFrom("stats", "optimize", "predict", "rnorm", "var", "optim","sd","pt")
 import("spam")
 import("fields")
+import("fftwtools") 
   
 S3method(print, LKrig)
 S3method(print,LatticeKrig)

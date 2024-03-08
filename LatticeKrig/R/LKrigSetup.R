@@ -32,6 +32,9 @@ LKrigSetup <- function(x = NULL,
 # NC must be specified 
 # defaults for NC.buffer are set in setDefaultsLKinfo
                        NC = NULL, NC.buffer=NULL,
+# default normalization method is exact as FFT, Kronecker, 
+# and both have more limited use cases and depend on the 
+# geometry of the problem
                        normalize=TRUE, normalizeMethod = "exact",
                        lambda = NA, sigma = NA, rho = NA, rho.object = NULL,
                        latticeInfo=NULL, basisInfo=NULL, 
@@ -167,17 +170,3 @@ LKrigSetup <- function(x = NULL,
   }
    return(LKinfo)
 }
-
-
-# Edits made by Antony: --------------------------------------------------------- 
-
-#Line 35: Added the normalizeMethod option and set the default to be "exact"
-#Line 77: edited the initial LKinfo object list to include normalizeMethod
-
-#Note: We need some way of telling people that the options
-#     for normalizeMethod are "exact", "exactKronecker", and "fftInterpolation". 
-#     This means a documentation update, right? 
-
-#--------------------------------------------------------------------------------
-
-
