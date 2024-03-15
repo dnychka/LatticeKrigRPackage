@@ -12,7 +12,9 @@ LKrigNormalizeBasisFFTInterpolate <- function(LKinfo, Level, x1){
 
   # Extracting important information from LKinfo 
   bounds <- LKinfo$x
-  basisNum <- LKinfo$latticeInfo$mxDomain[Level,2]
+  basisNum_big <- max(LKinfo$latticeInfo$mxDomain[Level,1], LKinfo$latticeInfo$mxDomain[Level,2])
+  basisNum_small <- min(LKinfo$latticeInfo$mxDomain[Level,1], LKinfo$latticeInfo$mxDomain[Level,2])
+  gridOrientation <- which.max(c(LKinfo$latticeInfo$mxDomain[Level,1], LKinfo$latticeInfo$mxDomain[Level,2]))
   buffer <- LKinfo$NC.buffer
   alphaNum <- LKinfo$alpha[Level]
   awght <- LKinfo$a.wght[Level]
@@ -20,17 +22,20 @@ LKrigNormalizeBasisFFTInterpolate <- function(LKinfo, Level, x1){
   #dimensions of original data, also helpful for shift parameter
   nr <- length(unique(x1[,1]))
   nc <- length(unique(x1[,2]))
+  maxDimension <- max(nr, nc)
+  minDimension <- min(nr, nc)
   
   # Setting up a new, single level LKrig object using the extracted info 
-  LKinfoNew <- LKrigSetup(bounds, nlevel = 1, NC = basisNum, NC.buffer = buffer, 
+  LKinfoNew <- LKrigSetup(bounds, nlevel = 1, NC = basisNum_big, NC.buffer = buffer, 
                           alpha = alphaNum, a.wght = awght, normalize = FALSE) 
   
   # Setting a default coarse grid size based on the number of basis functions 
   # MINIMUM VALUE is 2 * basisNum - 1
   # NOTE: can play with this for accuracy
-  miniGridSize <- 4 * basisNum
+  miniGridSize_big <- 4 * basisNum_big
+  miniGridSize_small <- 4 * basisNum_small
   
-  if (miniGridSize >= min(c(nr, nc)) ) {
+  if (miniGridSize_big >= maxDimension || miniGridSize_small >= minDimension) {
     stop("Warning: Minimum coarse grid based on the number of basis functions is 
          greater than the size of the data. This method is not appropriate here. 
          Either choose less basis functions, or choose a different method, 
@@ -39,9 +44,19 @@ LKrigNormalizeBasisFFTInterpolate <- function(LKinfo, Level, x1){
   }
   
   else{
+    
     # Creating the actual grid
-    gridList<- list( x= seq( bounds[1,1],bounds[2,1],length.out = miniGridSize),
-                     y= seq( bounds[1,2],bounds[2,2],length.out = miniGridSize) )
+    # if the first row of basis funcs is larger, the y is the bigger side
+    if (gridOrientation == 1){
+      gridList<- list( x= seq( bounds[1,1],bounds[2,1],length.out = miniGridSize_big),
+                       y= seq( bounds[1,2],bounds[2,2],length.out = miniGridSize_small) )
+    }
+    # if the second row of basis funcs is larger, the x is the bigger side
+    if (gridOrientation == 2){
+      gridList<- list( x= seq( bounds[1,1],bounds[2,1],length.out = miniGridSize_small),
+                       y= seq( bounds[1,2],bounds[2,2],length.out = miniGridSize_big) )
+    }
+    
     sGrid<- make.surface.grid(gridList)
     
     # Calling LKrig.cov to evaluate the variance on the coarse grid

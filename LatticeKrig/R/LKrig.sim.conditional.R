@@ -83,6 +83,7 @@ LKrig.sim.conditional <- function(LKrigObj, M = 1, x.grid = NULL,
 simConditionalDraw <- function(index=1,  LKrigObj, ghat, x.grid, Z.grid,
                                PHIGrid, seeds= 123,  verbose=FALSE){
 require(LatticeKrig)
+require(spam64)
         set.seed( seeds[index] )
 # generate process at grid and also on the observation locations.
         simCoefficients<- LKrig.sim(LKinfo = LKrigObj$LKinfo, just.coefficients=TRUE)

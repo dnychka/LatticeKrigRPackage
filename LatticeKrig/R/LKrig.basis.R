@@ -109,7 +109,7 @@ LKrig.basis <- function(x1, LKinfo, verbose = FALSE)
         	    "exact"= LKrigNormalizeBasis( LKinfo,  Level=l,  PHI=PHItemp),  
         	    "exactKronecker"= LKrigNormalizeBasisFast(LKinfo,  Level=l,  x=x1),  
         	    "fftInterpolation"= LKrigNormalizeBasisFFTInterpolate(LKinfo, Level=l, x1=x1),
-        	    "both" = LKrigNormalizeBasisSelector(LKinfo, Level = l, x1 = x1)
+        	    "both" = LKrigNormalizeBasisSelector(LKinfo, Level = l, x1 = x1, verbose = verbose)
         	      ) 
             	)
         	

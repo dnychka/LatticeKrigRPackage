@@ -1,37 +1,33 @@
-
-# This functions choose which method to evaluates the variance of the 
-# basis functions. It selects the fft method for lower levels where the
-# number of basis functions is low enough, and then begins calling the
-# Kronecker method for finer levels. This merges the two powerful 
-# normalization methods in LatticeKrig
-
-LKrigNormalizeBasisSelector <- function(LKinfo, Level, x1){
+LKrigNormalizeBasisSelector <- function(LKinfo, Level, x1, verbose){
   
   # Extracting number of basis functions from LKinfo 
-  basisNum <- LKinfo$latticeInfo$mxDomain[Level,2]
+  basisNum <- max(LKinfo$latticeInfo$mxDomain[Level,1], LKinfo$latticeInfo$mxDomain[Level,2])
   
-  #dimensions of original data
+  # Dimensions of original data
   nr <- length(unique(x1[,1]))
   nc <- length(unique(x1[,2]))
-  minDimension <- min(c(nr, nc))
+  maxDimension <- max(nr, nc)
   
-  #coarse grid size for fft method
+  # Cutoff for where the fft becomes essentially less useful than Kronecker
   miniGridSize <- 4 * basisNum
   
   #method selection
   # if coarse grid size is less than the size of the data, use FFT
-  if (miniGridSize < minDimension){
-    cat("Using FFT Interpolation method for level", Level, fill = TRUE)
+  if (Level < 2 && miniGridSize < minDimension){
+    if (verbose){
+      cat("Using FFT Interpolation method for level", Level, fill = TRUE)
+    }
     wght <- LKrigNormalizeBasisFFTInterpolate(LKinfo, Level, x1)
   }
   
   #when coarse grid size gets too big (too many basis functions)
   #switch over to the Kronecker method
   else {
-    cat("Using Kronecker method for level", Level, fill = TRUE)
+    if (verbose){
+      cat("Using Kronecker method for level", Level, fill = TRUE)
+    }
     wght <- LKrigNormalizeBasisFast(LKinfo,  Level,  x1)
   }
   
   return(wght)
-  
 }
