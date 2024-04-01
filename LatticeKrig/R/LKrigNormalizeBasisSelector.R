@@ -13,7 +13,7 @@ LKrigNormalizeBasisSelector <- function(LKinfo, Level, x1, verbose){
   
   #method selection
   # if coarse grid size is less than the size of the data, use FFT
-  if (Level < 2 && miniGridSize < minDimension){
+  if (Level < 2 && miniGridSize < maxDimension){
     if (verbose){
       cat("Using FFT Interpolation method for level", Level, fill = TRUE)
     }
