@@ -184,12 +184,17 @@ compute the unnormalized process variance.  First the normalization
 can be done level by level rather than dealing with the entire
 multi-resolution process at once. Also it is important to work with the
 precision matrix rather than the covariance.  The function
-\code{LKrig.normalize.basis.slow} takes advantage of the sparsity of the
+\code{LKrigNormalizeBasis} takes advantage of the sparsity of the
 precision matrix for the coefficients.
-\code{LKrig.normalize.basis.fast} is even a more efficient version 
+\code{LKrigNormalizeBasisFast} is a more efficient version 
 for an isotropic type model when
 a.wght is constant for a given level and takes advantage of the
-Kronecker structure on the precision matrix at each level.
+Kronecker structure on the precision matrix at each level. 
+\code{LKrigNormalizeBasisFFTInterpolate} is the fastest method, which provides 
+an accurate but approximate method for the normalization, which takes advantage 
+of situations where the number of locations significantly exceeds the number of
+basis functions.
+
 
 The precision matrix for the basis coefficients at each resolution has
  the form \code{t(B)\%*\% B}. These matrices for the individual levels
@@ -288,9 +293,9 @@ functions.  To plot the returned list use
  \code{diag(t(PHI)\%*\% solve(Q) \%*\% PHI))} closely related to the marginal
  variance of the process.
 
-\strong{LKrig.normalize.basis},
-\strong{LKrig.normalize.basis.fast}, 
-\strong{LKrig.normalize.basis.slow}: A vector of variances
+\strong{LKrigNormalizeBasis},
+\strong{LKrigNormalizeBasisFast}, 
+\strong{LKrigNormalizeBasisFFTInterpolate}: A vector of variances
 corresponding to the unnormalized process at the locations.
 
 

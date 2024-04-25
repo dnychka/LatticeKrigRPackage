@@ -11,13 +11,15 @@
 LKrigNormalizeBasisFFTInterpolate <- function(LKinfo, Level, x1){
 
   # Extracting important information from LKinfo 
-  bounds <- LKinfo$x
+  bounds <- cbind(c(min(LKinfo$x[,1]), max(LKinfo$x[,1])), 
+                  c(min(LKinfo$x[,2]), max(LKinfo$x[,2])))
   basisNum_big <- max(LKinfo$latticeInfo$mxDomain[Level,1], 
                       LKinfo$latticeInfo$mxDomain[Level,2])
   basisNum_small <- min(LKinfo$latticeInfo$mxDomain[Level,1], 
                         LKinfo$latticeInfo$mxDomain[Level,2])
   gridOrientation <- which.max(c(LKinfo$latticeInfo$mxDomain[Level,1],
                                  LKinfo$latticeInfo$mxDomain[Level,2]))
+
   buffer <- LKinfo$NC.buffer
   alphaNum <- LKinfo$alpha[Level]
   awght <- LKinfo$a.wght[Level]
