@@ -1,7 +1,7 @@
 
-R version 3.4.4 (2018-03-15) -- "Someone to Lean On"
-Copyright (C) 2018 The R Foundation for Statistical Computing
-Platform: x86_64-apple-darwin15.6.0 (64-bit)
+R version 4.3.2 (2023-10-31) -- "Eye Holes"
+Copyright (C) 2023 The R Foundation for Statistical Computing
+Platform: aarch64-apple-darwin20 (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -32,13 +32,19 @@ Testing:  check using Qinverse formula
 PASSED test at tolerance  1e-07
 Testing:  check using Qinverse formula full matrix
 PASSED test at tolerance  1e-07
+Testing:  w/o norm full cov matrix 
+PASSED test at tolerance  1e-07
+Testing:  w/o norm cross cov matrix 
+PASSED test at tolerance  1e-07
 Testing:   Qinverse formula norm
 PASSED test at tolerance  1e-07
-Testing:   Qinverse formula nonorm
+Testing:   marginal variance multi nonorm
 PASSED test at tolerance  1e-08
-Testing:   Qinverse formula Tensor no norm
+Testing:   cov matrix multi nonorm
 PASSED test at tolerance  1e-08
-Testing:   Qinverse formula Tensor no norm
+Testing:   marginal variance multi nonorm
+PASSED test at tolerance  1e-08
+Testing:   cov matrix multi nonorm
 PASSED test at tolerance  1e-08
 Testing:   1 level Marginal variance compared to  fast normalize
 PASSED test at tolerance  2e-07
@@ -49,4 +55,4 @@ Done with testing fast normalize algorithm
 > 
 > proc.time()
    user  system elapsed 
-  4.110   0.132   4.407 
+  2.839   0.028   2.903 
