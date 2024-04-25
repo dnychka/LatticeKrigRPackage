@@ -1,6 +1,6 @@
 Package: LatticeKrig
-Version: 9.0
-Date: 2023-05-30
+Version: 9.2
+Date: 2024-04-03
 Title: Multi-Resolution Kriging Based on Markov Random Fields
 Authors@R: c( 
             person("Douglas", "Nychka", role = c("aut", "cre"),
@@ -9,10 +9,8 @@ Authors@R: c(
             person("Stephan", "Sain", role = "aut"),
             person("Nathan", "Lenssen", role = "aut"),    
 	    person("Colette", "Smirniotis", role = "aut"),     
-	    person("Matthew", "Iverson", role = "aut"),   
-	    person("University Corporation for Atmospheric Research",
-               role="cph", email="nychka@ucar.edu")
-	       ) 
+	    person("Matthew", "Iverson", role = "aut"),
+	    person("Antony", "Sikorski", role = "aut") )
 Maintainer: Douglas Nychka <nychka@mines.edu>
 Description: Methods for the interpolation of large spatial
   datasets. This package follows a "fixed rank Kriging" approach but
@@ -50,6 +48,13 @@ Description: Methods for the interpolation of large spatial
   Atmospheric Research. 
 License: GPL (>= 2)
 URL: https://www.r-project.org
-Depends: R (>= 3.5.0), methods, spam, fields (>= 9.9)
-Packaged: 2020-04-13; nychka
+Depends: R (>= 3.5.0), methods, spam, fftwtools, fields (>= 9.9)
+Packaged: 2024-04-03 21:40:12 UTC; nychka
 NeedsCompilation: yes
+Author: Douglas Nychka [aut, cre],
+  Dorit Hammerling [aut],
+  Stephan Sain [aut],
+  Nathan Lenssen [aut],
+  Colette Smirniotis [aut],
+  Matthew Iverson [aut],
+  Antony Sikorski [aut]

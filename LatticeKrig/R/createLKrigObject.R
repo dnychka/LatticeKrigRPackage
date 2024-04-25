@@ -21,8 +21,10 @@ function ( x, y, weights=NULL, Z,  X, U, LKinfo,
 # make sure locations are a matrix and get the number of rows
 	x <- as.matrix(x)
 	y <- as.matrix(y)
+
 	if( is.null(weights)){
-		weights<- rep(1, nrow(y))
+		weights<- rep(1, nrow(x))
+	
 		}
     if( verbose){
       cat("createLKrigObject:",fill=TRUE)

@@ -19,12 +19,15 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # or see http://www.r-project.org/Licenses/GPL-2
 
-LKrig.basis <- function(x1, LKinfo, verbose = FALSE)
+LKrig.basis <- function(x1, LKinfo, Level= NULL, 
+                        raw = FALSE, verbose = FALSE)
   {
     nlevel        <- LKinfo$nlevel
 #    delta         <- LKinfo$latticeInfo$delta
 #    overlap       <- LKinfo$basisInfo$overlap
-    normalize     <- LKinfo$normalize
+    # don't normalize if raw is TRUE
+    normalize     <- LKinfo$normalize & !raw
+    normalizeMethod <- LKinfo$normalizeMethod
     distance.type <- LKinfo$distance.type
     fast          <-  attr( LKinfo$a.wght,"fastNormalize")
     V <- LKinfo$basisInfo$V
@@ -61,7 +64,17 @@ LKrig.basis <- function(x1, LKinfo, verbose = FALSE)
           cat("LKrig.basis: Dim x1 ",  dim( x1), fill=TRUE)
     }
     basis.delta <- LKrigLatticeScales(LKinfo)
-    for (l in 1:nlevel) {
+    
+    # hook to just evaluate subset  of  levels
+    # if level argument in not NA
+    # if level is NA then evaluate all levels. 
+    if(is.null(Level) ){
+      levelRange<-  1:nlevel
+    }
+    else{
+      levelRange<- Level
+    }
+    for (l in levelRange) {
         # Loop over levels and evaluate basis functions in that level.
         # Note that all the center information based on the regualr grids is
         # taken from the LKinfo object
@@ -96,21 +109,23 @@ LKrig.basis <- function(x1, LKinfo, verbose = FALSE)
           print( t1)
         }
         if (normalize) { 
-        	t2<- system.time( 
-        	if( !fast ){
-        	# the default choice should work for all models	
-               wght<-  LKrigNormalizeBasis( LKinfo,  Level=l,  PHI=PHItemp)               
-            }
-            else{ 
-            # potentially a faster method that is likely very specific
-            # to a particular more e.g. LKrectangle with stationary first order GMF
-            # NOTE that locations are passed here rather than the basis matrix	
-               wght<- LKrigNormalizeBasisFast(LKinfo,  Level=l,  x=x1)
-            	}
+        	t2<- system.time(
+  
+        	        	  
+# depending on option chosen, the basis functions will either be normalized by the default exact method, 
+# the fft interpolation alone, the kronecker alone, or both combined 
+# both will select fft for coarser levels, kronecker for levels where the number number of basis functions
+# violates the minimum coarse grid size condition
+        	  wght <- switch(  
+        	    normalizeMethod,  
+        	    "exact"= LKrigNormalizeBasis( LKinfo,  Level=l,  PHI=PHItemp),  
+        	    "exactKronecker"= LKrigNormalizeBasisFast(LKinfo,  Level=l,  x=x1),  
+        	    "fftInterpolation"= LKrigNormalizeBasisFFTInterpolate(LKinfo, Level=l, x1=x1),
+        	    "both" = LKrigNormalizeBasisSelector(LKinfo, Level = l, x1 = x1, verbose = verbose)
+        	      ) 
             	)
-                
             	if( verbose){
-            		cat("time for normalization", "fast=", fast,  fill=TRUE)
+            		cat("time for normalization", "Method=", normalizeMethod,  fill=TRUE)
             		print( t2)
             	}
 # now normalize the basis functions by the weights treat the case with one point separately
@@ -128,30 +143,29 @@ LKrig.basis <- function(x1, LKinfo, verbose = FALSE)
           else{
               PHItemp@entries <- PHItemp@entries/sqrt(wght)
               }
-         if( verbose){
-          cat("finding normalized basis functions", fill=TRUE)
-        }    
+           
         }   
        
-# NOTE: when spam is loaded this is equivalent to just cbind( PHI, PHItemp)
+# At this point if normalization has been done
+# the variance of the process at level i will be 1.0 at the x1 locations
+# the next two modifications to the basis happen regardless of
+# the normalization. 
+# alpha are the weights applied at each level 
+# (makes sense that these sum to one but they do not need to )
+# rho is an overall weight applied across all levels
+# If sum(alpha) = 1 and the basis is normalized
+# then the process will have marginal variance rho and each level will 
+# have variance alpha[level]*rho. This product can vary over space and is 
+# motivates  including the objects defining surface of these parameters. 
         
-# always weight basis functions by scalar alpha
-        if (is.null( LKinfo$alphaObject[[l]]) ){
-         wght <- LKinfo$alpha[[l]]
-        }
-        else{
-# spatially varying alpha extension         
-          wght <- LKinfo$alpha[[l]]*c(predict(LKinfo$alphaObject[[l]], x1))
-          }
+        
+wght<- LKFindAlphaVarianceWeights(x1,LKinfo, l)
+
 #  spam does not handle diag of one element so do separately  
         if( length( wght)>1){
           t3<- system.time(
             PHItemp <- diag.spam(sqrt(wght)) %*% PHItemp
             )
-          if( verbose){
-            cat("time for weights", t3,  fill=TRUE)
-            print( t3)
-          }
           }
         else{
             PHItemp <-sqrt(wght)*PHItemp
@@ -159,28 +173,18 @@ LKrig.basis <- function(x1, LKinfo, verbose = FALSE)
 # accumulate this level into growing basis matrix        
         PHI <- spam::cbind.spam(PHI, PHItemp)
     }
- #   
-   
-    
+#   
 # finally multiply the basis functions by sqrt(rho) to give the right
-# marginal variances. This is found as a function of the locations 
-# (see use of predict below)  or set to a constant.
-
-    if (!is.null( LKinfo$rho.object) ) {
-      wght <- c(predict(LKinfo$rho.object, x1))
-    }
-    else{
-      wght<- ifelse( is.na( LKinfo$rho), 1.0, LKinfo$rho )
-    }
-      
+# marginal variances. This is either a function of the locations or constant.
+# rho may not be provided when estimating a model 
+     wght<- LKFindRhoVarianceWeights(x1,LKinfo)
+     
     if( length( wght)>1){
       PHI <- diag.spam(sqrt(wght)) %*% PHI
       }
     else{
       PHI <-sqrt(wght)*PHI
       }
-########
+#############    attr(PHI, which = "LKinfo") <- LKinfo
     return(PHI)
 }
-
-

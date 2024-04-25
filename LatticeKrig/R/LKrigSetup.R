@@ -32,10 +32,11 @@ LKrigSetup <- function(x = NULL,
 # NC must be specified 
 # defaults for NC.buffer are set in setDefaultsLKinfo
                        NC = NULL, NC.buffer=NULL,
-                       normalize=TRUE,
-# varinace parameters
+# default normalization method is exact as FFT, Kronecker, 
+# and both have more limited use cases and depend on the 
+# geometry of the problem
+                       normalize=TRUE, normalizeMethod = "exact",
                        lambda = NA, sigma = NA, rho = NA, rho.object = NULL,
-#
                        latticeInfo=NULL, basisInfo=NULL, 
 # default geometry is a rectangular domain with Euclidean distance 
 # (see NC above)
@@ -76,6 +77,7 @@ LKrigSetup <- function(x = NULL,
                 NC.buffer = NC.buffer,
                        nu = nu,
                 normalize = normalize,
+          normalizeMethod = normalizeMethod,
                    lambda = lambda,
                     sigma = sigma,
                       rho = rho,
@@ -168,4 +170,3 @@ LKrigSetup <- function(x = NULL,
   }
    return(LKinfo)
 }
-

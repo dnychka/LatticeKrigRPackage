@@ -86,13 +86,17 @@ LKrig <- function(x, y,
 # NOTE default for weights are just 1's and filled in by 
 # the next call    
 
-    object<- createLKrigObject( x, y, weights, Z,
-                                X, U,  LKinfo,
+    object<- createLKrigObject( x, y, 
+                              weights = weights,
+                                    Z = Z,
+                                    X = X,
+                                    U = U, 
+                               LKinfo = LKinfo,
                                 xName = xName, 
                                 ZName = ZName,
                                 UName = UName, 
                               verbose = verbose)
-    
+  
     nObs <-  nrow( object$y )
     nReps <- ncol( object$y )
 # for readablity make a local copy of LKinfo
@@ -101,6 +105,7 @@ LKrig <- function(x, y,
 	# Begin computations ....
 	# weighted observation vector
     wy <- sqrt(object$weights) * object$y
+   
 # create matrix for fixed part of model    
 # Spatial drift matrix -- default is assumed to be linear in coordinates (m=2)
 # and includes possible covariate(s) -- the Z matrix.
@@ -108,7 +113,8 @@ LKrig <- function(x, y,
 # (see also LKrigSetup)
    if (is.null(wU)) {
    	wU<- LKrigMakewU( object,  verbose=verbose)
- 	 }
+   }
+   
 # some column indices to keep track of fixed part of the model	
 # NOTE nZ <= nt because Z is a subset of U
     object$nt <- ifelse( is.null(ncol(wU)), 0, ncol(wU))
@@ -123,7 +129,8 @@ if (is.null(wX)) {
 	}
 else{
 	timewX<- rep(0,5)
-	}		
+}	
+ 
  #   Precision matrix of the lattice process
 #   inverse of Q is proportional to the covariance matrix of the Markov Random Field
 timeQ<-system.time(
