@@ -40,3 +40,4 @@ LKrig.quadraticform <- function(Q, PHI, choleskyMemory=NULL) {
     }
     return(wght)
 }
+

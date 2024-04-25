@@ -273,12 +273,14 @@ LKrigSetupAwght.LKRectangle <- function(object, ...) {
 	#   
 	RBF <- object$basisInfo$BasisFunction
 	# lots of conditions on SAR when the fast normalization
-	# FORTRAN code can be used.    
+	# FORTRAN code can be used.  
+	#### ALSO NEED EXACT SWITCH HERE 
 	fastNormalization <- all(stationary) & 
 	                    all(first.order) &
 	         all(!is.na(unlist(a.wght))) & 
 	        	(RBF == "WendlandFunction") &
 	  (object$basisInfo$BasisType == "Radial")
+##### WHY IS THIS HERE?
 	if( !is.null(object$setupArgs$BCHook)){
 #	  cat("turn off fast normalization")
 	  fastNormalization <- FALSE

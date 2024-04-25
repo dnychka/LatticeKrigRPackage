@@ -13,9 +13,13 @@ LKrigNormalizeBasisFFTInterpolate <- function(LKinfo, Level, x1){
   # Extracting important information from LKinfo 
   bounds <- cbind(c(min(LKinfo$x[,1]), max(LKinfo$x[,1])), 
                   c(min(LKinfo$x[,2]), max(LKinfo$x[,2])))
-  basisNum_big <- max(LKinfo$latticeInfo$mxDomain[Level,1], LKinfo$latticeInfo$mxDomain[Level,2])
-  basisNum_small <- min(LKinfo$latticeInfo$mxDomain[Level,1], LKinfo$latticeInfo$mxDomain[Level,2])
-  gridOrientation <- which.max(c(LKinfo$latticeInfo$mxDomain[Level,1], LKinfo$latticeInfo$mxDomain[Level,2]))
+  basisNum_big <- max(LKinfo$latticeInfo$mxDomain[Level,1], 
+                      LKinfo$latticeInfo$mxDomain[Level,2])
+  basisNum_small <- min(LKinfo$latticeInfo$mxDomain[Level,1], 
+                        LKinfo$latticeInfo$mxDomain[Level,2])
+  gridOrientation <- which.max(c(LKinfo$latticeInfo$mxDomain[Level,1],
+                                 LKinfo$latticeInfo$mxDomain[Level,2]))
+
   buffer <- LKinfo$NC.buffer
   alphaNum <- LKinfo$alpha[Level]
   awght <- LKinfo$a.wght[Level]
@@ -62,7 +66,9 @@ LKrigNormalizeBasisFFTInterpolate <- function(LKinfo, Level, x1){
     
     # Calling LKrig.cov to evaluate the variance on the coarse grid
     # this is the initial, small variance calculation that we will upsample
-    roughMat <- as.surface(sGrid, LKrig.cov(sGrid, LKinfo = LKinfoNew, marginal=TRUE ))[["z"]]
+    roughMat <- as.surface(sGrid, 
+                           LKrig.cov(sGrid, LKinfo = LKinfoNew, marginal=TRUE )
+                           )[["z"]]
     
     # FFT step: taking the fft of the small variance
     # reliant on fftwtools package

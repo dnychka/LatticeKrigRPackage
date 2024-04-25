@@ -134,3 +134,4 @@ require(spam64)
 return(
        list( g.conditional = g.conditional, d.coef = d.coef) )
 }
+

@@ -42,7 +42,7 @@ Warning messages:
 3: In LKrig.basis(object$x, object$LKinfo, verbose = FALSE) :
   Some normalization weights are zero
 Warning message:
-In createLKrigObject(x, y, weights, Z, X, U, LKinfo, xName = xName,  :
+In createLKrigObject(x, y, weights = weights, Z = Z, X = X, U = U,  :
   Not all x locations are unique: see the results of
                            duplicated(cat.matrix(x)) 
 Testing:  bullet proof application of identity
@@ -84,4 +84,4 @@ PASSED test at tolerance  1e-08
 Done testing LatticeKrig
 > proc.time()
    user  system elapsed 
- 12.332   0.088  12.437 
+ 12.294   0.057  12.382 

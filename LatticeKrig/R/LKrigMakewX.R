@@ -27,8 +27,9 @@ LKrigMakewX <- function(object, verbose = FALSE) {
 		wX <- diag.spam(sqrt(object$weights)) %*% object$X
 	} 
 	else {
-		wX <- diag.spam(sqrt(object$weights)) %*% LKrig.basis(object$x, 
-			object$LKinfo, verbose = FALSE)
+	  tmpX<- LKrig.basis(object$x, 
+	                     object$LKinfo, verbose = FALSE)
+		wX <- diag.spam(sqrt(object$weights)) %*% tmpX
 	}
 	if(verbose){
 	cat( "LKrigMakewX: dim wX ", dim( wX), fill=TRUE)	
