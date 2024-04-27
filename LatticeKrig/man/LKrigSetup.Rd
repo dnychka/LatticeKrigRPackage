@@ -31,8 +31,8 @@ describing the LatticeKrig spatial model. A key to specifying the LatticeKrig sp
 \usage{
 LKrigSetup(x = NULL, nlevel = NULL, alpha = NA, alphaObject =
                  NULL, nu = NULL, a.wght = NA, a.wghtObject = NULL, NC
-                 = NULL, NC.buffer = NULL, normalize = TRUE, lambda =
-                 NA, sigma = NA, rho = NA, rho.object = NULL,
+                 = NULL, NC.buffer = NULL, normalize = TRUE, normalizeMethod = 
+                 "exact", lambda = NA, sigma = NA, rho = NA, rho.object = NULL,
                  latticeInfo = NULL, basisInfo = NULL, LKGeometry =
                  "LKRectangle", distance.type = "Euclidean",
                  BasisFunction = "WendlandFunction", overlap = 2.5, V =
@@ -188,6 +188,11 @@ contribute as much to the total number of lattice points.}
   	give a marginal variance of one for each level of
   	multi-resolution.  (Normalizing by levels makes it easier to
   	interpret the \code{alpha} weights.)  } 
+  	
+  \item{normalizeMethod}{ Options are \code{"exact"}, \code{"exactKronecker"}, \code{"fftInterpolation"}, and \code{"both"}. The \code{"exact"}" option calculates the exact marginal variance but slowly, while \code{"exactKronecker"} can offer a speedup in scenarios with a constant a.wght and rectangular geometry. \code{"fftInterpolation"} offers an ever faster but approximate calculation, and can only be used in scenarios where the number of locations significantly exceeds the number of basis functions. The \code{"both"} method
+  automatically uses the FFT approximation for lower levels, and switches to the Kronecker method 
+  when the number of basis functions grows to be too large for the approximate method. See 
+  \code{LKrigNormalizeBasis} for more detail.}
   
   \item{nu}{ A
   	smoothness parameter that controls relative sizes of
@@ -287,6 +292,7 @@ Now use \code{distance.type = dtype}for the distance type argument.
 	\item{a.wght}{a.wght parameters as a list that has  nlevel components and possibly some attributes. }
 	\item{nu}{nu parameter}
 	\item{normalize}{A logical indicating whether to normalize.}
+	\item{normalizeMethod}{A string that determines the method for normalization.}
 	\item{lambda}{ Value of lambda.}
 	\item{sigma}{Value of sigma.}
 	\item{rho}{Value for rho.}

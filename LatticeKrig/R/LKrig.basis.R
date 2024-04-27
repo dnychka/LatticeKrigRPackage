@@ -25,8 +25,10 @@ LKrig.basis <- function(x1, LKinfo, Level= NULL,
     nlevel        <- LKinfo$nlevel
 #    delta         <- LKinfo$latticeInfo$delta
 #    overlap       <- LKinfo$basisInfo$overlap
+
     # don't normalize if raw is TRUE
     normalize     <- LKinfo$normalize & !raw
+
     normalizeMethod <- LKinfo$normalizeMethod
     distance.type <- LKinfo$distance.type
     fast          <-  attr( LKinfo$a.wght,"fastNormalize")
@@ -124,6 +126,7 @@ LKrig.basis <- function(x1, LKinfo, Level= NULL,
         	    "both" = LKrigNormalizeBasisSelector(LKinfo, Level = l, x1 = x1, verbose = verbose)
         	      ) 
             	)
+
             	if( verbose){
             		cat("time for normalization", "Method=", normalizeMethod,  fill=TRUE)
             		print( t2)
