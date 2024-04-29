@@ -1,24 +1,41 @@
+# LatticeKrig  is a package for analysis of spatial data written for
+# the R software environment .
+# Copyright (C) 2016
+# University Corporation for Atmospheric Research (UCAR)
+# Contact: Douglas Nychka, nychka@ucar.edu,
+# National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with the R software environment if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+# or see http://www.r-project.org/Licenses/GPL-2
 
-# This functions evaluates the variance of the basis functions on a coarser grid, 
-# then uses 2D interpolation via FFT in order to smooth/interpolate the variance 
-# up to the size of the original grid that we were working with. Should provide a 
-# significant computational speedup. 
 
-
-# NOTE: this function is reliant on the library(fftwtools). Needs to be installed 
-#      with the LatticeKrig package itself. 
-
-LKrigNormalizeBasisFFTInterpolate <- function(LKinfo, Level, x1,
-                                              numberInterpPoints=4){
+LKrigNormalizeBasisFFTInterpolate <- function(LKinfo, Level, x1){
+  # This functions evaluates the variance of the basis functions on a coarser grid, 
+  # then uses 2D interpolation via FFT in order to smooth/interpolate the variance 
+  # up to the size of the original grid that we were working with. Should provide a 
+  # significant computational speedup. 
 
   # Extracting important information from LKinfo 
-  bounds <- LKinfo$x
+  bounds <- cbind(c(min(LKinfo$x[,1]), max(LKinfo$x[,1])), 
+                  c(min(LKinfo$x[,2]), max(LKinfo$x[,2])))
   basisNum_big <- max(LKinfo$latticeInfo$mxDomain[Level,1], 
                       LKinfo$latticeInfo$mxDomain[Level,2])
   basisNum_small <- min(LKinfo$latticeInfo$mxDomain[Level,1], 
                         LKinfo$latticeInfo$mxDomain[Level,2])
   gridOrientation <- which.max(c(LKinfo$latticeInfo$mxDomain[Level,1],
                                  LKinfo$latticeInfo$mxDomain[Level,2]))
+
   buffer <- LKinfo$NC.buffer
   alphaNum <- LKinfo$alpha[Level]
   awght <- LKinfo$a.wght[Level]
@@ -36,8 +53,8 @@ LKrigNormalizeBasisFFTInterpolate <- function(LKinfo, Level, x1,
   # Setting a default coarse grid size based on the number of basis functions 
   # MINIMUM VALUE is 2 * basisNum - 1
   # NOTE: can play with this for accuracy
-  miniGridSize_big<-  numberInterpPoints * basisNum_big
-  miniGridSize_small <- numberInterpPoints * basisNum_small
+  miniGridSize_big <- 4 * basisNum_big
+  miniGridSize_small <- 4 * basisNum_small
   
   if (miniGridSize_big >= maxDimension || miniGridSize_small >= minDimension) {
     stop("Warning: Minimum coarse grid based on the number of basis functions is 
