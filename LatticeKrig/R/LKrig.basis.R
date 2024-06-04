@@ -111,9 +111,8 @@ LKrig.basis <- function(x1, LKinfo, Level= NULL,
           print( t1)
         }
         if (normalize) { 
+         #  cat("normalization method: ", normalizeMethod, fill=TRUE )
         	t2<- system.time(
-  
-        	        	  
 # depending on option chosen, the basis functions will either be normalized by the default exact method, 
 # the fft interpolation alone, the kronecker alone, or both combined 
 # both will select fft for coarser levels, kronecker for levels where the number number of basis functions

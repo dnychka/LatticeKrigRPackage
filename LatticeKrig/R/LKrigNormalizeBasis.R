@@ -19,8 +19,22 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # or see http://www.r-project.org/Licenses/GPL-2
 
-LKrigNormalizeBasis <- function(LKinfo, Level, PHI,   ...) {
-	# get  SAR matrix at level Level
+LKrigNormalizeBasis <- function(LKinfo, Level, PHI=NULL, 
+                                x1=NULL, 
+                                gridList= NULL,...) {
+
+  # next condition is mainly for ease of testing this outside of LKrig.basis
+  if( is.null( PHI)){
+    if( is.null(x1)){
+      if( is.null( gridList)){
+        stop(" missing location information ")
+      }
+      x1<- make.surface.grid( gridList)
+    }
+    PHI<- LKrig.basis(x1, LKinfo = LKinfo,
+                raw=TRUE, Level = Level)
+  }
+  # get  SAR matrix at level Level
 	tempB <- LKrigSAR(LKinfo, Level = Level)
 	# tempB is in spind format
 	tempB<- spam( tempB[c("ind", "ra")], nrow=tempB$da[1], ncol=tempB$da[2])
