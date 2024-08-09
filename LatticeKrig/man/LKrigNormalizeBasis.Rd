@@ -35,23 +35,25 @@
 
 }
 \usage{
-LKrigNormalizeBasis( LKinfo, Level, PHI, ...)
+LKrigNormalizeBasis(
+LKinfo, Level, PHI = NULL, x1 = NULL, gridList = NULL, ...)
 LKrigNormalizeBasisFast(LKinfo, ...)
-LKrigNormalizeBasisFFTInterpolate(LKinfo, Level, x)
+LKrigNormalizeBasisFFTInterpolate(LKinfo, Level, x1)
 \method{LKrigNormalizeBasisFast}{default}(LKinfo, ...)
-\method{LKrigNormalizeBasisFast}{LKRectangle}(LKinfo, Level, x,  ...)
+\method{LKrigNormalizeBasisFast}{LKRectangle}(LKinfo, Level, x1,  ...)
 LKRectangleSetupNormalization(mx, a.wght)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{a.wght}{A.wght parameters.}
+  \item{gridList}{If not NULL this is a gridList object that will be expanded to give a grid of locations and used for \code{x1}.}
   \item{LKinfo}{ An LKinfo object.  NOTE:  Here  \code{choleskyMemory}, a Spam memory argument, can be a component of LKinfo and is subsequently passed
   	 through to the	(spam) sparse cholesky decomposition}
   \item{Level}{The multi-resolution level.}
   \item{mx}{Matrix of lattice sizes.}
   \item{PHI}{Unnormalized basis functions evaluated at the locations 
   	to find the normalization weights.}
-  \item{x}{Locations to find normalization weights.}
+  \item{x1}{Locations to find normalization weights. If NULL then locations obtained from \code{gridList argument}. }
   \item{\dots}{Additional arguments for method. }
 }
 \details{

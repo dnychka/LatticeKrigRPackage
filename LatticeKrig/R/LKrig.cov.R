@@ -20,7 +20,7 @@
 # or see http://www.r-project.org/Licenses/GPL-2
 
 LKrig.cov <- function(x1, x2 = NULL, LKinfo, C = NA, 
-                      marginal = FALSE, ARange=NA) {
+                      marginal = FALSE, aRange=NA) {
   # ARange is an unused argument to make this compatable with
   # being called from spatialProcess in fields 
   if( marginal){

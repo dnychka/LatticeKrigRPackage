@@ -151,6 +151,7 @@ options( echo=FALSE)
 #
 ###### check of formula with weights
   set.seed(123)
+  nlevel<-3
   weights<- runif(N)
   W<- diag(weights)
   lambda<- .5
@@ -196,8 +197,8 @@ test.for.zero(  lnDet( B3) - lnDet(Q) - sum( log( weights))  + (N-N2)*log(lambda
 # recopy data to make reading easier
   rm( obj, obj0) # remove previous objects
   data( ozone2)
-  x<-ozone2$lon.lat[1:10,]
-  y<- ozone2$y[16,1:10]
+  x<-ozone2$lon.lat
+  y<- ozone2$y[16,]
   good <-  !is.na( y)
   x<- x[good,]
   y<- y[good]
@@ -220,12 +221,20 @@ test.for.zero(  lnDet( B3) - lnDet(Q) - sum( log( weights))  + (N-N2)*log(lambda
  
   obj1<- Krig( x,y,weights=weights, lambda=lambda,GCV=TRUE, m=2,
                cov.function="LKrig.cov", cov.args=list(LKinfo=obj$LKinfo))
-            
- test.for.zero( obj0$fitted.values, obj1$fitted.values)
- test.for.zero( predict(obj0), predict(obj1), tag="predicted  values mKrig/Krig  w/weights")
- 
+  
+  obj2<-spatialProcess(x,y,weights, 
+                       lambda=lambda, 
+                       m=2, cov.function="LKrig.cov",
+                       cov.args=list(LKinfo=obj$LKinfo),
+                       aRange=NA)
+  
+ test.for.zero( obj$fitted.values, obj0$fitted.values)
+ test.for.zero( obj$fitted.values, obj1$fitted.values)
+ test.for.zero( obj$fitted.values, obj2$fitted.values)
+ test.for.zero( predict(obj), predict(obj0), tag="predicted  values mKrig/Krig  w/weights")
+ test.for.zero( predict(obj), predict(obj1), tag="predicted  values mKrig/Krig  w/weights")
+ test.for.zero( predict(obj), predict(obj2), tag="predicted  values mKrig/Krig  w/weights")
 ############ now tests for LatticeKrig
-
  test.for.zero( obj$fitted.values, obj0$fitted.values)
  test.for.zero( obj$rho.MLE, obj0$summary["sigma2"])
  test.for.zero( obj$lnDetCov, obj0$lnDetCov)
