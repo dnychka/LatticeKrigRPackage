@@ -45,10 +45,11 @@ specification.}
 \usage{
 #
 LKrig.cov(x1, x2 = NULL, LKinfo, C = NA, marginal = FALSE,
-theta = NULL) 
+                 aRange = NA)
 LKrig.cov.plot( LKinfo, NP=200, center = NULL, xlim = NULL, ylim = NULL)
 LKrigCovWeightedObs(x1, wX, LKinfo) 
-LKrig.basis(x1, LKinfo, verbose = FALSE)
+
+LKrig.basis(x1, LKinfo, Level = NULL, raw = FALSE, verbose = FALSE)
 LKrig.precision(LKinfo, return.B = FALSE, verbose=FALSE)  
 LKrig.quadraticform( Q, PHI, choleskyMemory = NULL) 
 LKrig.spind2spam(obj, add.zero.rows=TRUE)
@@ -84,7 +85,7 @@ the covariance of the basis coefficients. This list is created in
 \code{LKrig} or by \code{LKrigSetup} and returned in the output
 object.  (See section on returned Value below for this list's
 description.)}
-
+\item{Level}{If NULL the entire basis is evaluated. If an integer just that level is evaluated.}
 \item{marginal}{If TRUE returns the marginal variance. Currently not
 implemented!}
 
@@ -97,13 +98,15 @@ row/column format passed to \code{LKrig.spind2spam}.}
 \item{PHI}{ A sparse matrix of basis functions (rows index points for
 evaluation, columns index basis functions).}
 
+\item{raw}{Do not normalize the basis functions even if it is indicated in the LKinfo object.}
+
 \item{return.B}{ If TRUE B is returned instead of the precision matrix
 t(B)\%*\%B.}
 
 \item{Q}{A sparse (spam format) precision matrix.}
 
-\item{theta}{Currently \code{theta} is a place holder argument
-    for future development. }
+\item{aRange}{Currently \code{aRange} is a place holder argument
+    for future development where the correlation range can be specified. }
 
 \item{wX}{The wX matrix constructed in the \code{\link{LKrig}} function.}
 

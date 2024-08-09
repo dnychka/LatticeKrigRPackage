@@ -52,7 +52,7 @@ conditional simulation, and other parts of the spatial analysis. See
 
 
 \usage{
-LatticeKrig(x, y, Z = NULL, nlevel = 3, findAwght = FALSE, LKinfo = NULL,
+LatticeKrig(x, y, Z = NULL,weights = NULL, nlevel = 3, findAwght = FALSE, LKinfo = NULL,
  X=NULL, U=NULL, na.rm =
                  TRUE, tol = 0.005, verbose = FALSE, ...)
 \method{print}{LatticeKrig}( x, digits=4, ...)
@@ -98,7 +98,9 @@ Or for the function \code{print.LatticeKrig} \code{x} is the returned object fro
 
  \item{tol}{Tolerance for the log likelihood used to judge convergence.}
 
- \item{verbose}{ If TRUE print out intermediate results. }
+ \item{verbose}{If TRUE print out intermediate results. }
+ \item{weights}{A weight vector to be used for the measurement error variance
+ This is in the same role as the weight vector in ordinary least squares fitting. I.e. the errors are assumed to have variances sigma2/weights where sigma2 is estimated by maximum likelihood if it is not specified.}
 
   \item{\dots}{Additional arguments to pass to LKrig. 
   The easiest way to pass a full specification is to create an LKinfo object beforehand and then just pass that (see example below.) This gives more control and the setup function will do some error checking on arguments. Also see help(LKrig) for a complete list of arguments to pass.  For convenience we note that  if you get some pesky memory warnings from spam

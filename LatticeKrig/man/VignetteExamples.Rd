@@ -22,7 +22,7 @@ Data sets used for  the R scripts in the vignette
 
 
 \format{
- See Section 4 in the {LatticeKrig Vignette} for the use of these data.
+ See Section 4 in the LatticeKrig Vignette for the use of these data.
  
 \strong{EquatorData:}
 \code{equatorLocations equatorValues equatorGrid equatorGridValues}

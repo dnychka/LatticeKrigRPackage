@@ -15,7 +15,7 @@
 # GNU General Public License for more details.
 
 
-  LKrigNormalizeBasisFast.LKRectangle<- function( LKinfo, Level, x, ...){
+  LKrigNormalizeBasisFast.LKRectangle<- function( LKinfo, Level, x1, ...){
 # some information about the rectangular lattice at level == Level  	
   mx1Level<- (LKinfo$latticeInfo$mx)[Level,1]
   mx2Level<- (LKinfo$latticeInfo$mx)[Level,2]
@@ -28,12 +28,15 @@
   setupList<- ( attr( LKinfo$a.wght,"fastNormDecomp"))[[Level]]
   # convert the locations to the integer scale of the lattice
   # at the level == Level          
-  xLocation<- scale( x, center= c( xmin, ymin), scale= c( dx, dy)) + 1
+  xLocation<- scale( x1, center= c( xmin, ymin), scale= c( dx, dy)) + 1
   nLocation<- nrow( xLocation)
 # solving linear system in based on writing as a Kronecker product
 # see setup function for LKrigSetupAwght.LKrectangle to see 
-                                        # definitions of the matrices below.
-      #     subroutine   findNorm(mx,my,offset,Ux,Dx,Uy,Dy,nLocations, xLocations, weights, Z)
+# definitions of the matrices below.
+# and the paper  Sikorski et. al (2024) STAT for the derivation.
+#   subroutine   findNorm(mx,my,offset,Ux,Dx,Uy,Dy,nLocations, xLocations, weights, Z)
+# yes this is FORTRAN!
+#
   return(
          .Fortran("findNorm",
                           mx = as.integer(mx1Level),

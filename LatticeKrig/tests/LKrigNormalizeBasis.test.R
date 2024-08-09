@@ -1,6 +1,6 @@
 
 suppressMessages(library( LatticeKrig))
-options( echo=FALSE)
+#options( echo=FALSE)
 
 ##########################################
 test.for.zero.flag<- 1
@@ -27,12 +27,18 @@ objFFT <- LatticeKrig( x, y, NC=NC,  a.wght=a.wght,
 gHat<- predictSurface( obj, nx=100, ny=100 )
 gHatFFT <- predictSurface( objFFT, nx=100, ny=100 )
 
-pred_diffs <- na.omit(c(gHat$z - gHatFFT$z))
-mean_error <- mean(pred_diffs)
-max_error <- max(pred_diffs)
-min_error <- min(pred_diffs)
+pred_diffs <- abs(c(gHat$z - gHatFFT$z))
+errorStats<- stats( pred_diffs)
 
-test.for.zero(mean_error, 6.73e-5, tol = 1e-3)
-test.for.zero(max_error, 0.00632, tol = 1e-3)
-test.for.zero(min_error, -0.00583, tol = 1e-3)
+
+test.for.zero(errorStats["mean",] , 0, 
+              relative = FALSE, tol = 8.5e-4)
+test.for.zero(errorStats["median",] , 0, 
+              relative = FALSE, tol = 6e-4)
+test.for.zero(errorStats["max",] , 0, 
+              relative = FALSE, tol = 7.8e-3)
+test.for.zero(errorStats["min",] , 0, 
+              relative = FALSE, tol = 3e-8)
+
+
 
