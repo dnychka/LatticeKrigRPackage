@@ -2,7 +2,7 @@
 \alias{nonstationaryModels}
 \title{Specifying non-stationary models}
 \description{An overview of specifying non-stationary 
-and anisotropic models with some specific 2-d examples showing how to vary the alpha, rho and a.wght parameters.}
+and anisotropic models with some specific 2-d examples showing how to vary the alpha, sigma2 and a.wght parameters.}
 \details{
 The Lattice Krig model can be extended in a natural way to have a  non-stationary covariance that has a multi-scale structure. 
 
@@ -18,18 +18,18 @@ Under the model with approximate stationary the SAR is parameterized by
 a set of a.wght values that are applied in the same way to every
 lattice point and its neighbors. When the process is normalized to
 have constant marginal variance, the variance of g_l(x) is given by
-rho* alpha_l. We recommend that the alpha parameters sum to one and so
-the marginal variance of g(x) is given by rho. This package allows for
-the parameters a.wght, rho, and alpha to vary over the spatial
+sigma2* alpha_l. We recommend that the alpha parameters sum to one and so
+the marginal variance of g(x) is given by sigma2. This package allows for
+the parameters a.wght, sigma2, and alpha to vary over the spatial
 domain. In this way the variance of g_l(x) is given by
-rho(x)alpha_l(x) and g(x) by rho(x) provided alpha_l sums to one. The
+sigma2(x)alpha_l(x) and g(x) by sigma2(x) provided alpha_l sums to one. The
 a.wght parameters can different values at each lattice point and
 possibly at each level. Some preliminary results suggest that having
 a.wght vary differently for different levels may be too much
 flexibility and may not needed.
 
 We describe the formatting for these features in the LKinfo object below. Essentially they involve specifying one or more of the arguments: 
-\code{a.wghtObject}, \code{rho.object} or \code{alphaObject}, in the call to 
+\code{a.wghtObject}, \code{sigma2.object} or \code{alphaObject}, in the call to 
 \code{LKrigSetup}. 
 
 \bold{a.wght}  The general form of this object is as a list of matrices. In this case
@@ -75,18 +75,18 @@ One should also set the vector of usual alpha parameters equal to all
  E.g. alpha= rep( 1, nlevel)
  
 
-\bold{rho} The object \code{rho.object} is used define a spatially
-varying rho(x). Like alpha and a.wght this object must work with the
+\bold{sigma2} The object \code{sigma2.object} is used define a spatially
+varying sigma2(x). Like alpha and a.wght this object must work with the
 predict function.
 
-\code{predict(rho.object, x)}
+\code{predict(sigma2.object, x)}
 }
 
 \examples{
 
 ######################################################
 ##### This is an extended example showing how to define 
-##### spatially varying rho parameter 
+##### spatially varying sigma2 parameter 
 #######################################################
 # Define some useful predict functions. 
 #######################################################
@@ -135,13 +135,13 @@ sDomain<- rbind( c(-1.2,-1.2),
 ##################################################
 ### end of setup 
 #################################################
-# rho increases across the domain as a function of first coordinate. 
-  rhoTemp<-  .01 +  10* pnorm( xPoints[,1], mean=.25, sd =.3 )
-  rho.object<- as.surface( xPoints, rhoTemp) 
-  class( rho.object)<- "surfaceGrid"
+# sigma2 increases across the domain as a function of first coordinate. 
+  sigma2Temp<-  .01 +  10* pnorm( xPoints[,1], mean=.25, sd =.3 )
+  sigma2.object<- as.surface( xPoints, sigma2Temp) 
+  class( sigma2.object)<- "surfaceGrid"
      
   LKinfo<- LKrigSetup( sDomain, NC= 4, nlevel = 3,
-                 a.wght=4.5, nu=1, rho.object=rho.object)   
+                 a.wght=4.5, nu=1, sigma2.object=sigma2.object)   
 # simulate a field from this model
   set.seed(123)
   look<- LKrig.sim( fineGrid, LKinfo)

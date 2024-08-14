@@ -29,4 +29,4 @@ Testing:  SE inverse from first formulas
 PASSED test at tolerance  1e-08
 > proc.time()
    user  system elapsed 
-  0.896   0.032   0.927 
+  0.871   0.027   0.893 

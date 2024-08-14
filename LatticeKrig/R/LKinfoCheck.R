@@ -1,6 +1,6 @@
 # LatticeKrig  is a package for analysis of spatial data written for
 # the R software environment .
-# Copyright (C) 2016
+# Copyright (C) 2024
 # University Corporation for Atmospheric Research (UCAR)
 # Contact: Douglas Nychka, nychka@ucar.edu,
 # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
@@ -27,7 +27,7 @@ LKinfoCheck.default<- function( object,...){
   LKinfo<- object
   testNames<- names(LKinfo)
   targetNames<- c("nlevel","alpha", "a.wght",          
-       "normalize", "lambda","sigma","rho",
+       "normalize", "lambda","tau","sigma2",
      "latticeInfo","basisInfo","distance.type")
 
   testMatch<- is.na( match(targetNames,testNames) ) 
@@ -53,7 +53,7 @@ LKinfoCheck.default<- function( object,...){
        }
  # 
   testNames<- names(LKinfo$latticeInfo)
-  targetNames<- c("m","offset", "mLevel","delta","rangeLocations")
+  targetNames<- c("m","offset", "mLevel","delta","rangeDomain")
   testMatch<- is.na(match(targetNames,testNames) )
   if( any( testMatch) ){
     stop(paste( "missing the required  latticeInfo component(s)",

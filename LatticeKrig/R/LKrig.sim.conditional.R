@@ -1,6 +1,6 @@
 # LatticeKrig  is a package for analysis of spatial data written for
 # the R software environment .
-# Copyright (C) 2016
+# Copyright (C) 2024
 # University Corporation for Atmospheric Research (UCAR)
 # Contact: Douglas Nychka, nychka@ucar.edu,
 # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
@@ -18,9 +18,9 @@
 # along with the R software environment if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # or see http://www.r-project.org/Licenses/GPL-2
-
 LKrig.sim.conditional <- function(LKrigObj, M = 1, x.grid = NULL, 
-    grid.list = NULL, nx = 80, ny = 80, ..., Z.grid = NULL, seed=42, verbose=FALSE) {
+            grid.list = NULL, nx = 80, ny = 80, ..., Z.grid = NULL, seed=42,
+                                  verbose=FALSE) {
     # generate grid if not specified
     if (is.null(x.grid)) {
         if (is.null(grid.list)) {
@@ -82,17 +82,17 @@ LKrig.sim.conditional <- function(LKrigObj, M = 1, x.grid = NULL,
 
 simConditionalDraw <- function(index=1,  LKrigObj, ghat, x.grid, Z.grid,
                                PHIGrid, seeds= 123,  verbose=FALSE){
-require(LatticeKrig)
-require(spam64)
+#require(LatticeKrig)
+#require(spam64)
         set.seed( seeds[index] )
 # generate process at grid and also on the observation locations.
         simCoefficients<- LKrig.sim(LKinfo = LKrigObj$LKinfo, just.coefficients=TRUE)
         g.unconditional.data <-LKrigObj$wX %*%simCoefficients 
-        g.unconditional.data <- sqrt(LKrigObj$rho.MLE) * g.unconditional.data
-        g.unconditional.grid <-sqrt(LKrigObj$rho.MLE) *PHIGrid%*%simCoefficients 
+        g.unconditional.data <- sqrt(LKrigObj$sigma2.MLE) * g.unconditional.data
+        g.unconditional.grid <-sqrt(LKrigObj$sigma2.MLE) *PHIGrid%*%simCoefficients 
         # generate a synthetic data set with fixed part set to zero.
         N<- length( LKrigObj$y)
-        y.synthetic.data <- g.unconditional.data + LKrigObj$sigma.MLE * 
+        y.synthetic.data <- g.unconditional.data + LKrigObj$tau.MLE * 
             rnorm(N)
 # this may confusing. divide by  sqrt(weights) to cancel out this term in the
 # wX matrix for  g.unconditional.data and to adjust measurement error variance         

@@ -1,6 +1,6 @@
 # LatticeKrig  is a package for analysis of spatial data written for
 # the R software environment .
-# Copyright (C) 2016
+# Copyright (C) 2024
 # University Corporation for Atmospheric Research (UCAR)
 # Contact: Douglas Nychka, nychka@ucar.edu,
 # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
@@ -43,7 +43,7 @@ LKrig.cov <- function(x1, x2 = NULL, LKinfo, C = NA,
         )
     )
     
-    rhoVariance<- LKFindRhoVarianceWeights(x1,LKinfo)
+    sigma2Variance<- LKFindSigma2VarianceWeights(x1,LKinfo)
     wght <- rep(0, nrow(x1))
     # loop over level of multiresolution
     for (l in 1:(LKinfo$nlevel)) {
@@ -53,12 +53,12 @@ LKrig.cov <- function(x1, x2 = NULL, LKinfo, C = NA,
         PHILevel <- LKrig.basis(x1, LKinfo, raw = TRUE, Level = l)
         marginal.variance <-
         LKrigNormalizeBasis(LKinfo,  Level = l,  PHI = PHILevel)
-        #  square root of alpha weights and rho weights always multiplied by basis
+        #  square root of alpha weights and sigma2 weights always multiplied by basis
         # function and so included into LKrigNormalizeBasis
       }
       else{
         marginal.variance <-  
-          rhoVariance*LKFindAlphaVarianceWeights(x1,LKinfo,l)
+          sigma2Variance*LKFindAlphaVarianceWeights(x1,LKinfo,l)
       }
         wght <- wght +  marginal.variance
     }

@@ -1,6 +1,6 @@
 % # LatticeKrig  is a package for analysis of spatial data written for
 % # the R software environment .
-% # Copyright (C) 2016
+% # Copyright (C) 2024
 % # University Corporation for Atmospheric Research (UCAR)
 % # Contact: Douglas Nychka, nychka@ucar.edu,
 % # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
@@ -21,18 +21,23 @@
 \alias{LKinfo}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Create or update the LatticeKrig model object  (LKinfo) for spatial fitting. 
+Create or update the LatticeKrig model object (LKinfo) for spatial fitting. 
 }
 \description{
 This function combines some input arguments with defaults for other
 to create a list 
-describing the LatticeKrig spatial model. A key to specifying the LatticeKrig spatial model is specifying the geometry, e.g. LKRectangle for a 2-d rectangular domain. Each geometry has some parameters that control the basic model setup and these are included through the \dots arguments of  this function. See the help for this argument below for some examples.
+describing the LatticeKrig spatial model. A key to specifying the LatticeKrig
+spatial model is specifying the geometry, e.g. LKRectangle for a 2-d rectangular
+domain. Each geometry has some parameters that control the basic model setup and
+these are included through the \dots arguments of  this function. See the help for
+this argument below for some examples.
 }
 \usage{
 LKrigSetup(x = NULL, nlevel = NULL, alpha = NA, alphaObject =
                  NULL, nu = NULL, a.wght = NA, a.wghtObject = NULL, NC
-                 = NULL, NC.buffer = NULL, normalize = TRUE, normalizeMethod = 
-                 "exact", lambda = NA, sigma = NA, rho = NA, rho.object = NULL,
+                 = NULL, NC.buffer = NULL,delta = delta, normalize = TRUE,
+                 normalizeMethod = 
+                 "exact", lambda = NA, tau = NA, sigma2 = NA, sigma2.object = NULL,
                  latticeInfo = NULL, basisInfo = NULL, LKGeometry =
                  "LKRectangle", distance.type = "Euclidean",
                  BasisFunction = "WendlandFunction", overlap = 2.5, V =
@@ -54,8 +59,9 @@ LKinfoUpdate(LKinfo, ... )
 	
 \item{alpha}{A vector of length \code{nlevel} with the relative
 variances for the different multi-resolution levels.  }
-\item{alphaObject}{For non-stationary models an object to be used with the predict function to give the alpha values at the process locations.
-Typically this is a list of "predict" objects. 
+\item{alphaObject}{For non-stationary models an object to be used 
+with the predict function to give the alpha values at the process
+locations.Typically this is a list of "predict" objects. 
 See \link{nonstationaryModels} for examples how to use this option. 
 }
 
@@ -83,7 +89,9 @@ See \link{nonstationaryModels} for examples how to use this option.
   	approximately \code{1/sqrt(a.wght-4)}. 
 }
 
-\item{a.wghtObject}{For non-stationary models an object to be used with the predict function to give the a.wght values at the lattice locations. See \link{nonstationaryModels} for examples how to used option. 
+\item{a.wghtObject}{For non-stationary models an object to be used 
+with the predict function to give the a.wght values at the lattice locations.
+See \link{nonstationaryModels} for examples how to used option. 
 }
 
  \item{basisInfo}{ A list with extra components the object used to
@@ -103,6 +111,10 @@ polled across replicates.This is largely a modeling decision whether
 variation among the replicate fields is due to the spatial component or
 also include variation in the fixed effects across replicates -- guess
 they are not really fixed then!}
+
+\item{delta}{A vector that will be used for the basis center spacings. This 
+is an alternative choice to \code{NC}. Note that all the spacings need 
+to be specified as a vector with length \code{nlevel}.}
 
 \item{dense}{If FALSE sparse linear algebra is used for the
 computations
@@ -131,9 +143,9 @@ for testing and timing sparse verses standard algorithms. }
 	
     \item{lambda}{ The "noise to signal ratio" or also known as the
   	smoothing parameter it is the parameter \code{lambda =
-  	sigma^2/rho}. If specified then sigma and rho typically are
+  	tau^2/sigma2}. If specified then tau and sigma2 typically are
   	estimated in LKrig by maximum likelihood. If lambda is not
-  	specified then it is set as \code{lambda = sigma^2/ rho}. Note
+  	specified then it is set as \code{lambda = tau^2/ sigma2}. Note
   	that to evaluate the spatial process model, e.g. using the
   	function \code{LKrig.cov}, a value of lambda is not needed and
   	this argument can default to NA.  } \item{latticeInfo}{ Part
@@ -165,20 +177,32 @@ for testing and timing sparse verses standard algorithms. }
   	locations. The easier way to specify space is by using the
   	mean.neighbor argument.  } 
   	
-\item{NC}{For regular grids of lattice points the maximum number of lattice grid points for a spatial coordinate and at the coarsest level of resolution. For a example, for a square region,
+\item{NC}{For regular grids of lattice points the maximum number of 
+lattice grid points for a spatial coordinate and at the coarsest level 
+of resolution. For a example, for a square region,
 (and \code{LKGeometry = "LKRectangle"})
 \code{NC=5} results in a 5X5  = 25  lattice points at the first level.
-Note that the default is that lattice points are also taken to have the same spacing in every dimension. } 
-\item{NC.buffer}{Number of extra lattice points added outside the spatial domain 
-for regular grids of lattice points. This helps to reduce boundary effects from the
-SAR model.  \code{NC.buffer=5} and \code{NC=5} for a square region will result in 
-(5+ 2*5) X (5+ 2*5) = 225 lattice locations at the coarsest level of resolution.
-Note that this number by default is fixed for finer resolutions and so does not
-contribute as much to the total number of lattice points.}
+Note that the default is that lattice points are also taken to have 
+the same spacing in every dimension. See the \code{delta} argument as an
+alternative way to specify the basis centers. } 
+
+\item{NC.buffer}{Number of extra lattice points added outside the 
+spatial domain 
+for regular grids of lattice points. This helps to reduce boundary 
+effects from the
+SAR model.  \code{NC.buffer=5} and \code{NC=5} for a square region 
+will result in 
+(5+ 2*5) X (5+ 2*5) = 225 lattice locations at the coarsest level 
+of resolution.
+Note that this number by default is fixed for finer resolutions and 
+so does not
+contribute as much to the total number of lattice points.
+This option works for either \code{NC} or \code{delta}.}
+
  \item{nlevel}{Number of levels in
   	multi-resolution. Note that each subsequent level increases the
   	number of basis functions within the spatial domain size by a
-  	factor of roughly 4. }
+  	factor of roughly 4. But not exactly 4!  }
  
  \item{noCheck}{If FALSE do not make any checks on the consistency of
   	the different parts of the final LKinfo object. e.q. values of
@@ -189,9 +213,18 @@ contribute as much to the total number of lattice points.}
   	multi-resolution.  (Normalizing by levels makes it easier to
   	interpret the \code{alpha} weights.)  } 
   	
-  \item{normalizeMethod}{ Options are \code{"exact"}, \code{"exactKronecker"}, \code{"fftInterpolation"}, and \code{"both"}. The \code{"exact"}" option calculates the exact marginal variance but slowly, while \code{"exactKronecker"} can offer a speedup in scenarios with a constant a.wght and rectangular geometry. \code{"fftInterpolation"} offers an ever faster but approximate calculation, and can only be used in scenarios where the number of locations significantly exceeds the number of basis functions. The \code{"both"} method
-  automatically uses the FFT approximation for lower levels, and switches to the Kronecker method 
-  when the number of basis functions grows to be too large for the approximate method. See 
+  \item{normalizeMethod}{ Options are \code{"exact"}, \code{"exactKronecker"},
+  \code{"fftInterpolation"}, and \code{"both"}. The \code{"exact"}" option
+  calculates the exact marginal variance but slowly, while
+  \code{"exactKronecker"} can offer a speedup in scenarios with a constant
+  a.wght and rectangular geometry. \code{"fftInterpolation"} offers
+  an ever faster but approximate calculation, and can only be used in 
+  situations where the number of locations significantly exceeds th
+  e number of basis functions. The \code{"both"} method
+  automatically uses the FFT approximation for lower levels, and switches
+  to the Kronecker method 
+  when the number of basis functions grows to be too large for the
+  approximate method. See 
   \code{LKrigNormalizeBasis} for more detail.}
   
   \item{nu}{ A
@@ -207,22 +240,22 @@ contribute as much to the total number of lattice points.}
   	direction.  See \code{LKrig.basis} for how overlap adjusts
   	scaling in the basis function formula. }
   	
-  \item{rho}{ A scalar, the sill or marginal variance of the process.
+  \item{sigma2}{ A scalar, the sill or marginal variance of the process.
   	} 
   	
   \item{BasisFunction}{Text string giving the 1-d form for
   	basis function. }
 
-  \item{rho.object}{ A prediction object to specify part of the
+  \item{sigma2.object}{ A prediction object to specify part of the
   	marginal variance for the process. Specifically the form is
-  	VAR(g(x1))= rho*h(x1) Calling \code{predict(rho.object,x1)}
+  	VAR(g(x1))= sigma2*h(x1) Calling \code{predict(sigma2.object,x1)}
   	should return a vector with the values of h at the (arbitrary)
   	spatial locations in x1.  If omitted assumed to be the
   	constant one -- the usual case.  }
  	\item{returnCall}{If TRUE the call to LKrigSetup is also included as
  	      part of the LKinfo object. }
  
-  \item{sigma}{ The measurement error standard deviation.  Also called
+  \item{tau}{ The measurement error standard deviation.  Also called
   	the nugget variance in geostatistics.  }
   	
   \item{V}{See entry in \code{LKrig}.}
@@ -238,8 +271,13 @@ rbind( c( 0,0), c(1,1)) will set the domain to be the unit square.  }
  	
   \item{\dots}{Specific arguments that will be included in the
   	\code{setupArgs} list and also passed to
-  	\code{LKrigSetupLattice}. For \code{LKinfoUpdate} these specify the components
-  	       of LKinfo to update. For example for a rectangular domain (the default) the argument \code{NC} is needed to specify the initial lattice size \code{NC.buffer} sets the number of extra points included in the lattice and defaults to 5.  \code{NC} for the LKSphere geometry  is the initial level of the
+  	\link{LKrigSetupLattice}
+  	. For \link{LKinfoUpdate} these specify the components
+  	       of LKinfo to update. For example for a rectangular domain (the default)
+  	       the argument \code{NC} is needed to specify the initial lattice size 
+  	       \code{NC.buffer} sets the number of extra points included in the
+  	       lattice and defaults to 5.  \code{NC} for the LKSphere geometry  
+  	       is the initial level of the
 	       icosahedral grid.   }
 }
 \details{
@@ -248,12 +286,19 @@ rbind( c( 0,0), c(1,1)) will set the domain to be the unit square.  }
 	geometries or other models to the LatticeKrig framework.  The
 	required components of this object (see below) outline how
 	the latticeKrig model is structured and what should be common
-	features independent of the geometry. The key components are
-	latticeInfo that contains the information used to generate the
-	spatial autoregressive matrix on the lattice (see
-	\link{LKrigSAR}) and the lattice centers (see
-	\link{LKrigLatticeCenters}). The component basisInfo used to generate
-	the radial basis function (see LKrig.basis)
+	features independent of the geometry. The key components are:
+	
+	\code{basisInfo} used to specify the form of the  basis functions (see \link{LKrig.basis})
+
+	\code{latticeInfo} that contains the information used to generate the
+	spatial autoregressive matrix on the lattice.
+	See (\link{LKrigSetupLattice} for the top level function that sets up the lattice. 
+	
+	\code{a.wght} A component that specifies the weights in the SAR model. (See \link{LKrigSetupAwght})
+	
+	\code{alpha} A component that gives the relative weights of the different
+	layers for a multiresolution model. (See
+	\link{LKrigSetupAlpha}.)
 	
 	Also part of this flexibility is to use different distance functions
 	(metrics). See help on \code{LKDistance} for the S4 method to
@@ -262,7 +307,7 @@ rbind( c( 0,0), c(1,1)) will set the domain to be the unit square.  }
 	\link{LKDist} for the lower level functions that actually do the work. 
 	To change the radius used for the spherical distances one can add a \code{Radius}
 	attribute to the text string. 
-  For example to use kilometers  for great circle distane ( R approximately 6371)
+  For example to use kilometers  for great circle distance ( R approximately 6371)
   
 \preformatted{
    dtype <- "GreatCircle" 
@@ -276,6 +321,18 @@ Now use \code{distance.type = dtype}for the distance type argument.
 	purpose is to find a reasonable choice for NC when this is not
 	specified. 
 
+	As example of how the computation is structured with the complete
+	\code{LKinfo} object 
+	\link{LKrigSAR} can be called to generate the sparse SAR matrix of the basis function coefficients at a given level of resolution:
+	\preformatted{
+  B1<- LKrigSAR(LKinfo, Level=1)
+	}
+	The basis function matrix can be evaluated at a matrix of locations $\code{x1} as 
+	\preformatted{
+	Phi<- LKrig.basis( x1,LKinfo)
+	}
+	
+
 	The function LKinfoUpdate is more of a utility used for
 	clarity that allows one to update the LKinfo object with
 	particular components without having to recreate the entire
@@ -285,7 +342,8 @@ Now use \code{distance.type = dtype}for the distance type argument.
 }
 
 \value{
-	An object with class "LKinfo" and also the additional class given by LKGeometry. The required components are:
+	An object with class "LKinfo" and also the additional class given by 
+	LKGeometry. The required components are:
 \describe{
 	\item{nlevel}{ Number of levels}
 	\item{alpha}{alpha parameters as a list that has  nlevel components and possibly some attributes. }
@@ -294,9 +352,9 @@ Now use \code{distance.type = dtype}for the distance type argument.
 	\item{normalize}{A logical indicating whether to normalize.}
 	\item{normalizeMethod}{A string that determines the method for normalization.}
 	\item{lambda}{ Value of lambda.}
-	\item{sigma}{Value of sigma.}
-	\item{rho}{Value for rho.}
-	\item{rho.object}{Value for rho.object.}
+	\item{tau}{Value of tau.}
+	\item{sigma2}{Value for sigma2.}
+	\item{sigma2.object}{Value for sigma2.object.}
 	\item{latticeInfo}{A list with specific multi-resolution lattice information}
   \item{setupArgs}{All arguments passed in the call and any in in \dots }
   \item{basisInfo}{A list with basis information.}

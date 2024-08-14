@@ -1,6 +1,6 @@
 # LatticeKrig  is a package for analysis of spatial data written for
 # the R software environment .
-# Copyright (C) 2016
+# Copyright (C) 2024
 # University Corporation for Atmospheric Research (UCAR)
 # Contact: Douglas Nychka, nychka@ucar.edu,
 # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
@@ -51,11 +51,11 @@ print.LKrig <- function(x, digits = 4, ...) {
     c1 <- c(c1, "Smoothing parameter (lambda)")
     c2 <- c(c2, signif(x$lambda, digits))
     
-        c1 <- c(c1, "MLE sigma ")
-        c2 <- c(c2, signif(x$sigma.MLE.FULL, digits))
+        c1 <- c(c1, "MLE tau ")
+        c2 <- c(c2, signif(x$tau.MLE.FULL, digits))
         
-        c1 <- c(c1, "MLE rho")
-        c2 <- c(c2, signif(x$rho.MLE.FULL, digits))
+        c1 <- c(c1, "MLE sigma2")
+        c2 <- c(c2, signif(x$sigma2.MLE.FULL, digits))
        
     
     

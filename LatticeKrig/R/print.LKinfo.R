@@ -1,6 +1,6 @@
 # LatticeKrig  is a package for analysis of spatial data written for
 # the R software environment .
-# Copyright (C) 2016
+# Copyright (C) 2024
 # University Corporation for Atmospheric Research (UCAR)
 # Contact: Douglas Nychka, nychka@ucar.edu,
 # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
@@ -37,8 +37,8 @@ print.LKinfo <- function(x, ...) {
       cat("Hey! The dense flag is TRUE so computations will
           not be done using sparse matrices.", fill=TRUE)
     }
-    cat("Ranges of locations in raw scale:", fill=TRUE)
-    print(  LKinfo$latticeInfo$rangeLocations)
+    cat("Ranges of spatial domain in raw scale:", fill=TRUE)
+    print(  LKinfo$latticeInfo$rangeDomain)
     if( !is.null(LKinfo$basisInfo$V)){
     	cat("(inverse) linear transformation for lattice nodes:",fill=TRUE)
     	print(LKinfo$basisInfo$V )

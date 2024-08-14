@@ -24,18 +24,18 @@ Type 'q()' to quit R.
 > 
 > suppressMessages(library(LatticeKrig))
 > options(echo = FALSE)
-       EffDf   lnProfLike          GCV    sigma.MLE      rho.MLE   lambda.MLE 
+       EffDf   lnProfLike          GCV      tau.MLE   sigma2.MLE   lambda.MLE 
    1.510e+01    8.142e+03    1.527e+01    9.682e-02    1.196e+00    7.836e-03 
   a.wght.MLE       lnLike functionEval gradientEval    totalEval 
    4.265e+00           NA    3.000e+00    3.000e+00    1.600e+01 
-       EffDf   lnProfLike          GCV    sigma.MLE      rho.MLE   lambda.MLE 
+       EffDf   lnProfLike          GCV      tau.MLE   sigma2.MLE   lambda.MLE 
    1.823e+01    8.142e+03    1.999e+01    9.683e-02    1.196e+00    7.837e-03 
   a.wght.MLE       lnLike functionEval gradientEval    totalEval 
    4.265e+00           NA    3.000e+00    3.000e+00    1.600e+01 
-       EffDf   lnProfLike          GCV    sigma.MLE      rho.MLE   lambda.MLE 
+       EffDf   lnProfLike          GCV      tau.MLE   sigma2.MLE   lambda.MLE 
    1.739e+01    1.132e+04    1.839e+01    9.873e-02    5.846e+00    1.667e-03 
   a.wght.MLE       lnLike functionEval gradientEval    totalEval 
    8.482e+00           NA    1.000e+01    1.000e+01    5.100e+01 
 > proc.time()
    user  system elapsed 
- 28.910   0.252  29.163 
+ 28.801   0.191  28.992 

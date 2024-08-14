@@ -1,3 +1,20 @@
+# LatticeKrig  is a package for analysis of spatial data written for
+# the R software environment .
+# Copyright (C) 2024
+# University Corporation for Atmospheric Research (UCAR)
+# Contact: Douglas Nychka, nychka@ucar.edu,
+# National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+
 
 # ####################################################################################
 LKrigFindLambdaAwght <- function(x, y, ...,  LKinfo,
@@ -73,14 +90,14 @@ LKrigFindLambdaAwght <- function(x, y, ...,  LKinfo,
 #
   capture.evaluations <-  rbind( c(lambdaTemp,llambda.start,
                                  a.wghtTemp, omega.start,
-                                 LKrigObject$rho.MLE.FULL,
-                                 LKrigObject$sigma.MLE.FULL,
+                                 LKrigObject$sigma2.MLE.FULL,
+                                 LKrigObject$tau.MLE.FULL,
                                  LKrigObject$lnProfileLike.FULL) 
                                 )
   if(verbose){
     cat("Capture.evaluations first call", fill=TRUE )
     cat("lambda", "log lambda", "a.wght", "omega",
-         "rhoMLE", "sigmaMLE", "logProfileLike", fill=TRUE)
+         "sigma2MLE", "tauMLE", "logProfileLike", fill=TRUE)
     cat( capture.evaluations, fill=TRUE)
   }
   
@@ -124,14 +141,14 @@ LKrigFindLambdaAwght <- function(x, y, ...,  LKinfo,
   # save summary results from this set of parameters.
   # Output to be saved     
   out <- rep(NA, 11)
-  names( out) <-  c("EffDf", "lnProfLike", "GCV", "sigma.MLE", "rho.MLE", 
+  names( out) <-  c("EffDf", "lnProfLike", "GCV", "tau.MLE", "sigma2.MLE", 
                     "lambda.MLE", "a.wght.MLE", "lnLike", "functionEval", 
                     "gradientEval", "totalEval")
   out[ 1] <- LKrigObject$trA.est
   out[ 2] <- LKrigObject$lnProfileLike.FULL
   out[ 3] <- LKrigObject$GCV
-  out[ 4] <- LKrigObject$sigma.MLE.FULL
-  out[ 5] <- LKrigObject$rho.MLE.FULL
+  out[ 4] <- LKrigObject$tau.MLE.FULL
+  out[ 5] <- LKrigObject$sigma2.MLE.FULL
   out[ 6] <- lambda.MLE
   out[ 7] <- a.wght.MLE
   out[ 8] <- LKrigObject$lnLike.FULL
@@ -142,7 +159,7 @@ LKrigFindLambdaAwght <- function(x, y, ...,  LKinfo,
   # Name columns  of likelihood eval. 
   dimnames(capture.evaluations)<- list( NULL,
                 c("lambda","logLambda","a.wght","omega",
-                  "rho.MLE", "sigma.MLE","lnProfileLike.FULL"))
+                  "sigma2.MLE", "tau.MLE","lnProfileLike.FULL"))
   return(list(summary = out,
               LKinfo = LKrigObject$LKinfo,
               llambda.start = llambda.start,
@@ -166,11 +183,11 @@ LambdaAwghtObjectiveFunction<- function(PARS, LKrigArgs, capture.env, verbose=FA
                     lambda = lambdaTemp,
                     a.wght = a.wghtTemp)
                   )
-  )[c("rho.MLE.FULL","sigma.MLE.FULL","lnProfileLike.FULL")] 
+  )[c("sigma2.MLE.FULL","tau.MLE.FULL","lnProfileLike.FULL")] 
   rowForCapture <-c( lambdaTemp,PARS[1],
                      a.wghtTemp,PARS[2],
-                     hold$rho.MLE.FULL,
-                     hold$sigma.MLE.FULL,
+                     hold$sigma2.MLE.FULL,
+                     hold$tau.MLE.FULL,
                      hold$lnProfileLike.FULL 
   )
   if( verbose){

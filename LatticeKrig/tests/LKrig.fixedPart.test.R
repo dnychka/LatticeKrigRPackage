@@ -58,17 +58,17 @@ test.for.zero( covM0, covM1,
 test.for.zero( covM0, covM2,
                tag="cov matrix of parameters GLS from LatticeKrig")
 
-SE2<- sqrt( diag( obj$rho.MLE* covM2) )
+SE2<- sqrt( diag( obj$sigma2.MLE* covM2) )
 
 # checking how GLS residual SS is computed
 SS0<- sum( objlm$residuals^2)
 
 test.for.zero( obj$quad.form, SS0, tag="testing quadratic form")
 
-test.for.zero( obj$rho.MLE*N, SS0, tag="testing rho*N and GLS SS")
+test.for.zero( obj$sigma2.MLE*N, SS0, tag="testing sigma2*N and GLS SS")
 
-test.for.zero( sqrt(obj$rho.MLE*(N/(N-3))),lmSigma , 
-               tag="Estimates of rho and from GLS")
+test.for.zero( sqrt(obj$sigma2.MLE*(N/(N-3))),lmSigma , 
+               tag="Estimates of sigma2 and from GLS")
 
 # now check with Z option do this by adding a quadratic part in Z
  allTerms<- fields.mkpoly(x, m=3)

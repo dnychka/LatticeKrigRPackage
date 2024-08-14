@@ -1,6 +1,6 @@
 % # LatticeKrig  is a package for analysis of spatial data written for
 % # the R software environment .
-% # Copyright (C) 2016
+% # Copyright (C) 2024
 % # University Corporation for Atmospheric Research (UCAR)
 % # Contact: Douglas Nychka, nychka@ucar.edu,
 % # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
@@ -78,7 +78,7 @@ createLKrigObject(x, y, weights = NULL, Z, X, U, LKinfo,
  
   \item{weights}{A vector that is proportional to the reciprocal
   variances of the errors. I.e. errors are assumed to be uncorrelated
-  with variances sigma^2/weights. }
+  with variances tau^2/weights. }
 
   \item{Z}{Linear covariates to be included in fixed part of the model
   that are distinct from the default first order polynomial in
@@ -235,15 +235,15 @@ x is a location in two dimensions, N(x) is a low order (linear)
 polynomial, Z is a matrix of spatial covariates and d a coefficient
 vector. Phi.j for 1 <= j <= m is a set of fixed basis functions and
 c.j the coefficients. The variance of f(x) is given by the parameter
-\code{rho} throughout this package. As explained below the process f
+\code{sigma2} throughout this package. As explained below the process f
 is a sum of \code{nlevel} independent processes that have different
 scales of spatial dependence.  The \code{alpha} gives the relative
 weighting between these processes.  Thus, the minimum set of
 parameters needed to describe the covariance of f are the integer
-\code{NC}, two scalars \code{rho} and \code{a.wght}, and a vector
+\code{NC}, two scalars \code{sigma2} and \code{a.wght}, and a vector
 \code{alpha}. \code{alpha} has a length of  the number of multi-resolution
 levels but we recommend that it be constrained sum to one.  The parameter
-rho is the
+sigma2 is the
 marginal variance of the process and this multiples alpha.  Thus in
 total there are a 1 + 2 + (nlevel - 1) parameters for a minimal
 specification of the covariance.  Note that this parsimonious
@@ -254,7 +254,7 @@ additional constraint on \code{alpha} is to make the weights
 controls decay of the alpha weights. There is some theory to suggest
 that \code{nu} is analogous to the smoothness parameter from the Matern
 family (e.g. nu=.5 approximates the exponential). In this case the
-covariance model requires just four parameters, \code{NC, rho, a.wght,
+covariance model requires just four parameters, \code{NC, sigma2, a.wght,
 nu}.
 
 The data model is
@@ -262,15 +262,15 @@ The data model is
  Y.k = f(x.k) + e.k
 
 Y.k are (scalar) observations made at spatial locations x.k with e.k
-uncorrelated normal errors with variance sigma^2/weights. Thus there
-is a minimum of one new parameter from the data model: sigma. Note
-that prediction only depends on the ratio \code{lambda = sigma^2/ rho}
+uncorrelated normal errors with variance tau^2/weights. Thus there
+is a minimum of one new parameter from the data model: tau. Note
+that prediction only depends on the ratio \code{lambda = tau^2/ sigma2}
 and not surprisingly lambda plays a key role in specifying and fitting
 a spatial model. Also taken with the model for f the minimum
 parameters needed for a spatial prediction are still four \code{NC,
 a.wght, nu} and \code{lambda}. For fixed lambda there are closed form 
-expressions for the MLEs for sigma and rho. LKrig exploits this feature
-by depending on lambda and then computing the MLEs for sigma and rho. 
+expressions for the MLEs for tau and sigma2. LKrig exploits this feature
+by depending on lambda and then computing the MLEs for tau and sigma2. 
 
 The data model can also be written in vector form as 
 
@@ -425,11 +425,11 @@ effects.
  normalized to have a marginal variance of one then g will have a
  variance that is the sum of the alpha parameters. Usually it is
  useful to constrain the alpha parameters to sum to one and then
- include an additional variance parameter, rho, to be the marginal
+ include an additional variance parameter, sigma2, to be the marginal
  variance for g.  So the full model for the spatial process used in
  LatticeKrig is
 
-g(x) = sqrt(rho) * sum.i sqrt(alpha[i]) * g.i(x)
+g(x) = sqrt(sigma2) * sum.i sqrt(alpha[i]) * g.i(x)
 
 The specification of the basis and GMRF is through the components of
 the object LKinfo, a required component for many LatticeKrig
@@ -528,28 +528,28 @@ Given that the process at each level has been normalized to have
 marginal variance of one there are several other points where the
 variance can be modified. The variance at level i is scaled by the
 parameters \code{alpha[i]} and the marginal variance of the process is
-scaled by \code{rho}.  Each of these can be extended to have some
+scaled by \code{sigma2}.  Each of these can be extended to have some
 spatial variation and thus provide a model for non-stationarity.
 
 An option in specifying the marginal variance is to prescribe a
 spatially varying multiplier. This component is specified by the
-object \code{rho.object}. By default this is not included (or assumed
+object \code{sigma2.object}. By default this is not included (or assumed
 to be identically one) but, if used, the full specification for the
 marginal variance of the spatial process at location \code{x} is
-formally: \code{rho * predict(rho.object, x) * sum( alpha)} There is
+formally: \code{sigma2 * predict(sigma2.object, x) * sum( alpha)} There is
 then a problem of identifiability between these and a good choice is
-to constrain \code{sum(alpha) ==1} so that \code{rho*
-predict(rho.object, x)} is associated with the marginal variance of
+to constrain \code{sum(alpha) ==1} so that \code{sigma2*
+predict(sigma2.object, x)} is associated with the marginal variance of
 the full spatial process.
 
 A second option is to allow the alpha variance component parameters to
 vary across space and at each level. The model in this case could be 
 
-g(x) = sqrt(rho(x)) * sum.i sqrt(alpha(x).i) * g.i(x)
+g(x) = sqrt(sigma2(x)) * sum.i sqrt(alpha(x).i) * g.i(x)
 
 To specify this case \code{alpha} should be a list
 with \code{nlevel} components and each component being a "predict" object that will evaluate the alpha  variance at a given level at arbitrary spatial locations. 
-Explicitly alpha should be set up so that  \code{ predict(alpha[[l]], x1) } will return a vector of  values for alpha at level \code{l} and at locations \code{x1}. This happens in \code{LKrig.basis} and the user is referred to this function to see how it is handled and possibly to make modifications to the model.  Similar to the scalar alpha case we recommend that the alpha's across levels sum to one and it still may make sense to have the rho parameter vary across space as well. Here alpha would control a varying correlation range and rho the marginal variance. 
+Explicitly alpha should be set up so that  \code{ predict(alpha[[l]], x1) } will return a vector of  values for alpha at level \code{l} and at locations \code{x1}. This happens in \code{LKrig.basis} and the user is referred to this function to see how it is handled and possibly to make modifications to the model.  Similar to the scalar alpha case we recommend that the alpha's across levels sum to one and it still may make sense to have the sigma2 parameter vary across space as well. Here alpha would control a varying correlation range and sigma2 the marginal variance. 
 
 
 LKrig also has the flexibility to handle more general weights in the
@@ -567,8 +567,8 @@ version of this package.
 
 \strong{The smoothing parameter lambda and effective degrees of
 freedom} Consistent with other fields package functions, the two main
-parameters in the model, sigma^2 and rho are parameterized as lambda =
-sigma^2/rho and rho. The MLEs for rho and sigma can be written in
+parameters in the model, tau^2 and sigma2 are parameterized as lambda =
+tau^2/sigma2 and sigma2. The MLEs for sigma2 and tau can be written in
 closed form as a function of lambda and these estimates can be
 substituted into the full likelihood to give a concentrated version
 that can numerically be maximized over lambda. The smoothing parameter

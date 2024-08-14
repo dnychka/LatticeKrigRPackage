@@ -1,6 +1,6 @@
 # LatticeKrig  is a package for analysis of spatial data written for
 # the R software environment .
-# Copyright (C) 2016
+# Copyright (C) 2024
 # University Corporation for Atmospheric Research (UCAR)
 # Contact: Douglas Nychka, nychka@ucar.edu,
 # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
@@ -154,10 +154,10 @@ LKrig.basis <- function(x1, LKinfo, Level= NULL,
 # the normalization. 
 # alpha are the weights applied at each level 
 # (makes sense that these sum to one but they do not need to )
-# rho is an overall weight applied across all levels
+# sigma2 is an overall weight applied across all levels
 # If sum(alpha) = 1 and the basis is normalized
-# then the process will have marginal variance rho and each level will 
-# have variance alpha[level]*rho. This product can vary over space and is 
+# then the process will have marginal variance sigma2 and each level will 
+# have variance alpha[level]*sigma2. This product can vary over space and is 
 # motivates  including the objects defining surface of these parameters. 
         
         
@@ -176,10 +176,10 @@ wght<- LKFindAlphaVarianceWeights(x1,LKinfo, l)
         PHI <- spam::cbind.spam(PHI, PHItemp)
     }
 #   
-# finally multiply the basis functions by sqrt(rho) to give the right
+# finally multiply the basis functions by sqrt(sigma2) to give the right
 # marginal variances. This is either a function of the locations or constant.
-# rho may not be provided when estimating a model 
-     wght<- LKFindRhoVarianceWeights(x1,LKinfo)
+# sigma2 may not be provided when estimating a model 
+     wght<- LKFindSigma2VarianceWeights(x1,LKinfo)
      
     if( length( wght)>1){
       PHI <- diag.spam(sqrt(wght)) %*% PHI

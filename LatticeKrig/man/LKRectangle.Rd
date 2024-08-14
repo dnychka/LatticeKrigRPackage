@@ -168,7 +168,7 @@ corner etc.
 \strong{Non-stationary models}
 This is the nuclear option to handle a completely non-stationary correlation
 structure! In this case one specifies the models by passing prediction
-objects for one or more of \code{rho.object}, \code{alphaObject} or 
+objects for one or more of \code{sigma2.object}, \code{alphaObject} or 
 \code{a.wghtObject}. 
 }
 \author{

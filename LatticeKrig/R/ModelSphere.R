@@ -98,7 +98,7 @@ setDefaultsLKinfo.LKSphere <- function(object, ...) {
     stop("object needs to an LKinfo object")
   }
   
-  rangeLocations<- apply( x,2, "range")
+  rangeDomain<- apply( x,2, "range")
   nlevel<- LKinfo$nlevel
 ###### end common operations  
 # if x not passed then  assume full Sphere
@@ -142,10 +142,10 @@ setDefaultsLKinfo.LKSphere <- function(object, ...) {
     grid3d<- MultiGrid[[ l + (startingLevel -1) ]]
     gridTemp<- toSphere( grid3d )
       # trim to range of locations (in lon/lat coordinates)
-    ind<-  gridTemp[,1] >= rangeLocations[1,1] &
-           gridTemp[,1] <= rangeLocations[2,1] &
-           gridTemp[,2] >= rangeLocations[1,2] &
-           gridTemp[,2] <= rangeLocations[2,2] 
+    ind<-  gridTemp[,1] >= rangeDomain[1,1] &
+           gridTemp[,1] <= rangeDomain[2,1] &
+           gridTemp[,2] >= rangeDomain[1,2] &
+           gridTemp[,2] <= rangeDomain[2,2] 
     ind2<-  (1:length( ind)) <= 12
 # first 12 coordinates are always the initial isocosohedron points    
     grid.all.levels[[l]]<-  gridTemp[ ind, ] 
@@ -169,7 +169,7 @@ setDefaultsLKinfo.LKSphere <- function(object, ...) {
               offset=offset,
               mLevel=mLevel, 
               delta=delta.save, 
-              rangeLocations=rangeLocations,
+              rangeDomain=rangeDomain,
 # specific arguments for LKSphere              
               startingLevel=startingLevel,
               grid=grid.all.levels,

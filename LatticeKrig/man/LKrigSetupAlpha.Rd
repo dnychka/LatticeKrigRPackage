@@ -1,6 +1,6 @@
 % # LatticeKrig  is a package for analysis of spatial data written for
 % # the R software environment .
-% # Copyright (C) 2016
+% # Copyright (C) 2024
 % # University Corporation for Atmospheric Research (UCAR)
 % # Contact: Douglas Nychka, nychka@ucar.edu,
 % # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
@@ -20,6 +20,7 @@
 \alias{LKrigSetupAlpha.LKInterval}
 \alias{LKrigSetupAlpha.LKRectangle}
 \alias{LKrigSetupAlpha.LKBox}
+\alias{LKFindAlphaVarianceWeights}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Creates the alpha parameter list in LatticeKrig covariance.
 %%  ~~function to do ... ~~
@@ -34,14 +35,20 @@
 LKrigSetupAlpha(object, ...)
 \method{LKrigSetupAlpha}{default}(object, ...)
 
-
+LKFindAlphaVarianceWeights(x1, LKinfo, level) 
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
+ \item{x1}{Locations to evaluate the  alpha weights.}
+ \item{LKinfo}{ An LKinfo object that is usually created by \link{LKrigSetup}.
+ }
+ \item{level}{Level of the multiresolution.}
+ 
   \item{object}{
   	The partial LKinfo object created within \code{LKrigSetup}
 %%     ~~Describe \code{object} here~~
 }
+
   \item{\dots}{
   	Any additional arguments to this method
 %%     ~~Describe \code{\dots} here~~
@@ -73,6 +80,9 @@ a list.
 [[3]]
 [1] 0.01
 }
+
+The lower level function \code{LKFindAlphaVarianceWeights}
+is used to supply weights as in the default model but also evaluate the weights at arbitrary locations. This second role is part of specifying a nonstationary model where the weights vary over the spatial domain. 
 
 }
 \author{

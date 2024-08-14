@@ -1,6 +1,6 @@
 % # LatticeKrig  is a package for analysis of spatial data written for
 % # the R software environment .
-% # Copyright (C) 2016
+% # Copyright (C) 2024
 % # University Corporation for Atmospheric Research (UCAR)
 % # Contact: Douglas Nychka, nychka@ucar.edu,
 % # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
@@ -100,7 +100,7 @@ Or for the function \code{print.LatticeKrig} \code{x} is the returned object fro
 
  \item{verbose}{If TRUE print out intermediate results. }
  \item{weights}{A weight vector to be used for the measurement error variance
- This is in the same role as the weight vector in ordinary least squares fitting. I.e. the errors are assumed to have variances sigma2/weights where sigma2 is estimated by maximum likelihood if it is not specified.}
+ This is in the same role as the weight vector in ordinary least squares fitting. I.e. the errors are assumed to have variances \code{tau^2/weights} where  \code{tau^2} is estimated by maximum likelihood if it is not specified.}
 
   \item{\dots}{Additional arguments to pass to LKrig. 
   The easiest way to pass a full specification is to create an LKinfo object beforehand and then just pass that (see example below.) This gives more control and the setup function will do some error checking on arguments. Also see help(LKrig) for a complete list of arguments to pass.  For convenience we note that  if you get some pesky memory warnings from spam
@@ -128,10 +128,10 @@ to reproduce the LatticeKrig estimate for smaller data sets and check computatio
 (See \code{\link{LKrig.cov}} with examples ).  Details on the basis functions and the Markov random field are given in the \code{\link{LKrig}}
 help function.  
 Throughout this package we assume the standard deviation of \eqn{e_k}
-is \code{sigma}
-and the marginal variance of  \eqn{h(x)} is \code{rho}. An important derived
-parameter of the spatial estimate is \code{lambda = sigma^2/ rho} the noise to 
-signal ratio. \code{sigma} and \code{rho} are estimated my restricted maximum
+is \code{tau}
+and the marginal variance of  \eqn{h(x)} is \code{sigma2}. An important derived
+parameter of the spatial estimate is \code{lambda = tau^2/ sigma2} the noise to 
+signal ratio. \code{tau} and \code{sigma2} are estimated my restricted maximum
 likelihood in \code{LatticeKrig}. 
  
 This top level function is built on the more basic function \code{\link{LKrig}}
@@ -157,9 +157,9 @@ spline. The smoothness mimics the Whittle covariance function (
 smoothness = 1 for the Matern).  (See \link{LKrig.cov.plot} to get a plot of
 the implied covariance function.) LatticeKrig also provides maximum likelihood 
 estimates
-of the measurement error standard deviation ("sigma") and process variance parameter ("rho") that are perhaps the 
+of the measurement error standard deviation ("tau") and process variance parameter ("sigma2") that are perhaps the 
 parameters that most effect the shape of the estimated spatial field. The ubiquitous
-parameter lambda throughout LatticeKrig is just the reparameterization lambda == sigma^2 / rho.
+parameter lambda throughout LatticeKrig is just the reparameterization lambda == tau^2 / sigma2.
 
 This top level function is pitched with all the caveats that
 statistical model assumptions should always be checked and applying
@@ -167,7 +167,7 @@ generic methods to a specific problems without checking the
 appropriateness can lead to misleading results. So plot your data and
 try several models. Details on the full
 computations can be found in the \code{LKrig} man page.
-The \code{lambda = sigma2/ rho} parameter in \code{LKrig} is essential to the
+The \code{lambda = tau^2/ sigma2} parameter in \code{LKrig} is essential to the
 Lattice Krig computation and an inappropriate value will result in
 over or under fitting and incorrect interpolated values. The function
 \code{LKrigFindLambda} is used within \code{LatticeKrig} to estimate a
@@ -216,7 +216,7 @@ and \code{fitted.values} in the returned object for these parts of the
 fitted spatial model. The component \code{LKinfo} has all the details
 that specify the basis functions and co variance model.
 The component \code{MLE} gives details of the likelihood evaluations to estimate 
-the sigma and rho parameters. 
+the tau and sigma2 parameters. 
 }
   
 \author{

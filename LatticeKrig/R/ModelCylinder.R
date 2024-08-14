@@ -1,6 +1,6 @@
 # LatticeKrig  is a package for analysis of spatial data written for
 # the R software environment .
-# Copyright (C) 2016
+# Copyright (C) 2024
 # University Corporation for Atmospheric Research (UCAR)
 # Contact: Douglas Nychka, nychka@ucar.edu,
 # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
@@ -114,7 +114,7 @@ LKrigSetupLattice.LKCylinder <- function(object,  verbose,  ...) {
   NC <-  object$NC
   NC.buffer <- object$NC.buffer
 	#object is usually of class LKinfo
-	rangeLocations <- apply(object$x, 2, "range")
+	rangeDomain <- apply(object$x, 2, "range")
 	# range in transformed scale
 	# find range of scaled locations
 if (is.null(object$basisInfo$V[1])) {
@@ -167,7 +167,7 @@ offset <- as.integer(c(0, cumsum(mLevel)))
 	mLevelDomain <- (mLevel - 2 * NC.buffer)
 	# required arguments for latticeInfo 
 	out <- list(m = m, offset = offset, mLevel = mLevel, delta = delta.save, 
-		rangeLocations = rangeLocations)
+		rangeDomain = rangeDomain)
 	# specific arguments for LKCylinder Geometry 
 	out <- c(out, list(mx = mx, mLevelDomain = mLevelDomain, 
 		mxDomain = mxDomain, NC = NC, NC.buffer = NC.buffer, 
