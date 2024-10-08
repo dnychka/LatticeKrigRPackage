@@ -82,7 +82,7 @@ LKrigSAR(object, ...)
 
 }
 \seealso{
- \code{\link{LKrig.precision}} \code{\link{spind2full}}
+ \code{\link{LKrig.precision}},\code{spind2full}
 }
 \examples{
     x<- cbind( c(0,1))

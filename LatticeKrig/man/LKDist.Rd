@@ -110,7 +110,7 @@ Doug Nychka
 }
 
 \seealso{
-	\code{\link{spind2spam}}, \code{\link{spind2full}}
+	\code{spind2spam}, \code{spind2full}
 }
 \examples{
 set.seed( 123)	

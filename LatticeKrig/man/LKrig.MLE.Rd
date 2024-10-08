@@ -219,7 +219,11 @@ over different parameters combinations simple.
 
 \strong{omega2Awght, Awght2omega } Converts between the Awght parameter (the diagonal elements
 of the SAR matrix) and the omega parameter that provides an unconstrained range for optimization. 
-The link is \code{Awght <- LKinfo$floorAwght + exp(omega) * (xDimension)}. Note that LKinfo
+The link is 
+
+\preformatted{Awght <- LKinfo$floorAwght + exp(omega) * (xDimension)}.
+
+Note that LKinfo
 supplied the lower bound on the Awght because this is geometry/problem specific. For the 2-d rectangle
 this is 4. 
 

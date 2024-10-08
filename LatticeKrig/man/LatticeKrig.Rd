@@ -75,7 +75,7 @@ Or for the function \code{print.LatticeKrig} \code{x} is the returned object fro
      \item{X}{For linear inverse problems the matrix that maps coefficients of the basis to the   
   	 predicted values of observations. X must be in spam format. To convert from spind or dense
   	 format  to spam format see \code{help(spam)} as an alternative  
-  	 \code{\link{spind2spam}}. See an example for this extension in the
+  	 \code{help(spind2spam)}. See an example for this extension in the
   	 \code{\link{LKrig}} help file. 
   	 } 
   	 
