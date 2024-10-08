@@ -1,6 +1,6 @@
 Package: LatticeKrig
 Version: 9.3.0
-Date: 2024-08-09
+Date: 2024-10-07
 Title: Multi-Resolution Kriging Based on Markov Random Fields
 Authors@R: c( 
             person("Douglas", "Nychka", role = c("aut", "cre"),
