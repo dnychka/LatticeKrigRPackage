@@ -72,7 +72,7 @@ test.for.zero( diag(covMatrix), rep( varTest, nrow( xNew)),
  # alpha<- alpha/sum( alpha)
  # alpha<- rep( 1,3)
  LKinfo<- LKrigSetup( cbind( c(3,5), c(3,5)), NC=2, NC.buffer=2,
-                      rho = 2.5,
+                      sigma2 = 2.5,
                      a.wght=5,  alpha=alpha, nlevel=3, 
                      normalize=FALSE)                   
   PHI<- LKrig.basis(xNew, LKinfo)
@@ -91,7 +91,7 @@ test.for.zero( diag(covMatrix), rep( varTest, nrow( xNew)),
   alpha<- c( 1, .8,.2)
   # alpha<- rep( 1,3)
   LKinfo<- LKrigSetup( cbind( c(3,5), c(3,5)), NC=2, NC.buffer=2,
-                       rho = 2.5,
+                       sigma2 = 2.5,
                        a.wght=5,  alpha=alpha, nlevel=3, 
                        normalize=TRUE)                   
   PHI<- LKrig.basis(xNew, LKinfo)

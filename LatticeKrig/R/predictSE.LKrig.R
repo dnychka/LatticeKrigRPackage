@@ -1,6 +1,6 @@
 # LatticeKrig  is a package for analysis of spatial data written for
 # the R software environment .
-# Copyright (C) 2016
+# Copyright (C) 2024
 # University Corporation for Atmospheric Research (UCAR)
 # Contact: Douglas Nychka, nychka@ucar.edu,
 # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
@@ -30,8 +30,8 @@
 	# set some local variables
 	NG <- nrow(xnew)
 	lambda <- object$lambda
-	rho <- object$rho.MLE
-	sigma2 <- lambda * rho
+	sigma2 <- object$sigma2.MLE
+	tau2 <- lambda * sigma2
 	weights <- object$weights
 # NOTE throughout the "w" added to variables, e.g. wX, wk0, is the sqrt(weights)
 # not the weights	
@@ -77,10 +77,10 @@ if (is.null(Znew) & (object$nZ > 0)) {
 	d.coef <- hold$d.coef
 	# colSums used to find multiple quadratic forms  
 	#e.g.  diag(t(x) %*%A%*%x) == colSums( x* (A%*%(x)))
-	temp1 <- rho * (colSums(t0 * (Omega %*% t0)) -
+	temp1 <- sigma2 * (colSums(t0 * (Omega %*% t0)) -
 	                      2 * colSums(t0 * d.coef))
 	# find marginal variances -- trival in the stationary case!
-	temp0 <- rho * (LKrig.cov(xnew, LKinfo = LKinfo, marginal = TRUE) - 
+	temp0 <- sigma2 * (LKrig.cov(xnew, LKinfo = LKinfo, marginal = TRUE) - 
 		colSums(wk0 * c.mKrig))
 	temp <- temp0 + temp1
 	return(sqrt(temp))

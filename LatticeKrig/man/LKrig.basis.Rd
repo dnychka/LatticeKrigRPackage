@@ -1,6 +1,6 @@
   % # LatticeKrig  is a package for analysis of spatial data written for
 % # the R software environment .
-% # Copyright (C) 2016
+% # Copyright (C) 2024
 % # University Corporation for Atmospheric Research (UCAR)
 % # Contact: Douglas Nychka, nychka@ucar.edu,
 % # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
@@ -25,9 +25,10 @@
 \alias{LKrig.spind2spam}
 \alias{LKrigCovWeightedObs}
 \alias{LKrigMarginalVariance}
+\alias{LKFindSigma2VarianceWeights}
+
 \title{
-Functions for generating a multi-resolution, compactly supported basis,  
-multi-resolution covariance functions and simulating from these processes.
+High level functions for generating and simulating a basis function,Gaussian Process. 
 }
 \description{
 These functions support the \code{LKrig} function.  Their main
@@ -37,7 +38,7 @@ a multi-resolution basis.  The Gaussian process model is an expansion
 in these basis functions where the basis coefficients follow a Markov
 random field model for each resolution level.  This family of
 functions generate the basis using sparse matrices, evaluate the
-covariance function of the process and also simulate realizations of
+covariance function of the process, and also simulate realizations of
 the process. \code{LKrig.cov.plot} is a useful function to get a quick
 plot of the covariance function implied by a LatticeKrig
 specification.}
@@ -54,6 +55,7 @@ LKrig.precision(LKinfo, return.B = FALSE, verbose=FALSE)
 LKrig.quadraticform( Q, PHI, choleskyMemory = NULL) 
 LKrig.spind2spam(obj, add.zero.rows=TRUE)
 LKrigMarginalVariance(x1, LKinfo, verbose = FALSE)
+LKFindSigma2VarianceWeights(x1, LKinfo) 
 }
 
 \arguments{
@@ -268,9 +270,10 @@ LatticeKrig process at each level and at the locations in \code{x1}. Returned va
 \code{nlevel} columns indexing the levels and the number of rows equal to  \code{nrow(x1)}. 
 If  \code{varLevels} is a row of this matrix then  sum( varLevels* LKinfo$alpha) is the marginal variance
 for the full process when the different levels are weighted by alpha. This is weighted sum is the marginal
-variance returned by \code{LKrig.cov} and \code{ marginal=TRUE} ( Also assuming that \code{LKinfo$rho.object}
+variance returned by \code{LKrig.cov} and \code{ marginal=TRUE} ( Also assuming that \code{LKinfo$sigma2.object}
 is NULL, which it usually is.) . 
 
+\strong{LKFindSigma2VarianceWeights} Return either the marginal variance of the process as a scalar or the variance at arbitrary locations \code{x1}. This second role is part of a nonstationary specification of the model where the process marginal variance can vary over space.
 
 \strong{LKrig.sim:} A matrix with dimensions of \code{nrow(x1)} by
 \code{M}. Each column are vectors of simulated values at the locations

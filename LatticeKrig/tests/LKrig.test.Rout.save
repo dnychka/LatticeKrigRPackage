@@ -86,4 +86,4 @@ PASSED test at tolerance  1e-08
 Done testing LatticeKrig
 > proc.time()
    user  system elapsed 
- 16.662   0.134  16.796 
+ 16.696   0.118  16.814 

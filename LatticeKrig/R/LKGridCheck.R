@@ -1,6 +1,6 @@
 # LatticeKrig  is a package for analysis of spatial data written for
 # the R software environment .
-# Copyright (C) 2016
+# Copyright (C) 2024
 # University Corporation for Atmospheric Research (UCAR)
 # Contact: Douglas Nychka, nychka@ucar.edu,
 # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
@@ -28,7 +28,7 @@
      if( !is.matrix( x1)){
      	stop( "x1 must be a matrix")
      }	  	 	
-   	 if( class(gridList)!="gridList"){
+   	 if(! is(gridList,"gridList")){
    	 	stop("gridList must have class gridList")
    	 }
    	info<- summary( gridList)

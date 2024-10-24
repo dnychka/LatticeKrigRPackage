@@ -1,6 +1,6 @@
 # LatticeKrig  is a package for analysis of spatial data written for
 # the R software environment .
-# Copyright (C) 2016
+# Copyright (C) 2024
 # University Corporation for Atmospheric Research (UCAR)
 # Contact: Douglas Nychka, nychka@ucar.edu,
 # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
@@ -107,109 +107,141 @@ LKinfoCheck.LKRectangle<- function( object, ...){
      } # end for loop over levels       
 }        
           
-LKrigSetupLattice.LKRectangle <- function(object, verbose, 
-	 ...) {
-	###### some common setup operations to all geometries
-	LKinfo <- object
-	if (class(LKinfo)[1] != "LKinfo") {
-		stop("object needs to an LKinfo object")
-	}
-	rangeLocations <- apply(object$x, 2, "range")
-	nlevel <- LKinfo$nlevel
-	NC <-  LKinfo$NC
-	NC.buffer <- LKinfo$NC.buffer
-	###### end common operations  
-	if (is.null(NC)) {
-		stop("Need to specify NC for grid size")
-	}
-	if (is.null(NC.buffer)) {
-	  stop("Need to specify NC.buffer for lattice buffer region")
-	}
-	#  if ( LKinfo$distance.type!= "Euclidean" ) {
-	#        stop("distance type is not supported (or is misspelled!).")        
-#     }
-# find range of scaled locations
-if (is.null(LKinfo$basisInfo$V)) {
-		Vinv <- diag(1, 2)
-	} else {
-		Vinv <- solve(LKinfo$basisInfo$V)
-	}
-	range.x <- apply(object$x %*% t(Vinv), 2, "range")
-	if (verbose) {
-		cat("ranges of transformed variables", range.x, fill = TRUE)
-	}
-	grid.info <- list(xmin = range.x[1, 1], xmax = range.x[2, 1], ymin = range.x[1, 
-		2], ymax = range.x[2, 2], range = range.x)
-# set the coarsest spacing of centers           
-	d1 <- grid.info$xmax - grid.info$xmin
-	d2 <- grid.info$ymax - grid.info$ymin
-  grid.info$delta <- max(c(d1, d2))/(NC - 1)
-#
-# actual number of grid points is determined by the spacing delta
-# delta is used so that centers are equally
-# spaced in both axes and NC is the maximum number of grid points
-# along the larger range. So for a rectangular region
-# along the longer side there will be NC grid points but for the shorter dimension
-# there will be less than NC.
-# Finally note that if NC.buffer is greater than zero the number of grid points in
-# both dimensions will be increased by this buffer around the edges:
-# a total of  NC + 2* NC.buffer grid points along the longer dimension
-#
-delta.level1 <- grid.info$delta
-	delta.save <- rep(NA, nlevel)
-	mx <- mxDomain <- matrix(NA, nrow = nlevel, ncol = 2)
-	#
-	# build up series of nlevel multi-resolution grids
-# and accumulate these in a master list -- creatively called grid
-grid.all.levels <- NULL
-	# loop through multiresolution levels decreasing delta by factor of 2
-	# and compute number of grid points.
-# build in a hook for buffer regions to differ in x and y
-# currently this distinction is not supported.
-NC.buffer.x <- NC.buffer
-	NC.buffer.y <- NC.buffer
-	for (j in 1:nlevel) {
-		delta <- delta.level1/(2^(j - 1))
-		delta.save[j] <- delta
-		# the width in the spatial coordinates for NC.buffer grid points at this level.
-		buffer.width.x <- NC.buffer.x * delta
-		buffer.width.y <- NC.buffer.y * delta
-		# rectangular case
-		grid.list <- list(
-		    x = seq(grid.info$xmin - buffer.width.x, grid.info$xmax + 
-		 	           buffer.width.x, delta),
-		    y = seq(grid.info$ymin - buffer.width.y, grid.info$ymax +
-		             buffer.width.y, delta)
-		                )
-		class(grid.list) <- "gridList"
-		mx[j, 1] <- length(grid.list$x)
-		mx[j, 2] <- length(grid.list$y)
-		mxDomain[j, ] <- mx[j, ] - 2 * NC.buffer            
-		grid.all.levels <- c(grid.all.levels, list(grid.list))
-	}
-# end multiresolution level loop
-#	
-# create a useful index that indicates where each level starts in a
-# stacked vector of the basis function coefficients.
-  mLevel <- mx[, 1] * mx[, 2]
-	offset <- as.integer(c(0, cumsum(mLevel)))
-	m <- sum(mLevel)
-	mLevelDomain <- (mx[, 1] - 2 * NC.buffer.x) * (mx[, 2] - 2 * NC.buffer.y)
-# first five components are used in the print function and
-# should always be created.        
-# The remaining components are specific to this geometry.
-        out <- list(m = m, offset = offset, mLevel = mLevel, delta = delta.save,                 
-		rangeLocations = rangeLocations)
-# specific arguments for LKrectangle 
-	out <- c(out, list(mLevelDomain = mLevelDomain,
-	                             mx = mx, 
-	                       mxDomain = mxDomain, 
-                        NC.buffer = NC.buffer,
-                             grid = grid.all.levels, 
-                        grid.info = grid.info)
-          )
-	return(out)
+
+LKrigSetupLattice.LKRectangle <- function(object, verbose,                                           ...) {
+  ###### 
+  LKinfo <- object
+  ##### some checks
+  if (class(LKinfo)[1] != "LKinfo") {
+    stop("object needs to be an LKinfo object")
+  }
+  if (is.null(LKinfo$NC)& is.null(LKinfo$delta)) {
+    stop("Need to specify NC  or delta for grid size")
+  }
+  if (is.null(LKinfo$NC.buffer)) {
+    stop("Need to specify NC.buffer for lattice buffer region")
+  }
+  if(!is.null(LKinfo$delta )){
+    if( length(LKinfo$delta)!= LKinfo$nlevel)
+    {
+      stop("length of delta is different from number of levels")
+    }
+  } 
+# create lattice
+  out<- LKRectangleCreateLattice(LKinfo, verbose=FALSE)
+  
+  return(out)
 }
+
+LKRectangleCreateLattice<- function(LKinfo, verbose=FALSE){
+  # these two items used throughout by passed or created 
+  # lattice info
+  nlevel<- LKinfo$nlevel
+  NC.buffer<- LKinfo$NC.buffer
+  
+  # find range of scaled locations
+  if (is.null(LKinfo$basisInfo$V)) {
+    Vinv <- diag(1, 2)
+  } else {
+    Vinv <- solve(LKinfo$basisInfo$V)
+  }
+  
+  if( is.null(LKinfo$rangeDomain)){
+    rangeDomain <- apply(LKinfo$x %*% t(Vinv), 2, "range")
+  }
+  else{
+    rangeDomain<- LKinfo$rangeDomain
+  }
+  
+  if (verbose) {
+    cat("Domain range", rangeDomain, fill = TRUE)
+  }
+  
+  grid.info <- list(xmin = rangeDomain[1, 1], xmax = rangeDomain[2, 1],
+                    ymin = rangeDomain[1, 2], ymax = rangeDomain[2, 2], 
+                    range = rangeDomain)
+  # set the coarsest spacing of centers           
+  d1 <- grid.info$xmax - grid.info$xmin
+  d2 <- grid.info$ymax - grid.info$ymin
+  # create basis function spacings if delta is not passed
+  if( is.null(LKinfo$delta)){
+    NC<- LKinfo$NC
+    delta.level1 <- max(c(d1, d2))/(NC - 1)
+    deltaVector <- rep(NA, nlevel)
+    for (j in 1:nlevel) {
+      deltaVector[j] <- delta.level1/(2^(j - 1))
+    }
+  }
+  else{
+    deltaVector<- LKinfo$delta
+  }
+  #
+  # actual number of grid points is determined by the spacing delta
+  # default delta is used so that centers are equally
+  # spaced in both axes and NC is the maximum number of grid points
+  # along the larger range. So for a rectangular region
+  # along the longer side there will be NC grid points but for the shorter dimension
+  # there will be less than NC.
+  # Finally note that if NC.buffer is greater than zero the number of grid points in
+  # both dimensions will be increased by this buffer around the edges:
+  # a total of  NC + 2* NC.buffer grid points along the longer dimension
+  #
+  mx <- mxDomain <- matrix(NA, nrow = nlevel, ncol = 2)
+  #
+  # build up series of nlevel multi-resolution grids
+  # and accumulate these in a master list -- creatively called grid
+  grid.all.levels <- NULL
+  # loop through multiresolution levels decreasing delta by factor of 2
+  # and compute number of grid points.
+  # build in a hook for buffer regions to differ in x and y
+  # currently this distinction is not supported.
+  NC.buffer.x <- NC.buffer
+  NC.buffer.y <- NC.buffer
+  for (j in 1:nlevel) {
+    delta <- deltaVector[j]
+    # the width in the spatial coordinates for NC.buffer grid points at this level.
+    buffer.width.x <- NC.buffer.x * delta
+    buffer.width.y <- NC.buffer.y * delta
+    # rectangular case
+    grid.list <- list(
+      x = seq(grid.info$xmin - buffer.width.x, grid.info$xmax + 
+                buffer.width.x, delta),
+      y = seq(grid.info$ymin - buffer.width.y, grid.info$ymax +
+                buffer.width.y, delta)
+    )
+    class(grid.list) <- "gridList"
+    mx[j, 1] <- length(grid.list$x)
+    mx[j, 2] <- length(grid.list$y)
+    mxDomain[j, ] <- mx[j, ] - 2 * NC.buffer            
+    grid.all.levels <- c(grid.all.levels, list(grid.list))
+  }
+  # end multiresolution level loop
+  #	
+  # create a useful index that indicates where each level starts in a
+  # stacked vector of the basis function coefficients.
+  mLevel <- mx[, 1] * mx[, 2]
+  offset <- as.integer(c(0, cumsum(mLevel)))
+  m <- sum(mLevel)
+  mLevelDomain <- (mx[, 1] - 2 * NC.buffer.x) * (mx[, 2] - 2 * NC.buffer.y)
+  
+  out <- list(     m = m, 
+                   offset = offset, 
+                   mLevel = mLevel, 
+                   delta = deltaVector,                 
+                   rangeDomain = rangeDomain
+  )
+  # specific arguments for LKrectangle 
+  out <- c(out, list(mLevelDomain = mLevelDomain,
+                     mx = mx, 
+                     mxDomain = mxDomain, 
+                     NC.buffer = NC.buffer,
+                     grid = grid.all.levels, 
+                     grid.info = grid.info)
+  )
+  return(out)
+  
+}
+
 
 LKrigSetupAwght.LKRectangle <- function(object, ...) {
 	# the object here should be of class LKinfo	

@@ -31,12 +31,12 @@ Testing:  cov matrix of parameters GLS from LatticeKrig
 PASSED test at tolerance  1e-08
 Testing:  testing quadratic form
 PASSED test at tolerance  1e-08
-Testing:  testing rho*N and GLS SS
+Testing:  testing sigma2*N and GLS SS
 PASSED test at tolerance  1e-08
-Testing:  Estimates of rho and from GLS
+Testing:  Estimates of sigma2 and from GLS
 PASSED test at tolerance  1e-08
 PASSED test at tolerance  1e-08
 PASSED test at tolerance  1e-08
 > proc.time()
    user  system elapsed 
-  1.835   0.034   1.864 
+  1.849   0.036   1.881 

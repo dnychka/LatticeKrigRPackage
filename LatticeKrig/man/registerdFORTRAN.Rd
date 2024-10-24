@@ -56,7 +56,6 @@ utility used to create these data objects.
 \references{
 For background on registering C, C++ and Fortran functions see 5.4 of
 Writing R Extensions. 
-See \url{http://r.789695.n4.nabble.com/Registration-of-native-routines-td4728874.html} for additional discussion of code registration. 
 }
 \examples{
 print(lkdistgridcomp)

@@ -1,6 +1,6 @@
 % # LatticeKrig  is a package for analysis of spatial data written for
 % # the R software environment .
-% # Copyright (C) 2016
+% # Copyright (C) 2024
 % # University Corporation for Atmospheric Research (UCAR)
 % # Contact: Douglas Nychka, nychka@ucar.edu,
 % # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
@@ -110,7 +110,7 @@ Doug Nychka
 }
 
 \seealso{
-	\code{\link{spind2spam}}, \code{\link{spind2full}}
+	\code{spind2spam}, \code{spind2full}
 }
 \examples{
 set.seed( 123)	

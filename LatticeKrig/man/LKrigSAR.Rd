@@ -1,6 +1,6 @@
 % # LatticeKrig  is a package for analysis of spatial data written for
 % # the R software environment .
-% # Copyright (C) 2016
+% # Copyright (C) 2024
 % # University Corporation for Atmospheric Research (UCAR)
 % # Contact: Douglas Nychka, nychka@ucar.edu,
 % # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
@@ -82,7 +82,7 @@ LKrigSAR(object, ...)
 
 }
 \seealso{
- \code{\link{LKrig.precision}} \code{\link{spind2full}}
+ \code{\link{LKrig.precision}},\code{spind2full}
 }
 \examples{
     x<- cbind( c(0,1))

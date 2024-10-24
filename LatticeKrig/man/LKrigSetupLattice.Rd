@@ -1,7 +1,7 @@
 
 % # LatticeKrig  is a package for analysis of spatial data written for
 % # the R software environment .
-% # Copyright (C) 2016
+% # Copyright (C) 2024
 % # University Corporation for Atmospheric Research (UCAR)
 % # Contact: Douglas Nychka, nychka@ucar.edu,
 % # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
@@ -24,6 +24,11 @@
 \alias{LKrigSetupLattice.LKRing}
 \alias{LKrigSetupLattice.LKCylinder}
 \alias{LKrigSetupLattice.LKSphere}
+\alias{LKIntervalCreateLattice}
+\alias{LKBoxCreateLattice}
+\alias{LKRectangleCreateLattice}
+
+
 
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Creates the lattice information for a specific geometry.
@@ -39,10 +44,16 @@ LKrigSetupLattice(object, ...)
 \method{LKrigSetupLattice}{default}(object, ...)
 
 \method{LKrigSetupLattice}{LKBox}(object, verbose,...)
+
+LKBoxCreateLattice(LKinfo, verbose = FALSE)
  
 \method{LKrigSetupLattice}{LKRectangle}(object, verbose,...)
 
+LKRectangleCreateLattice(LKinfo, verbose = FALSE)
+
 \method{LKrigSetupLattice}{LKInterval}(object, verbose,...)
+
+LKIntervalCreateLattice(LKinfo, verbose = FALSE)
 
  \method{LKrigSetupLattice}{LKRing}(object, verbose,...)
  
@@ -54,6 +65,8 @@ LKrigSetupLattice(object, ...)
 
 \arguments{
 %\item{grid.info}{}
+\item{LKinfo}{The LKinfo object created by \code{LatticeKrig} or by 
+\code{LKrigSetup}. }
   \item{object}{ A list that is an LKinfo object.}
 
 
@@ -68,7 +81,11 @@ are in lon/lat degrees.}
 }
 \details{
 	This method takes the LKInfo object and the other arguments and computes the 
-	lattice information needed for a specific geometry. The functions are
+	lattice information needed for a specific geometry. Three lower
+	level functions that actually create the lattices for regular grids in 1D, 2D, and 3D
+	were written to make the code eaiser to follow and hanlde both the case when the number of basis functions is specified (\code{NC}) or where the grid spacing is specified (\code{delta}). 
+	
+	These functions are
 	 called from within LKrigSetup and the results are added as a component to\code{latticeInfo}
 	as part of the LKinfo object.  The  way 
 	to design  what should be in \code{latticeInfo} is to keep in mind that
@@ -143,6 +160,7 @@ are in lon/lat degrees.}
 }
 
 \seealso{
+  \code{LatticeKrig}
 	\code{\link{LKGeometry}}
     \code{\link{LKrigSetup}},
 	\code{\link{LKrigSAR}},

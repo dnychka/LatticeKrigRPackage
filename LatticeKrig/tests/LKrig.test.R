@@ -20,7 +20,8 @@ options( echo=FALSE)
   N<- length( y)
   a.wght<- 5
   lambda <-  1.5
-  obj<- LKrig( x,y,NC=16, lambda=lambda, a.wght=a.wght, alpha=1, nlevel=1, NtrA=5,iseed=122)
+  obj<- LKrig( x,y,NC=16, lambda=lambda, a.wght=a.wght,
+               alpha=1, nlevel=1, NtrA=5,iseed=122)
   LKinfo<- obj$LKinfo
   K<- LKrig.cov( x,x,LKinfo)
   tempM<-  K
@@ -70,6 +71,10 @@ options( echo=FALSE)
   test.for.zero( obj0$fitted.values, obj$fitted.values)
   test.for.zero( obj$d.coef, obj0$beta,
                  tag= "d.coef  from Lattice Krig and beta mKrig")
+  
+#### test with specifying grid directly  
+  
+  
 ###########################################################################
 ### test that code works with locations outside spatial domain.
   xTest<- rbind(x, c( -100,20) )

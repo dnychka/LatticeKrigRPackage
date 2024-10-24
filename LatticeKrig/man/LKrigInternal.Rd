@@ -1,6 +1,6 @@
 % # LatticeKrig  is a package for analysis of spatial data written for
 % # the R software environment .
-% # Copyright (C) 2016
+% # Copyright (C) 2024
 % # University Corporation for Atmospheric Research (UCAR)
 % # Contact: Douglas Nychka, nychka@ucar.edu,
 % # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
@@ -20,7 +20,7 @@
 \name{LKrig Internal}
 \alias{LKrig.coef}
 \alias{LKrig.lnPlike}
-\alias{LKrig.lnPlikeOLD}
+
 \alias{LKrig.traceA}
 \alias{dfind2d}
 \alias{dfind3d}
@@ -42,7 +42,6 @@ LKrigMakewX(object, verbose = FALSE)
 LKrig.coef( GCholesky, wX, wU, wy, lambda,
 collapseFixedEffect = FALSE,  verbose = FALSE)
 LKrig.lnPlike( GCholesky, Q, quad.form, nObs, nReps, weights, LKinfo)
-LKrig.lnPlikeOLD(Mc, Q, wy, residuals, weights, LKinfo)
 LKrig.traceA(GCholesky, wX, wU, lambda, weights, NtrA, iseed = NA)
 LKrigUnrollZGrid( grid.list, ZGrid=NULL)
 LKDefaultVarNames(A, tag)
@@ -59,13 +58,13 @@ LKDefaultVarNames(A, tag)
    samples. Keep the same to compare results with mKrig and also for
    multiple values of lambda.}
  
- \item{lambda}{The ratio of the nugget variance (sigma squared) to the
+ \item{lambda}{The ratio of the nugget variance (tau squared) to the
   parameter controlling the marginal variance of the process (called
-  rho in fields).}
+  sigma2 in fields).}
  \item{LKinfo}{The LKinfo object. See help(LKinfo)}
 %  \item{m}{Parameter specifying the degree of polynomial is (m-1).}
 
-  \item{Mc}{Cholesky decomposition of regression matrix.}
+%  \item{Mc}{Cholesky decomposition of regression matrix.}
 
   \item{NtrA}{Number of Monte Carlo samples to estimate trace. Default
   is 20 in LKrig.}
@@ -80,7 +79,7 @@ LKDefaultVarNames(A, tag)
   \item{quad.form}{The part of the log likelihood that is a quadratic form.
   (This is typically found in \code{LKrig.coef}.)}
 
-   \item{residuals}{Residuals from fitting spatial process.}
+%   \item{residuals}{Residuals from fitting spatial process.}
    
    \item{tag}{Text string to use as the column name. This will be followed  1, 2, ... for the names. E.g. X1 X2 X3. Default value will be the 
    name of A. }
@@ -89,7 +88,7 @@ LKDefaultVarNames(A, tag)
    
 \item{weights}{A vector that is proportional to the reciprocal
   variances of the errors. I.e. errors are assumed to be uncorrelated
-  with variances sigma^2/weights. }
+  with variances tau^2/weights. }
   
 \item{wU}{Weighted U matrix the fixed part of the model.}
 \item{wX}{Weighted X matrix (in spam format) related to nonparametric (stochastic) part of 
@@ -126,8 +125,8 @@ likelihood. The coefficients (\code{c.mKrig}) are also found because
 they provide for shortcut formulas for the standard errors and MLE
 estimates.  These coefficients are identical to the basis coefficients
 (\code{c.coef}) found for usual Kriging in the mKrig
-function. \code{LKrig.lnPlike} also finds the profile MLE of sigma and
-rho given a fixed value for lambda (and \code{alpha} and
+function. \code{LKrig.lnPlike} also finds the profile MLE of tau and
+sigma2 given a fixed value for lambda (and \code{alpha} and
 \code{a.wght}).  See the source for LKrig and also MLE.LKrig to see
 how these functions are used.
 
@@ -166,9 +165,9 @@ spatial drift and which are other fixed spatial covariates.}
 \item{lnProfileLike}{the log likelihood profiled for lambda, alpha
 and a.wght}
 
-\item{rho.MLE}{the MLE of rho given lambda, alpha and a.wght}
+\item{sigma2.MLE}{the MLE of sigma2 given lambda, alpha and a.wght}
 
-\item{shat.MLE}{ the MLE of sigma given lambda, alpha and a.wght}
+\item{shat.MLE}{ the MLE of tau given lambda, alpha and a.wght}
 
 \item{quad.form}{the quadratic form in the exponent of the
  multivariate normal likelihood}

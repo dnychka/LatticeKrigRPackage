@@ -22,15 +22,15 @@ hold<- predict( obj, xnew=x)
 
 test.for.zero( hold, obj$fitted.values, tag="predict and fitted values")
 
-Sigma<- obj$rho.MLE*LKrig.cov( x,x, LKinfo=obj$LKinfo) +
-                  (obj$sigma.MLE^2) * diag( 1, length(y))
-S0<- obj$rho.MLE*LKrig.cov( x,xnew, LKinfo=obj$LKinfo)
+Sigma<- obj$sigma2.MLE*LKrig.cov( x,x, LKinfo=obj$LKinfo) +
+                  ((obj$tau.MLE)^2) * diag( 1, length(y))
+S0<- obj$sigma2.MLE*LKrig.cov( x,xnew, LKinfo=obj$LKinfo)
 
 hold<- predict( obj, xnew=xnew)
 hold2<- t(S0)%*%solve( Sigma)%*%y
 test.for.zero( hold, hold2, tag="predicts at new values")
 
 #hold<- predictSE( obj, xnew=xnew)
-#hold2<-  obj$rho.MLE  - diag(  t(S0)%*%solve( Sigma) %*% S0 )
+#hold2<-  obj$sigma2.MLE  - diag(  t(S0)%*%solve( Sigma) %*% S0 )
 #test.for.zero( hold, hold2, tag=" SE at new values")
 

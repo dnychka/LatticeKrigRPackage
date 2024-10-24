@@ -55,4 +55,4 @@ Done with testing fast normalize algorithm
 > 
 > proc.time()
    user  system elapsed 
-  3.128   0.029   3.154 
+  3.232   0.034   3.264 

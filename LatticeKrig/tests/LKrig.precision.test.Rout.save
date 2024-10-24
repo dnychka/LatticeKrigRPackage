@@ -187,4 +187,4 @@ Done testing LKrig.precision
 >   options( echo=FALSE)
 > proc.time()
    user  system elapsed 
-  3.241   0.046   3.282 
+  3.211   0.039   3.248 

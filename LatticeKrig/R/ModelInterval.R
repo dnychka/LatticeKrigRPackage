@@ -1,6 +1,6 @@
 # LatticeKrig  is a package for analysis of spatial data written for
 # the R software environment .
-# Copyright (C) 2016
+# Copyright (C) 2024
 # University Corporation for Atmospheric Research (UCAR)
 # Contact: Douglas Nychka, nychka@ucar.edu,
 # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
@@ -44,52 +44,121 @@ setDefaultsLKinfo.LKInterval <- function(object, ...) {
 
 LKrigSetupLattice.LKInterval <- function(object, verbose,
                                         ...){
-#object is of class LKinfo
-   NC<- object$NC
-   NC.buffer <- object$NC.buffer
-  range.x<- rangeLocations<-  range(object$x)
   if( ncol( object$x) !=1) {
        stop( "x is not 1-d !")
-   }
-  grid.info<-list( xmin=  rangeLocations[1], xmax= rangeLocations[2],
-   range= rbind(range.x))
-  nlevel<- object$nlevel
-  delta.level1<- ( grid.info$xmax - grid.info$xmin ) /( NC - 1 )
-  mLevel<- rep( NA, nlevel)
-  delta.save<- rep( NA, nlevel)
-  grid.all.levels<- NULL
-# begin multiresolution loop 
-   for (j in 1:nlevel) {
-        delta <- delta.level1/(2^(j - 1))
-        delta.save[j] <- delta
-        # the width in the spatial coordinates for NC.buffer grid points at this level.
-        buffer.width <- NC.buffer * delta
-        grid.list <- list(x = seq(grid.info$xmin - buffer.width, 
-            grid.info$xmax + buffer.width, delta) )
-        class( grid.list) <- "gridList"
-        mLevel[j] <- length(grid.list$x)
-        grid.all.levels <- c(grid.all.levels, list(grid.list))
-    } 
-# end multiresolution level loop
-# create a useful index that indicates where each level starts in a
-# stacked vector of the basis function coefficients.
-    offset <- as.integer(c(0, cumsum(mLevel)))
-    m<- sum(mLevel)
-    mx<- cbind(mLevel)
-    mLevelDomain <- (mLevel - 2 * NC)
-    mxDomain<- cbind( mLevelDomain)
-    out<-  list(  m = m, offset = offset, mLevel = mLevel,
-                  delta = delta.save, rangeLocations = rangeLocations,
-  # specific arguments for LKInterval              
-                  mLevelDomain = mLevelDomain,
-                  mx= mx, mxDomain= mxDomain,
-                  NC=NC,
-                  NC.buffer = NC.buffer,
-                  grid = grid.all.levels,
-                  grid.info=grid.info)
- return( out )
+  }
+  ###### 
+  LKinfo <- object
+  ##### some checks
+  if (class(LKinfo)[1] != "LKinfo") {
+    stop("object needs to be an LKinfo object")
+  }
+  if (is.null(LKinfo$NC)& is.null(LKinfo$delta)) {
+    stop("Need to specify NC  or delta for grid size")
+  }
+  if (is.null(LKinfo$NC.buffer)) {
+    stop("Need to specify NC.buffer for lattice buffer region")
+  }
+  if(!is.null(LKinfo$delta )){
+    if( length(LKinfo$delta)!= LKinfo$nlevel)
+    {
+      stop("length of delta is different from number of levels")
+    }
+  } 
+  # create lattice
+  out<- LKIntervalCreateLattice(LKinfo, verbose=FALSE)
+  return(out)
 }
-
+LKIntervalCreateLattice<- function(LKinfo, verbose=FALSE){
+  
+  # these two items used throughout
+  nlevel <- LKinfo$nlevel
+  NC.buffer <- LKinfo$NC.buffer
+  
+  if (is.null(LKinfo$rangeDomain)) {
+    rangeDomain <- cbind(range(LKinfo$x))
+  }
+  else{
+    rangeDomain <- LKinfo$rangeDomain
+  }
+  
+  if (verbose) {
+    cat("Domain range", rangeDomain, fill = TRUE)
+  }
+  
+  grid.info <-
+    list(xmin = rangeDomain[1, 1],
+         xmax = rangeDomain[2, 1],
+         range = rangeDomain)
+  # set the coarsest spacing of centers
+  d1 <- grid.info$xmax - grid.info$xmin
+  # create basis function spacings if delta is not passed
+  # these decrease by a factor of 2 fro each level.
+  if (is.null(LKinfo$delta)) {
+    NC <- LKinfo$NC
+    delta.level1 <- c(d1) / (NC - 1)
+    deltaVector <- rep(NA, nlevel)
+    for (j in 1:nlevel) {
+      deltaVector[j] <- delta.level1 / (2 ^ (j - 1))
+    }
+  }
+  else{
+    deltaVector <- LKinfo$delta
+  }
+  
+  mx <- mxDomain <- matrix(NA, nrow = nlevel, ncol = 1)
+  #
+  # build up series of nlevel multi-resolution grids
+  # and accumulate these in a master list -- creatively called grid
+  grid.all.levels <- NULL
+  # loop through multiresolution levels 
+  NC.buffer.x <- NC.buffer
+  for (j in 1:nlevel) {
+    delta <- deltaVector[j]
+    # the width in the spatial coordinates for NC.buffer grid points at this level.
+    buffer.width.x <- NC.buffer.x * delta
+    grid.list <- list(x = seq(
+      grid.info$xmin - buffer.width.x,
+      grid.info$xmax + buffer.width.x,
+      delta)
+    )
+    class(grid.list) <- "gridList"
+    mx[j, 1] <- length(grid.list$x)
+    mxDomain[j,] <- mx[j,] - 2 * NC.buffer
+    grid.all.levels <- c(grid.all.levels, list(grid.list))
+  }
+  # end multiresolution level loop
+  #
+  # create a useful index that indicates where each level starts in a
+  # stacked vector of the basis function coefficients.
+  mLevel <- mx[, 1]
+  offset <- as.integer(c(0, cumsum(mLevel)))
+  m <- sum(mLevel)
+  mLevelDomain <- (mx[, 1] - 2 * NC.buffer.x)
+  
+  out <- list(
+    m = m,
+    offset = offset,
+    mLevel = mLevel,
+    delta = deltaVector,
+    rangeDomain = rangeDomain
+  )
+  # specific arguments for LKInterval
+  out <- c(
+    out,
+    list(
+      mLevelDomain = mLevelDomain,
+      mx = mx,
+      mxDomain = mxDomain,
+      NC.buffer = NC.buffer,
+      grid = grid.all.levels,
+      grid.info = grid.info
+    )
+  )
+  return(out)
+  
+}
+ 
 # for a given level define spatial autoregressive weights
 # The interpretation is that these weights applied to the
 # coefficients result in uncorrelated random variables

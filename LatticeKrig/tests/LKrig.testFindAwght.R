@@ -24,7 +24,7 @@ M<- 1e3 # nummber of independent spatial replications
 N<- 40 # number of obs
 x<- matrix( runif(2*N ), N,2)
 lambdaTrue<- .1^2
-#NOTE: true rho is 1.0 dont add fixed function so likelihood is precise.
+#NOTE: true sigma2 is 1.0 dont add fixed function so likelihood is precise.
 LKinfoTrue<- LKrigSetup(x,NC=3, nlevel=2, a.wght= 4.2,
                         alpha=c(1.0,.5), lambda=lambdaTrue,
                         normalize=FALSE, NC.buffer=2,
@@ -76,7 +76,7 @@ M<- 1e2 # nummber of independent spatial replications
 N<- 100 # number of obs
 x<- matrix( runif(2*N ), N,2)
 lambdaTrue<- .05^2
-#NOTE: true rho is 1.0
+#NOTE: true sigma2 is 1.0
 LKinfoTrue<- LKrigSetup(x,NC=3, nlevel=2, a.wght= 4.2,
                         alpha=c(1.0,.5), lambda=lambdaTrue,
                         normalize=FALSE, NC.buffer=2,

@@ -30,33 +30,33 @@ Testing:  Direct formula
 PASSED test at tolerance  1e-08
 Testing:  lnDetCov for mKrig and LatticeKrig
 PASSED test at tolerance  1e-08
-Testing:  quadratic forms for rho MLE
+Testing:  quadratic forms for sigma2 MLE
 PASSED test at tolerance  1e-08
 Testing:  Profile Likelihood concentrated on lambda
 PASSED test at tolerance  1e-08
 Testing:  
-individual rho estimates from LKrig and identical compuation
+individual sigma2 estimates from LKrig and identical compuation
                  using mKrig
 PASSED test at tolerance  1e-08
 Testing:  
- full rho estimate from LKrig and identical compuation
+ full sigma2 estimate from LKrig and identical compuation
                  using mKrig
 PASSED test at tolerance  1e-08
 Testing:  
  individual lnProfile from LKrig and identical computation
                  using mKrig
 PASSED test at tolerance  1e-08
-Testing:  MLEs for rho with replicate fields
+Testing:  MLEs for sigma2 with replicate fields
 PASSED test at tolerance  1e-08
 Testing:  Profile Likelihood concentrated on lambda with replicate fields
 PASSED test at tolerance  1e-08
-Testing:  quad form for arbitrary sigma and rho
+Testing:  quad form for arbitrary tau and sigma2
 PASSED test at tolerance  1e-08
-Testing:  lnDetCov with arbitrary rho sigma
+Testing:  lnDetCov with arbitrary sigma2 tau
 PASSED test at tolerance  1e-08
-Testing:  lnLike arbitrary sigma and rho
+Testing:  lnLike arbitrary tau and sigma2
 PASSED test at tolerance  1e-08
 all done with lnPLike with weights
 > proc.time()
    user  system elapsed 
-  7.567   0.162   7.597 
+  7.638   0.170   7.677 

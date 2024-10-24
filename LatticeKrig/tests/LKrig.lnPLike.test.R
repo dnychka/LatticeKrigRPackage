@@ -67,7 +67,8 @@ options( echo=FALSE)
   test.for.zero( lnDet( B3) - lnDet(Q) - sum( log( weights))  + (N-N2)*log(lambda),
                          lnDet( M1), tag="Direct formula")
   test.for.zero( obj$lnDetCov,  obj0$lnDetCov, tag= "lnDetCov for mKrig and LatticeKrig")
-  test.for.zero( obj$rho.MLE,  obj0$summary["sigma2"], tag= "quadratic forms for rho MLE")
+  test.for.zero( obj$sigma2.MLE,  obj0$summary["sigma2"], tag= "quadratic forms for sigma2 MLE")
+  
   test.for.zero( obj$lnProfileLike, obj0$summary["lnProfileLike.FULL"],
                                 tag="Profile Likelihood concentrated on lambda" )
   
@@ -89,11 +90,11 @@ options( echo=FALSE)
                  NtrA=5, iseed=122)
   # quick up front test of likelihood computation
   # This is only valid if mKrig is computating the likelihood correctly ;-).  
-  test.for.zero( objR$rho.MLE, obj0R$replicateInfo$sigma2.MLE, 
-                 tag="individual rho estimates from LKrig and identical compuation
+  test.for.zero( objR$sigma2.MLE, obj0R$replicateInfo$sigma2.MLE, 
+                 tag="individual sigma2 estimates from LKrig and identical compuation
                  using mKrig")
-  test.for.zero( objR$rho.MLE.FULL,obj0R$summary["sigma2"], 
-                 tag=" full rho estimate from LKrig and identical compuation
+  test.for.zero( objR$sigma2.MLE.FULL,obj0R$summary["sigma2"], 
+                 tag=" full sigma2 estimate from LKrig and identical compuation
                  using mKrig")
   test.for.zero( objR$lnProfileLike,obj0R$replicateInfo$lnProfileLike, 
                  tag=" individual lnProfile from LKrig and identical computation
@@ -110,18 +111,18 @@ options( echo=FALSE)
                 cov.function="LKrig.cov",
                 cov.args=list(LKinfo=LKinfo),
                 NtrA=20, iseed=122, collapseFixedEffect = FALSE)
-  test.for.zero(  obj0$repInfo$sigma2.MLE, obj$rho.MLE,
-           tag="MLEs for rho with replicate fields" )
+  test.for.zero(  obj0$repInfo$sigma2.MLE, obj$sigma2.MLE,
+           tag="MLEs for sigma2 with replicate fields" )
 
   test.for.zero(  obj0$repInfo$lnProfileLike, obj$lnProfileLike,
                 tag="Profile Likelihood concentrated on lambda with replicate fields" )
 
 
 # test of full likelihood
-#    t(y- T%*%d.coef) %*% solve( sigma^2/w + rho*K) %*% ( y- T%*%d.coef)
-#    (1/rho) t(y- T%*%d.coef) %*% solve( lambda/w + K) %*% ( y- T%*%d.coef)
-#    (1/rho) * quad.form
-#  NOTE d.coef the MLE is GLS estimate and only depends on _lambda_ and not rho
+#    t(y- T%*%d.coef) %*% solve( tau^2/w + sigma2*K) %*% ( y- T%*%d.coef)
+#    (1/sigma2) t(y- T%*%d.coef) %*% solve( lambda/w + K) %*% ( y- T%*%d.coef)
+#    (1/sigma2) * quad.form
+#  NOTE d.coef the MLE is GLS estimate and only depends on _lambda_ and not sigma2
 
 # small data set with reps and weights                                        #
   data( ozone2)
@@ -135,26 +136,26 @@ options( echo=FALSE)
   weights<- runif(N)
   W<- diag(weights)
 
-  sigma<- .1
-  rho<- 2.2
-  lambda<- sigma^2/rho
+  tau<- .1
+  sigma2<- 2.2
+  lambda<- tau^2/sigma2
 
    obj.test<- LKrig( x,Y,NC=5, weights= weights, nlevel=nlevel,alpha=alpha,a.wght=a.wght,
-                              NtrA=5,iseed=122, sigma=sigma, rho=rho)
+                              NtrA=5,iseed=122, tau=tau, sigma2=sigma2)
    Tmatrix <- cbind(fields.mkpoly(x, 2))
    res<- Y - Tmatrix%*%obj.test$d.coef
 # the M matrix you have all been waiting for!
    M<- (diag(lambda/weights) + LKrig.cov(x,x,LKinfo=obj.test$LKinfo))
    qtest<- diag( t(res)%*% solve( M)%*% res )
-   test.for.zero( qtest, obj.test$quad.form, tag="quad form for arbitrary sigma and rho")
+   test.for.zero( qtest, obj.test$quad.form, tag="quad form for arbitrary tau and sigma2")
 
    n<- nrow( Y)
    lnDetCov.test<- sum( log( eigen(M)$values))
-   test.for.zero( obj.test$lnDetCov, lnDetCov.test, tag="lnDetCov with arbitrary rho sigma")
+   test.for.zero( obj.test$lnDetCov, lnDetCov.test, tag="lnDetCov with arbitrary sigma2 tau")
 
-   lnLike.test<-   (-qtest/(2*rho) - log(2*pi)*(n/2)
-                       -(n/2)*log(rho) - (1/2) * lnDetCov.test) 
-   test.for.zero( lnLike.test, obj.test$lnLike, tag="lnLike arbitrary sigma and rho")
+   lnLike.test<-   (-qtest/(2*sigma2) - log(2*pi)*(n/2)
+                       -(n/2)*log(sigma2) - (1/2) * lnDetCov.test) 
+   test.for.zero( lnLike.test, obj.test$lnLike, tag="lnLike arbitrary tau and sigma2")
 
 
 

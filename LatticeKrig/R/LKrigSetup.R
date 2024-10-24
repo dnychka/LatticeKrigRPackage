@@ -1,6 +1,6 @@
 # LatticeKrig  is a package for analysis of spatial data written for
 # the R software environment .
-# Copyright (C) 2016
+# Copyright (C) 2024
 # University Corporation for Atmospheric Research (UCAR)
 # Contact: Douglas Nychka, nychka@ucar.edu,
 # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
@@ -31,12 +31,15 @@ LKrigSetup <- function(x = NULL,
 # with NC.buffer added on the 4 edges.
 # NC must be specified 
 # defaults for NC.buffer are set in setDefaultsLKinfo
-                       NC = NULL, NC.buffer=NULL,
+# Either NC or delta must be given -- but not both
+                          NC = NULL,
+                   NC.buffer = NULL,
+                       delta = delta,
 # default normalization method is exact as FFT, Kronecker, 
 # and both have more limited use cases and depend on the 
 # geometry of the problem
                        normalize=TRUE, normalizeMethod = "exact",
-                       lambda = NA, sigma = NA, rho = NA, rho.object = NULL,
+                       lambda = NA, tau = NA, sigma2 = NA, sigma2.object = NULL,
                        latticeInfo=NULL, basisInfo=NULL, 
 # default geometry is a rectangular domain with Euclidean distance 
 # (see NC above)
@@ -59,7 +62,8 @@ LKrigSetup <- function(x = NULL,
 # useful for debugging                       
                        verbose = FALSE, noCheck=FALSE,
                        returnCall = FALSE,
-                       dense=FALSE, 
+                       dense = FALSE, 
+                     
 # these additional arguments will just be added as a list to the LKinfo object as setupArgs
                           ... ) { 
 #
@@ -79,9 +83,9 @@ LKrigSetup <- function(x = NULL,
                 normalize = normalize,
           normalizeMethod = normalizeMethod,
                    lambda = lambda,
-                    sigma = sigma,
-                      rho = rho,
-               rho.object = rho.object,
+                    tau = tau,
+                      sigma2 = sigma2,
+               sigma2.object = sigma2.object,
               LKGeometry  = LKGeometry,
             distance.type = distance.type, 
             BasisFunction = BasisFunction,
@@ -96,7 +100,6 @@ LKrigSetup <- function(x = NULL,
            choleskyMemory = choleskyMemory,
                 setupArgs =  setupArgs,
                     dense = dense
-        
                  ) 
 # 
     LKinfo$basisInfo<- list(             BasisType = BasisType,
@@ -121,10 +124,16 @@ LKrigSetup <- function(x = NULL,
 # or to add some additional information to the LKinfo object.   
    LKinfo<- setDefaultsLKinfo( LKinfo )
    if( verbose){
-    	cat("----- After call to setDefaultsLKinfo -----", fill=TRUE)
+     
+     cat("-------------------------------------------",fill=TRUE )
+     cat("LKinfo object after setting defaults", fill=TRUE)
+     cat("-------------------------------------------",fill=TRUE )
      temp<- LKinfo
      class( temp) <- NULL
      print( as.list(temp))
+     cat("-------------------------------------------",fill=TRUE )
+     cat(" END", fill=TRUE)
+     cat("-------------------------------------------",fill=TRUE )
    }
 #    
 # Create information to construct the lattice at each level based on the
@@ -147,12 +156,12 @@ LKrigSetup <- function(x = NULL,
     LKinfo$alpha<- LKrigSetupAlpha(LKinfo)
     if( verbose){
         print(alpha)}
-# fix up the a.wght parameters specfic geometries might need 
-# a specific function here.
+# fix up the a.wght parameters -- specific geometries might call 
+# specific functions
     LKinfo$a.wght<-LKrigSetupAwght(LKinfo)
-# set lambda if sigma and rho are passed.
+# set lambda if tau and sigma2 are passed.
     if (is.na(lambda[1])) {
-        lambda <- sigma^2/rho
+        lambda <- tau^2/sigma2
         LKinfo$lambda<- lambda
     }  
 # Note saving call argument in return allows the function 

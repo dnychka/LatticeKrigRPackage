@@ -1,6 +1,6 @@
 # LatticeKrig  is a package for analysis of spatial data written for
 # the R software environment .
-# Copyright (C) 2016
+# Copyright (C) 2024
 # University Corporation for Atmospheric Research (UCAR)
 # Contact: Douglas Nychka, nychka@ucar.edu,
 # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
@@ -36,12 +36,12 @@ LKrig.MLE <- function(x, y, ..., LKinfo, use.cholesky=NULL, par.grid = NULL,
     out <- matrix(NA, nrow = NG, ncol = 10)
     if( lambda.profile){
     dimnames(out)<-  list(NULL, c("EffDf", "lnProfLike", "GCV", 
-                  "sigma.MLE", "rho.MLE","lambda.MLE", "llambda.MLE", 
+                  "tau.MLE", "sigma2.MLE","lambda.MLE", "llambda.MLE", 
                   "lnLike", "counts value", "grad") )
     }
     else{
     dimnames(out)<-  list(NULL, c("EffDf", "lnProfLike", "GCV", 
-                                    "sigma.MLE", "rho.MLE","lambda", "llambda", 
+                                    "tau.MLE", "sigma2.MLE","lambda", "llambda", 
                                     "lnLike", "counts value", "grad") )
     }
     
