@@ -56,7 +56,7 @@ Tensor.basis <- function(x1, centers, basis.delta,
             temp <- temp * do.call( BasisFunction, list( d=out$ra[,j]))
         }
     } 
-    out$ra<- temp  
-    out <- spam(out[c("ind", "ra")], nrow=out$da[1], ncol= out$da[2] )
+    out$ra<- temp
+    out <- spind2spam(out)
     return(out)
 }

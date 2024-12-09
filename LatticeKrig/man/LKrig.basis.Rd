@@ -110,7 +110,7 @@ t(B)\%*\%B.}
 \item{aRange}{Currently \code{aRange} is a place holder argument
     for future development where the correlation range can be specified. }
 
-\item{wX}{The wX matrix constructed in the \code{\link{LKrig}} function.}
+\item{wX}{The wX matrix constructed in the \code{LKrig} function.}
 
 \item{x1}{A two column matrix of 2-dimension locations to evaluate
 basis functions or the first set of locations to evaluate the
@@ -324,7 +324,7 @@ Doug Nychka
 }
 
 \seealso{
-\link{LKrig}, \link{mKrig}, \link{Krig}, \link{fastTps}, \link{Wendland}, 
+\link{LKrig}, \code{mKrig}, \code{Krig}, \code{fastTps}, \code{Wendland}, 
 \link{LKrigSAR}, \link{Radial.basis}
 }
 \examples{

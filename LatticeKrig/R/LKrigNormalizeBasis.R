@@ -36,10 +36,10 @@ LKrigNormalizeBasis <- function(LKinfo, Level, PHI=NULL,
   }
   # get  SAR matrix at level Level
 	tempB <- LKrigSAR(LKinfo, Level = Level)
-	# tempB is in spind format
-	tempB<- spam( tempB[c("ind", "ra")], nrow=tempB$da[1], ncol=tempB$da[2])
-	# quadratic form involves applying inverse precision matrix to basis function evaluted at
-	# locations for evaluation
+	# tempB is in spind format convert to spam format 
+	tempB<- spind2spam( tempB)
+        # quadratic form involves applying inverse precision matrix
+        # to basis function evaluted at locations for evaluation
 wght <- LKrig.quadraticform(t(tempB) %*% tempB, PHI = PHI,
                      choleskyMemory = LKinfo$choleskyMemory)
 	return(wght)
