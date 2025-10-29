@@ -87,9 +87,6 @@ predict function.
 
 \examples{
 
-######################################################
-##### This is an extended example showing how to define 
-##### spatially varying sigma2 parameter 
 #######################################################
 # Define some useful predict functions. 
 #######################################################
@@ -145,6 +142,9 @@ predict.multivariateSurfaceGridList <- function(object, x, nLevel, level){
 
 ################################################
 ##### Non-stationary examples
+##### Below are 10, different examples showing 
+##### non-stationary, anisotropic, and 
+##### multi-resolution capabilities. 
 ###############################################
 # spatial domain    
 sDomain<- rbind( c(-1.2,-1.2),
@@ -167,17 +167,20 @@ fineGrid<- make.surface.grid(
 ##################################################
 ### end of setup 
 #################################################
+# Example 1: Spatially varying sigma2 parameter
 # sigma2 increases across the domain as a function of first coordinate. 
-sigma2Temp<-  .01 +  10* pnorm( xPoints[,1], mean=.25, sd =.3 )
-sigma2.object<- as.surface( xPoints, sigma2Temp) 
-class( sigma2.object)<- "surfaceGrid"
+#################################################
+sigma2Values<-  .01 +  10* pnorm( xPoints[,1], mean=.25, sd =.3 )
+sigma2Object_ex1<- as.surface( xPoints, sigma2Values) 
+class( sigma2Object_ex1)<- "surfaceGrid"
 
-LKinfo<- LKrigSetup( sDomain, NC= 4, nlevel = 3,
-                     a.wght=4.5, nu=1, sigma2.object=sigma2.object)   
-# simulate a field from this model
+LKinfo_sigma2<- LKrigSetup( sDomain, NC= 4, nlevel = 3,
+                            a.wght=4.5, nu=1, sigma2.object=sigma2Object_ex1)   
+# Simulate a field from this model
 set.seed(123)
-look<- LKrig.sim( fineGrid, LKinfo)
-image.plot( as.surface( fineGrid, look))
+simField_sigma2<- LKrig.sim( fineGrid, LKinfo_sigma2)
+image.plot( as.surface( fineGrid, simField_sigma2), 
+            main = "Spatially Varying Sigma2: Increases Left to Right")
 xline( .25, col="grey30")
 # see also 
 # temp<- as.surface( fineGrid, look)
@@ -185,174 +188,177 @@ xline( .25, col="grey30")
 # matplot(temp$x, temp$z, type="l", xlab="x", ylab="GP slice" )
 
 ######################################################
-##### spatially varying alpha parameters 
+##### Example 2: Spatially varying alpha parameters 
 #######################################################
 
-# the alpha surface at each level will just be the result of 
+# The alpha surface at each level will just be the result of 
 # bi-linear interpolation of values specified on a small grid.
-# To keep things identified the alpha weights at 
-# any grid location are 
-# normalized to sum to 1. 
+# To keep things identified, the alpha weights at 
+# any grid location are normalized to sum to 1. 
 #
-# create a 3 column matrix with  (proportional) alpha weights
+# Create a 3 column matrix with (proportional) alpha weights
 # at each grid point 
 #
-taper<- pnorm( xPoints[,1], mean = .4, sd=.02)
-alphaTemp<- cbind( taper,
-                   rep( 1, length( taper)), 
-                   1-taper)
-# normalize to sum to one                        
-alphaTemp <- alphaTemp/rowSums(alphaTemp)
+alphaTaper_ex2<- pnorm( xPoints[,1], mean = .4, sd=.02)
+alphaWeights_ex2<- cbind( alphaTaper_ex2,
+                          rep( 1, length( alphaTaper_ex2)), 
+                          1-alphaTaper_ex2)
+# Normalize to sum to one                        
+alphaWeights_ex2 <- alphaWeights_ex2/rowSums(alphaWeights_ex2)
 
 # pack as a list 
 # convert from a vector to the image/list format  $x $y $z
 # give this object a class so that predict.surfaceGrid is called.
 # accumulate these objects in a list 
 # (yes this is a "list of lists")
-alphaObject<- list()
+alphaObject_ex2<- list()
 for( k in 1:3){
-  hold<- as.surface( xPoints, alphaTemp[,k]) 
-  class( hold)<- "surfaceGrid"
-  alphaObject<- c( alphaObject, list( hold))
+  alphaSurface<- as.surface( xPoints, alphaWeights_ex2[,k]) 
+  class( alphaSurface)<- "surfaceGrid"
+  alphaObject_ex2<- c( alphaObject_ex2, list( alphaSurface))
 }
 
-# define the 2-d LatticeKrig model
-LKinfo<- LKrigSetup(sDomain, NC = 4, a.wght=4.5,
-                    alpha = c(1,1,1), nlevel = 3, 
-                    alphaObject =  alphaObject )
-# simulate a field 
+# Define the 2-d LatticeKrig model
+LKinfo_alpha<- LKrigSetup(sDomain, NC = 4, a.wght=4.5,
+                          alpha = c(1,1,1), nlevel = 3, 
+                          alphaObject =  alphaObject_ex2 )
+# Simulate a field 
 
 set.seed(123)
-look<- LKrig.sim( fineGrid, LKinfo)
-image.plot( as.surface( fineGrid, look))
+simField_alpha<- LKrig.sim( fineGrid, LKinfo_alpha)
+image.plot( as.surface( fineGrid, simField_alpha),
+            main = "Spatially Varying Alpha Parameters (3 Levels)")
 
 ######################################################
-##### spatially varying a.wght parameters 
+##### Example 3: Spatially varying a.wght parameters 
 ##### See above comments and setup
 ##### for steps that are the same 
 #######################################################
-taper<- pnorm( xPoints[,1] + xPoints[,1],
-               mean = 0, sd=.15)
-a.wghtTemp<- 4.001*taper +  10*(1-taper)
-# pack up as a list 
-# convert from a vector to the image/list format  $x $y $z
-# give this object a class so that predict.surfaceGrid is called.
-# accumulate these objects in a list (yes this is 
-# a "list of lists")
+awghtTaper_ex3<- pnorm( xPoints[,1] + xPoints[,1],
+                        mean = 0, sd=.15)
+awghtValues_ex3<- 4.001*awghtTaper_ex3 +  10*(1-awghtTaper_ex3)
+# Pack up as a list 
+# Convert from a vector to the image/list format: $x $y $z
+# Give this object a class so that predict.surfaceGrid is called.
 
-a.wghtObjectA <- as.surface( xPoints, a.wghtTemp) 
-class( a.wghtObjectA)<- "surfaceGrid"
+awghtObject_ex3 <- as.surface( xPoints, awghtValues_ex3) 
+class( awghtObject_ex3)<- "surfaceGrid"
 
+# Define the 2-d LatticeKrig model
 
-# define the 2-d LatticeKrig model
-
-LKinfo2<- LKrigSetup(sDomain, NC = 10, NC.buffer=0, 
-                     alpha = c(1, .5, .125), nlevel = 3, 
-                     a.wghtObject =  a.wghtObjectA)
+LKinfo_awght<- LKrigSetup(sDomain, NC = 10, NC.buffer=0, 
+                          alpha = c(1, .5, .125), nlevel = 3, 
+                          a.wghtObject =  awghtObject_ex3)
 
 set.seed(123)            
-look<- LKrig.sim( fineGrid, LKinfo2)
-image.plot( as.surface( fineGrid, look))
+simField_awght<- LKrig.sim( fineGrid, LKinfo_awght)
+image.plot( as.surface( fineGrid, simField_awght),
+            main = "Spatially Varying a.wght Parameters")
 ##############################################
-###### 1-d example
+###### Example 4: 1-D example
 #############################################
-xCoarse1<- seq( -.5,1.5,, 40)
-y<-  pnorm( xCoarse1, mean=.4, sd=.05)*5 + 2.2 
-a.wghtObject<- Tps(xCoarse1, y, lambda=0)
-alphaTemp<-c(.5, .3, .2)
-LKinfoTEST<- LKrigSetup( rbind(0,1), NC=10,
-                         LKGeometry="LKInterval",
-                         nlevel=3, alpha=alphaTemp,
-                         a.wghtObject = a.wghtObject,
-                         NC.buffer=2
+xCoarse_1d<- seq( -.5,1.5,, 40)
+yCoarse_1d<-  pnorm( xCoarse_1d, mean=.4, sd=.05)*5 + 2.2 
+awghtObject_1d<- Tps(xCoarse_1d, yCoarse_1d, lambda=0)
+alphaWeights_1d<-c(.5, .3, .2)
+LKinfo_1d<- LKrigSetup( rbind(0,1), NC=10,
+                        LKGeometry="LKInterval",
+                        nlevel=3, alpha=alphaWeights_1d,
+                        a.wghtObject = awghtObject_1d,
+                        NC.buffer=2
 ) 
-xFine1<- cbind(seq( 0,1,length.out= 200))
+xFine_1d<- cbind(seq( 0,1,length.out= 200))
 set.seed( 123)
-look<- LKrig.sim( xFine1, LKinfoTEST, M=5)
-matplot( xFine1, look, type="l", lty=1)
+simField_1d<- LKrig.sim( xFine_1d, LKinfo_1d, M=5)
+matplot( xFine_1d, simField_1d, type="l", lty=1, lwd = 1.5,
+         main = "1-D LatticeKrig Simulation (5 Realizations)",
+         xlab = "x", ylab = "Simulated Values")
 ##################################################
-######## Anisotropy in a.wght
+######## Example 5: Anisotropy in a.wght
 ##################################################
-#### stationary example
-a.wghtM2<- c( rbind( c(  0,   0, -1.5),
-                     c(-.5, 4.5,  -.25),
-                     c(-1.5,  0,    0)
+#### Stationary anisotropic example
+awghtMatrix_aniso<- c( rbind( c(  0,   0, -1.5),
+                              c(-.5, 4.5,  -.25),
+                              c(-1.5,  0,    0)
 )
 ) 
 
-LKinfo3<- LKrigSetup(sDomain, NC = 5, 
-                     a.wght= list( a.wghtM2), 
-                     alpha = c(1, .5, .125), nlevel = 3, 
-                     a.wghtObject =  NULL, normalize=TRUE )
-
+LKinfo_aniso_stat<- LKrigSetup(sDomain, NC = 5, 
+                               a.wght= list( awghtMatrix_aniso), 
+                               alpha = c(1, .5, .125), nlevel = 3, 
+                               a.wghtObject =  NULL, normalize=TRUE )
 
 set.seed(123)            
-look<- LKrig.sim( fineGrid, LKinfo3)
-image.plot( as.surface( fineGrid, look))
+simField_aniso_stat<- LKrig.sim( fineGrid, LKinfo_aniso_stat)
+image.plot( as.surface( fineGrid, simField_aniso_stat),
+            main = "Stationary Anisotropic Covariance")
 
 \dontrun{
   
-  #### Anisotropy varying over space
+  #### Example 6: Anisotropy varying over space
   #### First check that the constant model can be reproduced
-  a.wghtM2<- c( rbind( c(  0,   0, -1.5),
-                       c(-.5, 4.5,  -.5),
-                       c(-1.5,  0,    0)
+  awghtMatrix_const<- c( rbind( c(  0,   0, -1.5),
+                                c(-.5, 4.5,  -.5),
+                                c(-1.5,  0,    0)
   )
   )
   
-  a.wghtObject<- list( values=a.wghtM2)
-  class(a.wghtObject )<- "constantValue"
+  awghtObject_const<- list( values=awghtMatrix_const)
+  class(awghtObject_const )<- "constantValue"
   
-  LKinfo4<- LKrigSetup(sDomain, NC = 5, 
-                       alpha = c(1,.5, .125), nlevel = 3, 
-                       a.wghtObject =  a.wghtObject, normalize=TRUE )
+  LKinfo_const<- LKrigSetup(sDomain, NC = 5, 
+                            alpha = c(1,.5, .125), nlevel = 3, 
+                            a.wghtObject =  awghtObject_const, normalize=TRUE )
   set.seed(123)            
-  look<- LKrig.sim( fineGrid, LKinfo4)
-  image.plot( as.surface( fineGrid, look) )            
+  simField_const<- LKrig.sim( fineGrid, LKinfo_const)
+  image.plot( as.surface( fineGrid, simField_const),
+              main = "Constant Anisotropic a.wght (Verification)" )            
   
-  ###### non-stationary anisotropy
-  a.wghtA <- c( rbind( c(    0,   0, -2),
-                       c( 0, 4.5,  0),
-                       c(-2,  0,     0)
+  ###### Example 7: Non-stationary anisotropy
+  awghtMatrix_A <- c( rbind( c(    0,   0, -2),
+                             c( 0, 4.5,  0),
+                             c(-2,  0,     0)
   )
   )
-  a.wghtB <- c( rbind( c(  -2,   0,     0),
-                       c(  0, 4.5,  0),
-                       c(    0,    0, -2)
+  awghtMatrix_B <- c( rbind( c(  -2,   0,     0),
+                             c(  0, 4.5,  0),
+                             c(    0,    0, -2)
   )
   )
   # Now create multivariate prediction object.
-  gridList<-  attributes( xPoints)$grid.list
-  m1<- length(gridList$x)
-  m2<- length(gridList$y) 
-  z<- array( NA, c( m1,m2,9))
-  alpha<- (xPoints[,1] + 1 )/2
-  alpha<- ifelse( alpha <= 0, 0, alpha)
-  alpha<- ifelse( alpha >= 1, 1, alpha)
-  # A for loop over the 9 pixels   
+  gridList_aniso<-  attributes( xPoints)$grid.list
+  m1_aniso<- length(gridList_aniso$x)
+  m2_aniso<- length(gridList_aniso$y) 
+  z_aniso<- array( NA, c( m1_aniso, m2_aniso, 9))
+  alphaTaper_aniso<- (xPoints[,1] + 1 )/2
+  alphaTaper_aniso<- ifelse( alphaTaper_aniso <= 0, 0, alphaTaper_aniso)
+  alphaTaper_aniso<- ifelse( alphaTaper_aniso >= 1, 1, alphaTaper_aniso)
+  # Loop over the 9 stencil elements   
   for(j in 1:9) {
-    # linear combination of two a.wght matrices
-    # 
-    zTemp<- a.wghtA[j] * (1-alpha) +  a.wghtB[j]*(alpha)
-    # coerce into an image format    
-    z[,,j]<- as.surface( xPoints, zTemp)$z
+    # Linear combination of two a.wght matrices
+    zTemp_aniso<- awghtMatrix_A[j] * (1-alphaTaper_aniso) +  
+                  awghtMatrix_B[j]*(alphaTaper_aniso)
+    # Coerce into an image format    
+    z_aniso[,,j]<- as.surface( xPoints, zTemp_aniso)$z
   }
   
-  a.wghtObject<- list( x= gridList$x,  y= gridList$y, z=z )
-  class( a.wghtObject)<- "multivariateSurfaceGrid"
+  awghtObject_nonstat<- list( x= gridList_aniso$x,  y= gridList_aniso$y, z=z_aniso )
+  class( awghtObject_nonstat)<- "multivariateSurfaceGrid"
   
-  LKinfo5<- LKrigSetup(sDomain, NC = 25, NC.buffer=0,
-                       alpha = c(1,.5), 
-                       nlevel = 2, 
-                       a.wghtObject =  a.wghtObject )
+  LKinfo_aniso_nonstat<- LKrigSetup(sDomain, NC = 25, NC.buffer=0,
+                                    alpha = c(1,.5), 
+                                    nlevel = 2, 
+                                    a.wghtObject =  awghtObject_nonstat )
   set.seed(122)  
-  fineGrid<- make.surface.grid(
+  fineGrid_ex7<- make.surface.grid(
     list( x = seq(-1, 1, ,150),
           y = seq(-1, 1, ,180)
     )
   )
-  look<- LKrig.sim( fineGrid, LKinfo5)
-  image.plot( as.surface( fineGrid, look), col = terrain.colors(256) )
+  simField_aniso_nonstat<- LKrig.sim( fineGrid_ex7, LKinfo_aniso_nonstat)
+  image.plot( as.surface( fineGrid_ex7, simField_aniso_nonstat), 
+              col = terrain.colors(256),
+              main = "Non-Stationary Anisotropic Covariance" )
 }
 
 
@@ -502,20 +508,21 @@ image.plot( as.surface( fineGrid, look))
   low_awghts <- awghts[1:(n_awghts/2)]
   high_awghts <- awghts[(n_awghts/2 + 1):n_awghts]
   
-  # Some setup for data (lives on 128x128 grid)
-  rows <- 128
-  columns <- rows
-  n <- rows^2
+  # Setup for data grid (128x128)
+  nrows_advanced <- 128
+  ncols_advanced <- nrows_advanced
+  n_advanced <- nrows_advanced^2
   
-  gridList<- list( x= seq( -1,1,length.out= rows),
-                   y= seq( -1,1,length.out= rows) )
-  sGrid<- make.surface.grid(gridList)
+  gridList_advanced<- list( x= seq( -1,1,length.out= nrows_advanced),
+                            y= seq( -1,1,length.out= nrows_advanced) )
+  sGrid_advanced<- make.surface.grid(gridList_advanced)
   
-  # two layers of basis functions, 20x20 and 40x40
+  # Two layers of basis functions: 20x20 and 39x39
   sidelen_bf_1 <- 20
   sidelen_bf_2 <- 39
   
   
+  # Function to create a.wght objects with anisotropy parameters
   create_awght_obj <- function(
     sidelen, 
     awght_config,
@@ -530,98 +537,105 @@ image.plot( as.surface( fineGrid, look))
     plotting = FALSE,
     data_rows
   ){
-    # setup grid 
-    gridList <- list(x= seq( -1,1,length.out= sidelen),
-                     y= seq( -1,1,length.out= sidelen))
-    sGrid <- make.surface.grid(gridList)
-    n <- sidelen^2
+    # Setup grid 
+    gridList_obj <- list(x= seq( -1,1,length.out= sidelen),
+                         y= seq( -1,1,length.out= sidelen))
+    sGrid_obj <- make.surface.grid(gridList_obj)
+    n_obj <- sidelen^2
     
-    # make the actual params 
-    kappa2 <- generate_param_field(paramtype = "awght", 
-                                   config = awght_config, 
-                                   sGrid, 
-                                   sidelen, sidelen, n) - 4
+    # Generate the parameter fields
+    kappa2_field <- generate_param_field(paramtype = "awght", 
+                                         config = awght_config, 
+                                         sGrid_obj, 
+                                         sidelen, sidelen, n_obj) - 4
     if (awght_override == TRUE){
-      kappa2 <- kappa2 - kappa2 + awght_override_val
+      kappa2_field <- kappa2_field - kappa2_field + awght_override_val
     }
     
-    theta <- generate_param_field(paramtype = "theta", 
-                                  config = theta_config, 
-                                  sGrid, 
-                                  sidelen, sidelen, n)
+    theta_field <- generate_param_field(paramtype = "theta", 
+                                        config = theta_config, 
+                                        sGrid_obj, 
+                                        sidelen, sidelen, n_obj)
     if (theta_override == TRUE){
-      theta <- theta - theta + theta_override_val
+      theta_field <- theta_field - theta_field + theta_override_val
     }
     
-    rho <- generate_param_field(paramtype = "rho", 
-                                 config = rho_config, 
-                                 sGrid, 
-                                 sidelen, sidelen, n)
+    rho_field <- generate_param_field(paramtype = "rho", 
+                                      config = rho_config, 
+                                      sGrid_obj, 
+                                      sidelen, sidelen, n_obj)
     if (rho_override == TRUE){
-      rho <- rho - rho + rho_override_val
+      rho_field <- rho_field - rho_field + rho_override_val
     }
-    rhox <- sqrt(rho)
-    rhoy <- 1/rhox
+    rhox_field <- sqrt(rho_field)
+    rhoy_field <- 1/rhox_field
     
-    # plotting functionality 
+    # Plotting functionality 
     if (plotting == TRUE){
       par(mfrow=c(1,3))
-      image.plot(kappa2, main = "kappa2 surface", col = viridis(256))
-      image.plot(theta, main = "theta surface", col = viridis(256))
-      image.plot(rho, main = "rho surface", col = viridis(256))
+      image.plot(kappa2_field, main = "Kappa2 Surface", col = viridis(256))
+      image.plot(theta_field, main = "Theta Surface", col = viridis(256))
+      image.plot(rho_field, main = "Rho Surface", col = viridis(256))
       par(mfrow = c(1,1))
     }
     
-    # create H tensor
-    H11 <- ( rhox^2 * (cos(theta))^2) + ( rhoy^2 * (sin(theta))^2 ) 
-    H12 <- (rhoy^2 - rhox^2)*(sin(theta)*cos(theta))
-    H21 <- H12 
-    H22 <- (rhox^2 * (sin(theta))^2) + (rhoy^2 * (cos(theta))^2)
+    # Create H tensor (anisotropy tensor)
+    H11_tensor <- ( rhox_field^2 * (cos(theta_field))^2) + 
+                  ( rhoy_field^2 * (sin(theta_field))^2 ) 
+    H12_tensor <- (rhoy_field^2 - rhox_field^2)*(sin(theta_field)*cos(theta_field))
+    H21_tensor <- H12_tensor 
+    H22_tensor <- (rhox_field^2 * (sin(theta_field))^2) + 
+                  (rhoy_field^2 * (cos(theta_field))^2)
     
-    # create stencil tensor 
-    stencil_tensor <- array( NA, c( sidelen,sidelen,9))
-    stencil_tensor[,,1] <- 0.5 * H12
-    stencil_tensor[,,2] <- -H22
-    stencil_tensor[,,3] <- -0.5 * H12
-    stencil_tensor[,,4] <- -H11
-    stencil_tensor[,,5] <- kappa2 + 2 * H11 + 2 * H22
-    stencil_tensor[,,6] <- -H11
-    stencil_tensor[,,7] <- -0.5 * H12
-    stencil_tensor[,,8] <- -H22
-    stencil_tensor[,,9] <- 0.5 * H12
+    # Create stencil tensor (9-point stencil for each grid location)
+    stencil_tensor_obj <- array( NA, c( sidelen, sidelen, 9))
+    stencil_tensor_obj[,,1] <- 0.5 * H12_tensor
+    stencil_tensor_obj[,,2] <- -H22_tensor
+    stencil_tensor_obj[,,3] <- -0.5 * H12_tensor
+    stencil_tensor_obj[,,4] <- -H11_tensor
+    stencil_tensor_obj[,,5] <- kappa2_field + 2 * H11_tensor + 2 * H22_tensor
+    stencil_tensor_obj[,,6] <- -H11_tensor
+    stencil_tensor_obj[,,7] <- -0.5 * H12_tensor
+    stencil_tensor_obj[,,8] <- -H22_tensor
+    stencil_tensor_obj[,,9] <- 0.5 * H12_tensor
     
-    # plot resulting stencil tensor 
+    # Plot resulting stencil tensor 
     if (plotting == TRUE){
       par(mfrow = c(3,3))
-      image.plot(stencil_tensor[,,1], main = "top left corner", col = viridis(256))
-      image.plot(stencil_tensor[,,2], main = "top middle", col = viridis(256))
-      image.plot(stencil_tensor[,,3], main = "top right corner", col = viridis(256))
-      image.plot(stencil_tensor[,,4], main = "middle left", col = viridis(256))
-      image.plot(stencil_tensor[,,5], main = "middle (awght)", col = viridis(256))
-      image.plot(stencil_tensor[,,6], main = "middle right", col = viridis(256))
-      image.plot(stencil_tensor[,,7], main = "bottom left corner", col = viridis(256))
-      image.plot(stencil_tensor[,,8], main = "bottom middle", col = viridis(256))
-      image.plot(stencil_tensor[,,9], main = "bottom right corner", col = viridis(256))
+      image.plot(stencil_tensor_obj[,,1], main = "Top Left Corner", col = viridis(256))
+      image.plot(stencil_tensor_obj[,,2], main = "Top Middle", col = viridis(256))
+      image.plot(stencil_tensor_obj[,,3], main = "Top Right Corner", col = viridis(256))
+      image.plot(stencil_tensor_obj[,,4], main = "Middle Left", col = viridis(256))
+      image.plot(stencil_tensor_obj[,,5], main = "Middle (a.wght)", col = viridis(256))
+      image.plot(stencil_tensor_obj[,,6], main = "Middle Right", col = viridis(256))
+      image.plot(stencil_tensor_obj[,,7], main = "Bottom Left Corner", col = viridis(256))
+      image.plot(stencil_tensor_obj[,,8], main = "Bottom Middle", col = viridis(256))
+      image.plot(stencil_tensor_obj[,,9], main = "Bottom Right Corner", col = viridis(256))
       par(mfrow = c(1,1))
     }
     
-    # create awght object 
-    awght_obj_final <- list( x= gridList$x,  y= gridList$y, z=stencil_tensor )
+    # Create a.wght object 
+    awght_obj_final <- list( x= gridList_obj$x,  y= gridList_obj$y, z=stencil_tensor_obj )
     class( awght_obj_final)<- "multivariateSurfaceGrid"
     
-    # return an object with everything in it 
-    object <- c()
-    object$awght <- awght_obj_final
-    object$kappa2 <- kappa2
-    object$theta <- theta
-    object$rhox <- rhox
-    object$rhoy <- rhoy
+    # Return an object with all components
+    result_obj <- list()
+    result_obj$awght <- awght_obj_final
+    result_obj$kappa2 <- kappa2_field
+    result_obj$theta <- theta_field
+    result_obj$rhox <- rhox_field
+    result_obj$rhoy <- rhoy_field
     
-    return(object)
+    return(result_obj)
   }
   
-  # create the awghts for the first level 
-  awght_1 <- create_awght_obj(
+  #####################################################
+  ######## Example 8: Nonstationary a.wght and anisotropy 
+  ######## Same for both levels
+  #####################################################
+  
+  # Create the a.wghts for the first level 
+  awghtObj_level1 <- create_awght_obj(
     sidelen = sidelen_bf_1, 
     awght_config = "constant",
     awght_override = TRUE, 
@@ -633,29 +647,30 @@ image.plot( as.surface( fineGrid, look))
     rho_override = TRUE,
     rho_override_val = 5,
     plotting = TRUE,
-    data_rows = rows
+    data_rows = nrows_advanced
   )
   
-  # the type of object determines the predict function called
-  a.wghtObject_1 <- awght_1$awght
-  class( a.wghtObject_1)<- "multivariateSurfaceGrid"
+  # The type of object determines the predict function called
+  awghtObject_level1 <- awghtObj_level1$awght
+  class( awghtObject_level1)<- "multivariateSurfaceGrid"
   
-  LKinfo6<- LKrigSetup(sGrid, NC = sidelen_bf_1, NC.buffer=0,
-                       alpha = c(0.3, 0.7), 
-                       nlevel = 2, 
-                       a.wghtObject =  a.wghtObject_1)
+  LKinfo_ex8<- LKrigSetup(sGrid_advanced, NC = sidelen_bf_1, NC.buffer=0,
+                          alpha = c(0.3, 0.7), 
+                          nlevel = 2, 
+                          a.wghtObject =  awghtObject_level1)
   
-  look6 <- LKrig.sim( sGrid, LKinfo6)
-  imagePlot(as.surface(sGrid, look6), col = turbo(256))
+  simField_ex8 <- LKrig.sim( sGrid_advanced, LKinfo_ex8)
+  imagePlot(as.surface(sGrid_advanced, simField_ex8), col = turbo(256),
+            main = "Nonstationary Anisotropy (Same for Both Levels)")
   
   
   #####################################################
-  ######## Nonstationary awght and anisotropy patterns
+  ######## Example 9: Nonstationary a.wght and anisotropy 
   ######## Different for each level
   #####################################################
   
-  # create the awghts for the second level 
-  awght_2 <- create_awght_obj(
+  # Create the a.wghts for the second level 
+  awghtObj_level2 <- create_awght_obj(
     sidelen = sidelen_bf_2, 
     awght_config = "constant",
     awght_override = TRUE, 
@@ -667,159 +682,165 @@ image.plot( as.surface( fineGrid, look))
     rho_override = TRUE,
     rho_override_val = 40,
     plotting = TRUE,
-    data_rows = rows
+    data_rows = nrows_advanced
   )
   
-  a.wghtObject_2 <- awght_2$awght
-  class( a.wghtObject_2)<- "multivariateSurfaceGrid"
+  awghtObject_level2 <- awghtObj_level2$awght
+  class( awghtObject_level2)<- "multivariateSurfaceGrid"
   
-  # pack both multivariateSurfaceGrid objects into
-  # a multivariateSurfaceGridList object. this is important
-  awghtObjectList <- list(a.wghtObject_1, a.wghtObject_2)
-  class(awghtObjectList) <- "multivariateSurfaceGridList"
+  # Pack both multivariateSurfaceGrid objects into
+  # a multivariateSurfaceGridList object (required for level-specific parameters)
+  awghtObjectList_ex9 <- list(awghtObject_level1, awghtObject_level2)
+  class(awghtObjectList_ex9) <- "multivariateSurfaceGridList"
   
-  LKinfo7<- LKrigSetup(sGrid, NC = sidelen_bf_1, NC.buffer=0,
-                       alpha = c(0.3, 0.7), 
-                       nlevel = 2, 
-                       a.wghtObject =  awghtObjectList)
+  LKinfo_ex9<- LKrigSetup(sGrid_advanced, NC = sidelen_bf_1, NC.buffer=0,
+                          alpha = c(0.3, 0.7), 
+                          nlevel = 2, 
+                          a.wghtObject =  awghtObjectList_ex9)
   
-  look7 <- LKrig.sim( sGrid, LKinfo7)
-  imagePlot(as.surface(sGrid, look7), col = turbo(256))
+  simField_ex9 <- LKrig.sim( sGrid_advanced, LKinfo_ex9)
+  imagePlot(as.surface(sGrid_advanced, simField_ex9), col = turbo(256),
+            main = "Nonstationary Anisotropy (Different for Each Level)")
   
   #####################################################
-  ######## Non-monotonically decaying covariance
+  ######## Example 10: Non-monotonically decaying covariance
   ######## Achieved with: 
-  ######## Nonstationary awght and anisotropy patterns
+  ######## Nonstationary a.wght and anisotropy patterns
   ######## Different for each level
   ######## and nonstationary alpha parameter with 
-  ######## some minor modifications 
+  ######## modifications to create teleconnection
   #####################################################
-  alpha_side <- 39
-  alpha_grid <- list(
-    x = seq(-1, 1, length.out = alpha_side),
-    y = seq(-1, 1, length.out = alpha_side)
+  alpha_side_ex10 <- 39
+  alphaGrid_ex10 <- list(
+    x = seq(-1, 1, length.out = alpha_side_ex10),
+    y = seq(-1, 1, length.out = alpha_side_ex10)
   )
-  alpha_pts <- make.surface.grid(alpha_grid)  
+  alphaPoints_ex10 <- make.surface.grid(alphaGrid_ex10)  
   
-  # define a taper for alpha
-  taper <- pnorm(alpha_pts[, 1], mean = 0.0, sd = 0.1)  # smooth 0->1 horizontally
-  alphaTemp <- cbind(1 - taper, taper)
+  # Define a taper for alpha
+  alphaTaper_ex10 <- pnorm(alphaPoints_ex10[, 1], mean = 0.0, sd = 0.1)  # smooth 0->1 horizontally
+  alphaWeights_ex10 <- cbind(1 - alphaTaper_ex10, alphaTaper_ex10)
   
-  # forcing some alpha weights to change for the teleconnection
-  alphaTemp[1517:1521] <- alphaTemp[1517:1521] + 100
-  alphaTemp[1478:1482] <- alphaTemp[1478:1482] + 100
-  alphaTemp[1439:1443] <- alphaTemp[1439:1443] + 100
-  alphaTemp[1400:1404] <- alphaTemp[1400:1404] + 100
-  alphaTemp[1361:1365] <- alphaTemp[1361:1365] + 100
+  # Forcing some alpha weights to change for the teleconnection effect
+  alphaWeights_ex10[1517:1521, ] <- alphaWeights_ex10[1517:1521, ] + 100
+  alphaWeights_ex10[1478:1482, ] <- alphaWeights_ex10[1478:1482, ] + 100
+  alphaWeights_ex10[1439:1443, ] <- alphaWeights_ex10[1439:1443, ] + 100
+  alphaWeights_ex10[1400:1404, ] <- alphaWeights_ex10[1400:1404, ] + 100
+  alphaWeights_ex10[1361:1365, ] <- alphaWeights_ex10[1361:1365, ] + 100
   
-  alphaTemp <- alphaTemp / rowSums(alphaTemp)           # normalize rows to sum to 1
+  alphaWeights_ex10 <- alphaWeights_ex10 / rowSums(alphaWeights_ex10)  # normalize rows to sum to 1
   
   par(mfrow = c(1,2))
   image.plot(
-    x = alpha_grid$x,
-    y = alpha_grid$y,
-    z = matrix(alphaTemp[, 1], nrow = alpha_side, ncol = alpha_side),
+    x = alphaGrid_ex10$x,
+    y = alphaGrid_ex10$y,
+    z = matrix(alphaWeights_ex10[, 1], nrow = alpha_side_ex10, ncol = alpha_side_ex10),
     col = viridis(256),
-    main = "Level-1 alpha weight"
+    main = "Level-1 Alpha Weight"
   )
   image.plot(
-    x = alpha_grid$x,
-    y = alpha_grid$y,
-    z = matrix(alphaTemp[, 2], nrow = alpha_side, ncol = alpha_side),
+    x = alphaGrid_ex10$x,
+    y = alphaGrid_ex10$y,
+    z = matrix(alphaWeights_ex10[, 2], nrow = alpha_side_ex10, ncol = alpha_side_ex10),
     col = viridis(256),
-    main = "Level-2 alpha weight"
+    main = "Level-2 Alpha Weight"
   )
   par(mfrow = c(1,1))
   
-  # Pack as a list of two "surfaceGrid" objects so predict.surfaceGrid() is used.
-  alphaObject <- list()
+  # Pack as a list of two "surfaceGrid" objects so predict.surfaceGrid() is used
+  alphaObject_ex10 <- list()
   for (k in 1:2) {
-    surf <- as.surface(alpha_pts, alphaTemp[, k])  # has $x, $y, $z (matrix)
-    class(surf) <- "surfaceGrid"
-    alphaObject <- c(alphaObject, list(surf))
+    alphaSurface_ex10 <- as.surface(alphaPoints_ex10, alphaWeights_ex10[, k])  # has $x, $y, $z (matrix)
+    class(alphaSurface_ex10) <- "surfaceGrid"
+    alphaObject_ex10 <- c(alphaObject_ex10, list(alphaSurface_ex10))
   }
   
-  LKinfo8<- LKrigSetup(sGrid, NC = sidelen_bf_1, NC.buffer=0,
-                       alpha = c(1,1),
-                       alphaObject = alphaObject, 
-                       nlevel = 2, 
-                       a.wghtObject =  awghtObjectList)
+  LKinfo_ex10<- LKrigSetup(sGrid_advanced, NC = sidelen_bf_1, NC.buffer=0,
+                           alpha = c(1,1),
+                           alphaObject = alphaObject_ex10, 
+                           nlevel = 2, 
+                           a.wghtObject =  awghtObjectList_ex9)
   
-  look8 <- LKrig.sim( sGrid, LKinfo8)
-  imagePlot(as.surface(sGrid, look8), col = turbo(256), 
-            main = "Top right teleconnection")
+  simField_ex10 <- LKrig.sim( sGrid_advanced, LKinfo_ex10)
+  imagePlot(as.surface(sGrid_advanced, simField_ex10), col = turbo(256), 
+            main = "Teleconnection: Non-Monotonic Covariance")
   
   
   
   #####################################################
   ######## Covariance plotting
-  ######## For the above three examples
+  ######## For Examples 8, 9, and 10
   #####################################################
   
-  # additional function for plotting covariances at a certain point
+  # Function for plotting covariances at a specified location
   plot_cov_surface <- function(
     LKinfo, 
     real_field,
     loc_x, 
     loc_y, 
     plotting = TRUE, 
-    cov_countour = TRUE,
+    cov_contour = TRUE,
     cov_lwd = 1.3
   ){
-    cov_surface <- LKrig.cov(sGrid, rbind(c(loc_x,loc_y)), LKinfo)
-    cov_surface <- matrix(cov_surface, nrow = rows, ncol = rows)
+    cov_surface_calc <- LKrig.cov(sGrid_advanced, rbind(c(loc_x, loc_y)), LKinfo)
+    cov_surface_calc <- matrix(cov_surface_calc, nrow = nrows_advanced, ncol = nrows_advanced)
     
     if (plotting == TRUE){
-      par(mfrow = c(1,2), mar=  c(5.1, 4.1, 4.1, 2.1))
-      image.plot(as.surface(sGrid, cov_surface), col = viridis(256), 
-                 main = "Covariance")
-      if (cov_countour == TRUE){
+      par(mfrow = c(1,2), mar =  c(5.1, 4.1, 4.1, 2.1))
+      image.plot(as.surface(sGrid_advanced, cov_surface_calc), col = viridis(256), 
+                 main = "Covariance Function")
+      if (cov_contour == TRUE){
         contour( 
-          as.surface(sGrid, cov_surface), 
+          as.surface(sGrid_advanced, cov_surface_calc), 
           col = "white", 
           add = TRUE, lwd = cov_lwd
         )
       }
       
-      imagePlot(as.surface(sGrid, real_field), 
-                main = "Spatial Field", col = turbo(256))
-      if (cov_countour == TRUE){
+      imagePlot(as.surface(sGrid_advanced, real_field), 
+                main = "Simulated Spatial Field", col = turbo(256))
+      if (cov_contour == TRUE){
         contour( 
-          as.surface(sGrid, cov_surface), 
+          as.surface(sGrid_advanced, cov_surface_calc), 
           col = "black", 
           add = TRUE, lwd = cov_lwd
         )
       }
       par(mfrow = c(1,1))
     }
-    # return (cov_surface)
+    invisible(cov_surface_calc)
   }
   
+  # Plot covariance for Example 8
   plot_cov_surface(
-    LKinfo = LKinfo6,
-    real_field = look6,
+    LKinfo = LKinfo_ex8,
+    real_field = simField_ex8,
     loc_x = 0,
     loc_y = 0,
     plotting = TRUE,
-    cov_countour = TRUE,
+    cov_contour = TRUE,
     cov_lwd = 1.3
   )
+  
+  # Plot covariance for Example 9
   plot_cov_surface(
-    LKinfo = LKinfo7,
-    real_field = look7,
+    LKinfo = LKinfo_ex9,
+    real_field = simField_ex9,
     loc_x = 0,
     loc_y = 0,
     plotting = TRUE,
-    cov_countour = TRUE,
+    cov_contour = TRUE,
     cov_lwd = 1.0
   )
+  
+  # Plot covariance for Example 10
   plot_cov_surface(
-    LKinfo = LKinfo8,
-    real_field = look8,
+    LKinfo = LKinfo_ex10,
+    real_field = simField_ex10,
     loc_x = 0,
     loc_y = 0,
     plotting = TRUE,
-    cov_countour = FALSE,
+    cov_contour = FALSE
   )
 
 }
