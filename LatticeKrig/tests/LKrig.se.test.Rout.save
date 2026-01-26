@@ -1,6 +1,6 @@
 
-R version 4.4.1 (2024-06-14) -- "Race for Your Life"
-Copyright (C) 2024 The R Foundation for Statistical Computing
+R version 4.5.2 (2025-10-31) -- "[Not] Part in a Rumble"
+Copyright (C) 2025 The R Foundation for Statistical Computing
 Platform: aarch64-apple-darwin20
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -36,10 +36,10 @@ Testing:  sanity for SE Krig and mKrig unequal weights
 PASSED test at tolerance  1e-08
 Testing:   SE LKrig and mKrig unequal weights
 PASSED test at tolerance  1e-08
-Testing:  check on SE values with drop.Z=FALSE
+Testing:  check on SE values with drop.XMat=FALSE
 PASSED test at tolerance  1e-08
 All done with SE tests TRUE> 
 > 
 > proc.time()
    user  system elapsed 
- 12.009   0.055  12.067 
+  8.123   0.052   8.210 

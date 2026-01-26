@@ -77,10 +77,10 @@ obj1 <- LKrig(x, y, NC = 16, nlevel = 1, alpha = 1, lambda = lambda, a.wght = 5,
 	NtrA = 5, iseed = 122, return.cholesky = TRUE, weights = weights, 
 	Z = Z)
 obj0 <- Krig(x, y, lambda = lambda, m = 2, cov.function = "LKrig.cov", 
-	cov.args = list(LKinfo = obj1$LKinfo), weights = weights, Z = Z)
-test0 <- predictSE(obj0, drop.Z = FALSE, Z = Z)
+	cov.args = list(LKinfo = obj1$LKinfo), weights = weights, XMat = Z)
+test0 <- predictSE(obj0, drop.XMat = FALSE, XMat = Z)
 test1 <- predictSE(obj1, Z = Z)
-test.for.zero(test0, test1, tag = "check on SE values with drop.Z=FALSE")
+test.for.zero(test0, test1, tag = "check on SE values with drop.XMat=FALSE")
 
 
 cat("All done with SE tests", fil = TRUE)

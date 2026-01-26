@@ -44,7 +44,8 @@ LatticeKrig<- function(x, y, Z=NULL, weights=NULL,   nlevel=3, findAwght=FALSE,
             argList<-list( ...)
 # determine the geometry/dimension if not specified
 # set up some thin plate spline like default models for just Euclidean spatial domains
-# in 1,2 and 3 dimensions.              
+# in 1,2 and 3 dimensions.       
+            
             argList<- LatticeKrigEasyDefaults(argList,nlevel,x)
             if(verbose){
               cat("extra args:", fill=TRUE)

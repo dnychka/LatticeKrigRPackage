@@ -24,13 +24,14 @@
 \alias{WendlandFunction}
 \alias{Tensor.basis}
 \alias{triWeight}
+\alias{CubicBSpline}
 
 \title{
-Two dimensional radial  and tensor basis functions based on a Wendland function.
+Two dimensional radial  and tensor basis functions 
 }
 \description{
-Two dimensional radial basis and tensor functions based on a Wendland function 
-and using sparse matrix format to reduce the storage.
+Two dimensional radial basis and tensor functions that are used as the building blocks for 
+the LatticeKrig multiresolution sparse basis matrices. 
 }
 \usage{
 Radial.basis(x1, centers, basis.delta, max.points = NULL,
@@ -45,6 +46,8 @@ Tensor.basis(x1, centers, basis.delta, max.points = NULL, mean.neighbor = 50,
 WendlandFunction(d)    
 
 triWeight(d)
+
+CubicBSpline(d)
 }
 
 \arguments{
@@ -84,7 +87,7 @@ the  function is applied to the distance components for each dimension.  }
 }
 \details{
 
-This function finds the pairwise distances between the points x1 and
+\strong{Radial.basis and Tensor.basis } These function finds the pairwise distances between the points x1 and
 centers and evaluates the function RadialBasisFunction at these
 distances scaled by delta. In most applications delta is constant, but
 a variable delta could be useful for lon/lat regular grids. The
@@ -131,8 +134,37 @@ for delta a scalar  and for just two dimensions  Tensor.basis  evaluates as
   WendlandFunction(BigD1/basis.delta) *WendlandFunction(BigD1/basis.delta)
 }
 
-The user is also encourage to consider using the higher level function 
-\link{LKrig.basis} paired with an LKinfo object to define the centers. But besure to use \code{normalize = FALSE} to avoid strange interactions of the SAR model, irrelevant in this case, with the basis function form.
+The  higher level function 
+\link{LKrig.basis} paired with an LKinfo object to define the centers 
+returns a sparse matrix with the basis functions evaluated at a set of locations. 
+
+If  \code{normalize = FALSE} in the LKinfo object then the basis functions are evaluated exactly as described above. If 
+\code{normalize = TRUE} there is an additional set of weights that are computed so that the LatticeKrig model when viewed as 
+a Gaussian process has constant marginal variances. 
+
+\strong{WendlandFunction,    
+triWeight,
+CubicBSpline} These functions have limited support and will be zero for \code{d} greater than one. 
+
+\strong{Wendland} (\eqn{\phi(d)}) for \eqn{ d \le 1}
+\deqn{ 
+\phi(d) = (1 - d)^6 (35d^2 + 18 d + 3))/3
+}
+and zero otherwise. 
+
+\strong{triWeight} (\eqn{\phi(d)}) for \eqn{ d \le 1})
+\deqn{ 
+\phi(d) = (1 - d^2)^3 
+}
+
+\strong{CubicBSpline} (\eqn{\phi(d)}) for \eqn{ d \le 1})
+
+A piecewise cubic polynomial over the  four intervals 
+\deqn{\{ [-1,-1/2],[-1/2,0],[0,-1/2],[1/2,1] \} }
+the individual cubic polynomials enforce zero boundary conditions for 
+the function, first and second derivaitves at 
+-1 and 1 and continuity of the function, first and second derivatives at the  three interior
+knot points (\eqn{\{} -1/2, 0, -1/2 \} )
 
 }
 \value{
@@ -204,8 +236,21 @@ b12<- bigX[,12]
 image( as.surface( lonlat, b12), col=c( "white",tim.colors(256)), add=TRUE,
 xlim="longitude", ylim="latitude")
 points( centers,  pch=16, col="magenta", cex=2)
+#######################################################
+###  check of the cubicBspline
+#######################################################
+xgrid<- seq( -1.2,1.2,1e-3)
+y<- CubicBSpline( xgrid)
 
+xgrid<- seq( -1.2,1.2,.005)
+y<- CubicBSpline( xgrid)
+plot( xgrid, y, type="l")
+rug( c( -1, -.5,0,.5,1),col="blue", lwd=4)
 
+#If piecewise cubic third differences should be step functions
+# with jumps at the knots
+plot( xgrid[-(1:3)], diff( y,differences=3)/(xgrid[2]- xgrid[1])^3, type="l")
+rug( c( -1, -.5,0,.5,1),col="blue", lwd=4)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

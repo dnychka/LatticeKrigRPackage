@@ -211,7 +211,7 @@ test.for.zero(  lnDet( B3) - lnDet(Q) - sum( log( weights))  + (N-N2)*log(lambda
   N<- length( y)
   alpha<- c(1,.5,.25)
   nlevel<-3
-  a.wght<-  list(5, 5, 4.5)
+  a.wght<-  list(4.1, 4.1, 4.5)
   lambda <- .5
   N<- length(y)
   set.seed(243)
@@ -232,7 +232,6 @@ test.for.zero(  lnDet( B3) - lnDet(Q) - sum( log( weights))  + (N-N2)*log(lambda
                        m=2, cov.function="LKrig.cov",
                        cov.args=list(LKinfo=obj$LKinfo),
                        aRange=NA)
-  
  test.for.zero( obj$fitted.values, obj0$fitted.values)
  test.for.zero( obj$fitted.values, obj1$fitted.values)
  test.for.zero( obj$fitted.values, obj2$fitted.values)

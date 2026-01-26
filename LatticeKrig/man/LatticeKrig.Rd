@@ -235,8 +235,24 @@ LKrig, LKrig.setup, LKrigFindLambda, LKinfo, LKrig.sim.conditional
 # thin plate spline-like model with the lambda parameter estimated by
 # maximum likelihood. Default choices are made for a.wght, nlevel, NC
 # and alpha.
+# Note that for small number of observations this is slower than
+# finding the exact estimate using say Tps pr spatialProcess in fields. 
+# n = 5e4 well that is a different manner ...
+
 
   obj<- LatticeKrig( x, y)
+  
+# It is all about the Lkinfo object!
+# the LKrigSetup function gives more flexibility in the model, here is the 
+# same fit using setup to define the model using the defaults chosen in obj
+#
+ LKinfo<- LKrigSetup( x,NC=4, a.wght=4.01, normalize=TRUE, nu=1.0, nlevel=3 )
+ obj1<- LatticeKrig( x, y, LKinfo= LKinfo)
+#
+# A BUG ...
+#obj2<- LatticeKrig( x, y, LKinfo= obj1$LKinfo)
+#test.for.zero( obj1$fitted.values, obj1$fitted.values)
+
 \dontrun{
 # summary of fit and a plot of fitted surface
   print( obj)
@@ -327,7 +343,14 @@ out2$MLE$summary[1:7]
 # Refit using the tensor product type of basis functions
 # (default is "Radial"). An example how an additional argument that is 
 # passed to the LKrigSetup function to create the LKinfo object.
-  obj2<- LatticeKrig( x, y, BasisType="Tensor")
+# with an overlap of 2.0 this exploits partition of unity propoery of 
+# cubic splines and reduces the need for a normalization
+# 
+  obj2<- LatticeKrig( x, y, 
+              BasisType = "Tensor",
+          BasisFunction = "CubicBSpline", 
+              normalize = FALSE)
+          
 }
 
 #

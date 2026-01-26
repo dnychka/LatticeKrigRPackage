@@ -39,6 +39,26 @@ LatticeKrigEasyDefaults<- function( argList,nlevel,x){
                 if( is.null(argList$nu)){
                 	argList$nu<-1
                 	}
+	  }
+  #
+  # make sure overlap is 2.0 for cubic spline tensor basis
+  # but don't mess with this  related arguments if they are passed 
+              EuclideanModel<- is.element( argList$LKGeometry,
+                                   c("LKInterval", "LKRectangle", "LKBox" )) 
+              if(EuclideanModel ){
+              #
+              if( !is.null(argList$BasisFunction) ) {
+                if( argList$BasisFunction == "CubicBSpline" &
+                    is.null(argList$overlap ))
+              argList$overlap<- 2.0
+              #
+              if( is.null(argList$BasisType) ){
+                argList$BasisType<-"tensor"
               }
+              #
+              }
+              }
+              
+              #
               return( argList)
 }

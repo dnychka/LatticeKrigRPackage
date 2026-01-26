@@ -87,7 +87,7 @@ print.LKinfo <- function(x, ...) {
        cat(" ", fill = TRUE)
   # Details on basis functions at each level
       bType <- LKinfo$basisInfo$BasisType
-      cat( "Basis  type:",
+      cat( "Basis  Type:",
            LKinfo$basisInfo$BasisType, 
            "using ",
            LKinfo$basisInfo$BasisFunction,
