@@ -97,12 +97,13 @@ LKrig.basis <- function(x1, LKinfo, Level= NULL,
                              )
                              }
         if(LKinfo$basisInfo$BasisType=="Tensor" ){  
+          
         	 t1<- system.time(            
         PHItemp <- Tensor.basis(  x1, centers, basis.delta[l],
                                 max.points = LKinfo$basisInfo$max.points,
                              mean.neighbor = LKinfo$basisInfo$mean.neighbor, 
                              BasisFunction = get(LKinfo$basisInfo$BasisFunction),
-                             distance.type = LKinfo$distance.type)
+                             distance.type = LKinfo$distance.type, verbose=verbose)
                              )
                              }      	                            
         if( verbose){

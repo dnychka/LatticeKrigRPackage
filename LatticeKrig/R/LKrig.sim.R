@@ -19,8 +19,12 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # or see http://www.r-project.org/Licenses/GPL-2
 
-LKrig.sim <- function(x1, LKinfo, M = 1, just.coefficients = FALSE) {
-	Q <- LKrig.precision(LKinfo)
+LKrig.sim <- function(x1, LKinfo, M = 1, just.coefficients = FALSE,
+                      timing=FALSE) {
+	
+  t1<- system.time(
+    Q <- LKrig.precision(LKinfo)
+  )
 	#
 	#  Q is precision matrix of the coefficients -- not of the field
 #  last step does the multiplication to go from coefficients to evaluating
@@ -37,16 +41,29 @@ LKrig.sim <- function(x1, LKinfo, M = 1, just.coefficients = FALSE) {
 #   E<- rnorm(20);  u1<- Hi%*% E ;   u2<-backsolve(Mc,E)
 #   test.for.zero(u1,u2)
 #
-   Qc <- chol(Q, memory = LKinfo$choleskyMemory)
+  t2<- system.time(
+    Qc <- chol(Q, memory = LKinfo$choleskyMemory)
+  )
 	m <- LKinfo$latticeInfo$m
 	E <- matrix(rnorm(M * m), nrow = m, ncol = M)
-	randomC <- backsolve(Qc, E)
+ t3<- system.time(
+   randomC <- backsolve(Qc, E)
+ )
 	if (just.coefficients) {
 		return(randomC)
 	} 
 	else {
+	  t4<- system.time(
 		PHI1 <- LKrig.basis(x1, LKinfo)
-		return(PHI1 %*% randomC)
+	  )
+	  t5<- system.time(
+	    simFields<- PHI1 %*% randomC
+	  )
+	  if( timing){
+	    print( rbind(t1,t2,t3,t4,t5))
+	  }
+	  
+		return(simFields)
 	}
 }	
 
