@@ -31,14 +31,13 @@ The fields are Gaussian and can be either simulated unconditionally or
 conditional on the field values and a set of irregular locations.  }
 
 \usage{
-#
-LKrig.sim(x1, LKinfo, M=1,just.coefficients = FALSE)
+LKrig.sim(x1, LKinfo, M = 1, just.coefficients = FALSE, timing = FALSE)
+
 LKrig.sim.conditional( LKrigObj, M=1, x.grid= NULL, grid.list=NULL,
                            nx=80, ny=80,...,Z.grid=NULL, seed=42, verbose=FALSE)
 
 simConditionalDraw(index = 1, LKrigObj, ghat, x.grid, Z.grid, PHIGrid,
                  seeds = 123, verbose = FALSE)
-
 }
 \arguments{
 
@@ -58,6 +57,9 @@ the covariance of the basis coefficients. This list is created in
 hands on manner directly using \code{LKrigSetup} (See section on
 returned value below for this list's description.)}
 
+\item{LKrigObj}{An \code{LKrig} object, i.e. the output list returned by
+\code{LKrig}.}
+
 
 \item{M}{Number of independent simulated fields.}
 
@@ -65,10 +67,10 @@ returned value below for this list's description.)}
 
 \item{ny}{Number of grid points in y coordinate for output grid.}
 
-\item{LKrigObj}{An \code{LKrig} object, i.e. the output list returned by
-\code{LKrig}.}
 
 \item{seed}{Seed to set random number generator.}
+
+\item{timing}{If true prints out intermedaite timing information for development.}
 
 \item{x1}{ A two column matrix of 2-dimension locations to evaluate
 basis functions or the first set of locations to evaluate the

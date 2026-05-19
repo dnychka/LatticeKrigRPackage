@@ -1,0 +1,235 @@
+------------------------------------------------ 
+##END HEADER
+
+
+##END HEADER
+
+ convertIndexPeriodic <- function(I, nGrid, nPad = NULL) {
+##END HEADER
+
+createLKrigObject<- 
+##END HEADER
+
+
+##END HEADER
+
+directionCosines<- function( x){
+##END HEADER
+
+setClass("gridList", prototype= list( seq(0,1,,40) ) )
+##END HEADER
+
+LatticeKrig<- function(x, y, Z=NULL, weights=NULL,   nlevel=3, findAwght=FALSE, 
+##END HEADER
+
+#This is a convenient function to harw ire good choices for 
+##END HEADER
+
+LKDefaultVarNames<- function(A, tag=NULL){
+##END HEADER
+LKDiag <- function(entries, nrow, diags = NULL, ncol = nrow, full = FALSE) {
+  entries = as.double(entries)
+##END HEADER
+
+LKDist<- function(  x1, x2, delta, max.points = NULL, 
+##END HEADER
+
+LKDistComponents<- function(  x1, x2, delta, max.points = NULL, 
+##END HEADER
+
+LKDistGrid<- function( x1, gridList, delta, max.points = NULL, 
+##END HEADER
+
+LKDistGridComponents<- function( x1, gridList, delta,
+##END HEADER
+LKFindAlphaVarianceWeights <- function(x1, LKinfo, level) {
+  # always weight basis functions by scalar alpha
+##END HEADER
+ LKFindSigma2VarianceWeights<- function (x1,LKinfo){
+   if (!is.null( LKinfo$sigma2.object) ) {
+##END HEADER
+
+# A utility function to setup up some variables and avoid 
+##END HEADER
+
+LKGridFindNmax<- function(n1, max.points, mean.neighbor, delta, gridList){    
+##END HEADER
+
+LKinfoCheck <- function(object,...){
+##END HEADER
+
+LKinfoUpdate<- function( LKinfo, ...){
+##END HEADER
+
+
+##END HEADER
+
+LKrig.basis <- function(x1, LKinfo, Level= NULL, 
+##END HEADER
+
+LKrig.coef <- function(GCholesky, wX, wU, wy, lambda,
+##END HEADER
+
+LKrig.cov.plot <- function(LKinfo, NP = 200, center = NULL, 
+##END HEADER
+
+LKrig.cov <- function(x1, x2 = NULL, LKinfo, C = NA, 
+##END HEADER
+LKrig.lnPlike<- function(GCholesky, Q, quad.form, nObs, nReps,
+                         weights, LKinfo) {
+##END HEADER
+
+LKrig.make.par.grid <- function(par.grid = NULL, LKinfo = NULL) {    
+##END HEADER
+
+
+##END HEADER
+
+LKrig.MLE <- function(x, y, ..., LKinfo, use.cholesky=NULL, par.grid = NULL, 
+##END HEADER
+
+LKrig.precision <- function(LKinfo, return.B = FALSE,
+##END HEADER
+
+LKrig.quadraticform <- function(Q, PHI, choleskyMemory=NULL) {
+##END HEADER
+
+LKrig <- function(x, y,
+##END HEADER
+LKrig.sim.conditional <- function(LKrigObj, M = 1, x.grid = NULL, 
+            grid.list = NULL, nx = 80, ny = 80, ..., Z.grid = NULL, seed=42,
+##END HEADER
+
+LKrig.sim <- function(x1, LKinfo, M = 1, just.coefficients = FALSE,
+##END HEADER
+
+LKrig.spind2spam <- function(obj, add.zero.rows = TRUE) {
+##END HEADER
+
+LKrig.traceA <- function(GCholesky, wX, wU, lambda, weights, NtrA, iseed = NA) {
+##END HEADER
+
+LKrigCovWeightedObs <- function(x1, wX, LKinfo) {
+##END HEADER
+
+LKrigDefaultFixedFunction <- function(x, Z = NULL, m = 2, distance.type = "Euclidean") {
+##END HEADER
+                         
+setGeneric(name="LKrigDistance", function( x1, x2, delta, ...  )
+##END HEADER
+
+LKrigFindLambda <- function(x, y, Z=NULL, U=NULL, X=NULL, ...,  LKinfo,
+##END HEADER
+
+
+##END HEADER
+
+LKrigLatticeCenters <- function( object, ...){
+##END HEADER
+
+LKrigLatticeScales <- function( object, ...){
+##END HEADER
+
+LKrigMakewU <- function(object, verbose = FALSE) {
+##END HEADER
+
+LKrigMakewX <- function(object, verbose = FALSE) {
+##END HEADER
+
+LKrigMarginalVariance<- function(x1, LKinfo, verbose = FALSE)
+##END HEADER
+
+LKrigNormalizeBasis <- function(LKinfo, Level, PHI=NULL, 
+##END HEADER
+
+
+##END HEADER
+
+LKrigNormalizeBasisSelector <- function(LKinfo, Level, x1, verbose){
+##END HEADER
+
+LKrigSAR <- function(object,...){
+##END HEADER
+
+LKrigSetup <- function(x = NULL,
+##END HEADER
+
+LKrigSetupAlpha <- function(object, ...){
+##END HEADER
+
+LKrigSetupAwght <- function(object,...){
+##END HEADER
+
+LKrigSetupAwghtObject<- function( object){
+##END HEADER
+
+LKrigSetupLattice <- function(object, ...){
+##END HEADER
+
+LKrigUnrollZGrid<- function( grid.list, ZGrid=NULL){
+##END HEADER
+
+###################################################################
+##END HEADER
+
+## LKrig model for 3-d data in a box
+##END HEADER
+
+## LKrig model for 3-d data in a box
+##END HEADER
+
+
+##END HEADER
+
+
+##END HEADER
+
+## LKrig model for 2-d data in ring
+##END HEADER
+
+###################################################################
+##END HEADER
+
+predict.LKrig <- function(object, xnew = object$x, Znew = NULL, drop.Z = FALSE,
+##END HEADER
+
+predictLKrigFixedFunction <- function(object, xnew=NULL, Znew = NULL,
+##END HEADER
+
+"predictSE.LKrig" <- function(object, xnew = NULL, Znew = object$Z, 
+##END HEADER
+
+"predictSurface.LKrig" <- function(object, grid.list = NULL, 
+##END HEADER
+
+print.LatticeKrig <- function(x, digits = 4, ...) {
+##END HEADER
+
+print.LKinfo <- function(x, ...) {
+##END HEADER
+
+print.LKrig <- function(x, digits = 4, ...) {
+##END HEADER
+
+Radial.basis <- function(x1, centers, basis.delta,
+##END HEADER
+
+setDefaultsLKinfo <- function(object,...){
+##END HEADER
+
+summary.LKrig <- function(object, digits = 4, stripAwght=TRUE, ...) {
+##END HEADER
+
+surface.LKrig <- function(object, ...) {
+##END HEADER
+
+Tensor.basis <- function(x1, centers, basis.delta,
+##END HEADER
+
+
+##END HEADER
+
+WendlandFunction <- function(d) {
+##END HEADER
+
+".on.Load" <- function(lib, pkg) {

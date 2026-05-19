@@ -1,0 +1,17 @@
+Awght2Omega.R
+convertIndexPeriodic.R
+createLKrigObject.R
+directionCosines.R
+GridList.R
+LatticeKrig.R
+LatticeKrigEasyDefaults.R
+LKDefaultVarNames.R
+LKinfoUpdate.R
+LKRectangleFastNormalization.R
+LKrig.make.par.grid.R
+LKrig.misc.R
+LKrig.MLE.R
+LKrig.quadraticform.R
+LKrigFindLambdaAwght.R
+LKrigNormalizeBasisSelector.R
+LKrigSetupAwghtObject.R

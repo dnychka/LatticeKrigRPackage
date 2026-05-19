@@ -9,6 +9,10 @@ import("spam")
 import("spam64")
 import("fields")
 import("fftwtools") 
+
+importFrom("graphics", "contour", "par")
+importFrom("stats", "pnorm", "runif")
+importFrom("viridisLite", "viridis","turbo")
   
 S3method(print, LKrig)
 S3method(print,LatticeKrig)

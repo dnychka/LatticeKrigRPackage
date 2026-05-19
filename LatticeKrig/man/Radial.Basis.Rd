@@ -16,8 +16,7 @@
 
 % # Modified DH Dec 2013
 % Earlier modifications DH 2/06/2012
-
-
+%
 \name{Radial.basis}
 \alias{Radial.basis}
 \alias{LKrig.cyl}
@@ -35,13 +34,12 @@ the LatticeKrig multiresolution sparse basis matrices.
 }
 \usage{
 Radial.basis(x1, centers, basis.delta, max.points = NULL,
-                  mean.neighbor = 50,
-                  BasisFunction = "WendlandFunction",
-                  distance.type = "Euclidean",
-                        verbose = FALSE)
+                 mean.neighbor = 50, BasisFunction =
+                 "WendlandFunction", distance.type = "Euclidean",
+                 verbose = FALSE)
 
 Tensor.basis(x1, centers, basis.delta, max.points = NULL, mean.neighbor = 50, 
-   BasisFunction = "WendlandFunction", distance.type = "Euclidean") 
+   BasisFunction = "WendlandFunction", distance.type = "Euclidean", verbose = FALSE) 
 
 WendlandFunction(d)    
 

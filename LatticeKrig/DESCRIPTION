@@ -1,6 +1,6 @@
 Package: LatticeKrig
-Version: 9.3.1
-Date: 2024-10-28
+Version: 9.4
+Date: 2026-05-18
 Title: Multi-Resolution Kriging Based on Markov Random Fields
 Authors@R: c( 
             person("Douglas", "Nychka", role = c("aut", "cre"),
@@ -48,7 +48,7 @@ Description: Methods for the interpolation of large spatial
   Atmospheric Research. 
 License: GPL (>= 2)
 URL: https://www.r-project.org
-Depends: R (>= 4.0.0), methods, spam, spam64, fftwtools, fields (>= 9.9)
+Depends: R (>= 4.0.0), methods, spam, spam64, fftwtools, fields (>= 9.9), viridisLite
 Packaged: 2024-08-03 21:40:12 UTC; nychka
 NeedsCompilation: yes
 Author: Douglas Nychka [aut, cre],
