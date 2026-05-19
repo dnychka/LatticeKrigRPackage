@@ -6,15 +6,16 @@ LatticeKrig is frozen at version 8.0 in the NCAR repository.
 
 This repository will now be used  current source and development for the 
 
-
 # LatticeKrig: Multiresolution Kriging Based on Markov Random Fields
 
  
-This repository contains some supplemental material in this top level and see the subdirectory **LatticeKrig** for the "head" of the standard R package. 
+This repository contains some supplemental material in this top level and see the 
+'subdirectory **LatticeKrig** for the "head" of the standard R package. 
 The most current package on CRAN  is listed here as
 *LatticeKrig_VERSION.tar.gz* .
 
-To create a possibly new version from this repository download the **LatticeKrig** subdirectory and in UNIX
+To create a possibly new version from this repository download the **LatticeKrig** 
+subdirectory and in UNIX
 ```
  R CMD build --force LatticeKrig
 ```

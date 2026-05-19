@@ -1,12 +1,6 @@
 
 
 # run check
-
-
-
-
-
-
 ~/Src/R-devel/bin/R  CMD build --force  LatticeKrig
 ~/Src/R-devel/bin/R  CMD check --as-cran LatticeKrig_5.4.tar.gz
 
@@ -61,67 +55,76 @@ R CMD build --force LatticeKrig
 R CMD check --as-cran LatticeKrigRIGHTVERSION.gz
 
 
-ftp -a cran.wu-wien.ac.at
-cd incoming
-
-# send file
-# email message to
-# cran@r-project.org
- in subject: CRAN submission LatticeKrig version
-
-
-
 ############ Changing copyright date
+This is happening in RWork  .
+# 
+cd ~/MyHome/Repositories/LatticeKrigRPackage/LatticeKrig/RWork
+
+ls *.R | wc
+
+grep 'or see http' *.R | wc
+grep  'GNU General Public License for more details' *.R | wc
+grep -L 'GNU General Public License for more details' *.R | wc
+
+grep 'or see http' *.R | wc
 
 
-# changing copyright date 
-foreach i ( *.R )
- echo $i
- cp $i temp.R
- sed s/2016/2024/g temp.R > $i
+
+# old style copyright header 
+grep -l  'or see http' *.R > filesOldC.txt
+foreach fileString (`cat filesOldC.txt`)
+    echo "Processing: $fileString"
+    cp $fileString temp.R
+    sed '1,/or see http/d'  temp.R > temp2.R
+ cat ../../CopyrightHeader.txt temp2.R > $fileString
+end
+rm temp.R
+rm temp2.R 
+
+
+# Now old copyright 
+grep -l  'Copyright (C) 2024' *.R > filesOldC.txt
+foreach fileString (`cat filesOldC.txt`)
+    echo "Processing: $fileString"
+    cp $fileString temp.R
+    sed '1,/GNU General Public License for more details/d'  temp.R > temp2.R
+ cat ../../CopyrightHeader.txt temp2.R > $fileString
+end
+rm temp.R
+rm temp2.R 
+
+
+
+
+grep -L 'Copyright (C) 2026 Colorado School of Mines' *.R > noHeader.txt
+foreach fileString (`cat noHeader.txt`)
+    echo "Processing: $fileString"
+    cp $fileString temp.R
+ cat ../../CopyrightHeader.txt temp.R > $fileString
 end
 rm temp.R
 
-foreach i ( *.Rd )
- echo $i
- cp $i temp.Rd
- sed s/2016/2024/g temp.Rd > $i
+
+ls *.R | wc
+grep 'Copyright (C) 2026 Colorado School of Mines' *.R | wc
+grep -L 'Copyright (C) 2026 Colorado School of Mines' *.R 
+
+grep 'BEGIN HEADER' *.R | wc
+grep 'END HEADER' *.R | wc
+
+
+foreach fileString (`ls *.R`)
+    echo "Processing: $fileString"
+   head -23 $fileString | tail -1  
+
 end
-rm temp.Rd
 
-
-
-
-############ check for long lines
-foreach i ( *.Rd )
- echo $i
-awk 'length($0) > 80' $i
+foreach fileString (`ls *.R`)
+echo " "
+echo " ------------------------------------------------ "
+echo " $fileString ------------------------------------------------ "
+head -25 $fileString | tail -3 
 end
-########## tidying up the code
-cd LatticeKrig
 
-cp -r R  R.OLD
-cd R
-# subdirectory of tidied code in the R directory
-mkdir R.tidy
-### in R:
-R 
-source("~/Home/Src/Rmisc/Mytidy.R")
-source.files<- system( " ls *.R", intern=TRUE)
-for( sfile in source.files){
- Mytidy( sfile, dir="../R.tidy")
-}
-
-### in UNIX
-cd ~/Home/Src/LatticeKrig 
-cp R/R.tidy*.R R 
-
-
-#DOI splash page:
-www.image.ucar.edu/LatticeKrig
-edit web space at
-webpub.ucar.edu
-/test/image
-http://test.www.image.ucar.edu/
 
 

@@ -1,4 +1,0 @@
-CubicBSpline.R
-LKDiag.R
-LKFindAlphaVarianceWeights.R
-LKFindSigma2VarianceWeights.R
