@@ -602,7 +602,7 @@ image.plot( as.surface( fineGrid, simField_aniso_stat),
     loc_x = 0,
     loc_y = 0,
     plotting = TRUE,
-    cov_contour = FALSE
+    cov_contour = FALSE,
     nrows_advanced= nrows_advanced,
     sGrid_advanced= sGrid_advanced
   )
