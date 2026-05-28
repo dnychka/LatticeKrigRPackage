@@ -1,10 +1,36 @@
+%%BEGIN HEADER
+%
+% LatticeKrig is a package for analysis of spatial data written for
+% the R software environment.
+% Copyright (C) 2026 Colorado School of Mines
+% 1500 Illinois St., Golden, CO 80401
+% Contact: Douglas Nychka,  douglasnychka@gmail.com,
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% A copy of the GNU General Public License is included
+% along with the R software environment if not, write to the Free Software
+% Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+% or refer to  http://www.r-project.org/Licenses/GPL-2
+%
+%%END HEADER
+
 \name{nonstationaryModels}
 \alias{nonstationaryModels}
 \title{Specifying non-stationary models}
 \description{An overview of specifying non-stationary 
-and anisotropic models with some specific examples showing how to vary the alpha, sigma2 and a.wght parameters.}
+and anisotropic models with some specific examples showing how to vary the 
+alpha, sigma2 and a.wght parameters.}
 \details{
-The Lattice Krig model can be extended in a natural way to have a  non-stationary covariance that has a multi-scale structure. 
+The Lattice Krig model can be extended in a natural way to have a  
+non-stationary covariance that has a multi-scale structure. 
 
 The default and  process model has the form 
 
@@ -356,7 +382,8 @@ image.plot( as.surface( fineGrid, simField_aniso_stat),
     z_aniso[,,j]<- as.surface( xPoints, zTemp_aniso)$z
   }
   
-  awghtObject_nonstat<- list( x= gridList_aniso$x,  y= gridList_aniso$y, z=z_aniso )
+  awghtObject_nonstat<- list( x= gridList_aniso$x,  y= gridList_aniso$y,
+  z=z_aniso )
   class( awghtObject_nonstat)<- "multivariateSurfaceGrid"
   
   LKinfo_aniso_nonstat<- LKrigSetup(sDomain, NC = 25, NC.buffer=0,
@@ -482,7 +509,7 @@ image.plot( as.surface( fineGrid, simField_aniso_stat),
   class( awghtObject_level2)<- "multivariateSurfaceGrid"
   
   # Pack both multivariateSurfaceGrid objects into
-  # a multivariateSurfaceGridList object (required for level-specific parameters)
+  # multivariateSurfaceGridList object (required for level-specific parameters)
   awghtObjectList_ex9 <- list(awghtObject_level1, awghtObject_level2)
   class(awghtObjectList_ex9) <- "multivariateSurfaceGridList"
   
@@ -513,7 +540,8 @@ image.plot( as.surface( fineGrid, simField_aniso_stat),
   alphaPoints_ex10 <- make.surface.grid(alphaGrid_ex10)  
   
   # Define a taper for alpha
-  alphaTaper_ex10 <- pnorm(alphaPoints_ex10[, 1], mean = 0.0, sd = 0.1)  # smooth 0->1 horizontally
+  alphaTaper_ex10 <- pnorm(alphaPoints_ex10[, 1], mean = 0.0, sd = 0.1) 
+  # smooth 0->1 horizontally
   alphaWeights_ex10 <- cbind(1 - alphaTaper_ex10, alphaTaper_ex10)
   
   # Forcing some alpha weights to change for the teleconnection effect
@@ -523,20 +551,25 @@ image.plot( as.surface( fineGrid, simField_aniso_stat),
   alphaWeights_ex10[1400:1404, ] <- alphaWeights_ex10[1400:1404, ] + 100
   alphaWeights_ex10[1361:1365, ] <- alphaWeights_ex10[1361:1365, ] + 100
   
-  alphaWeights_ex10 <- alphaWeights_ex10 / rowSums(alphaWeights_ex10)  # normalize rows to sum to 1
+  alphaWeights_ex10 <- alphaWeights_ex10 / rowSums(alphaWeights_ex10)  
+  # normalize rows to sum to 1
   
   par(mfrow = c(1,2))
   image.plot(
     x = alphaGrid_ex10$x,
     y = alphaGrid_ex10$y,
-    z = matrix(alphaWeights_ex10[, 1], nrow = alpha_side_ex10, ncol = alpha_side_ex10),
+    z = matrix(alphaWeights_ex10[, 1], 
+      nrow = alpha_side_ex10,
+      ncol = alpha_side_ex10),
     col = viridis(256),
     main = "Level-1 Alpha Weight"
   )
   image.plot(
     x = alphaGrid_ex10$x,
     y = alphaGrid_ex10$y,
-    z = matrix(alphaWeights_ex10[, 2], nrow = alpha_side_ex10, ncol = alpha_side_ex10),
+    z = matrix(alphaWeights_ex10[, 2], 
+      nrow = alpha_side_ex10, 
+      ncol = alpha_side_ex10),
     col = viridis(256),
     main = "Level-2 Alpha Weight"
   )

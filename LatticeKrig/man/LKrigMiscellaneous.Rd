@@ -1,21 +1,26 @@
-% # LatticeKrig  is a package for analysis of spatial data written for
-% # the R software environment .
-% # Copyright (C) 2024
-% # University Corporation for Atmospheric Research (UCAR)
-% # Contact: Douglas Nychka, nychka@ucar.edu,
-% # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
-% #
-% # This program is free software; you can redistribute it and/or modify
-% # it under the terms of the GNU General Public License as published by
-% # the Free Software Foundation; either version 2 of the License, or
-% # (at your option) any later version.
-% # This program is distributed in the hope that it will be useful,
-% # but WITHOUT ANY WARRANTY; without even the implied warranty of
-% # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% # GNU General Public License for more details.
-
-% # Modified DH Dec 2013
-% Earlier modifications DH 2/03/2012
+%%BEGIN HEADER
+%
+% LatticeKrig is a package for analysis of spatial data written for
+% the R software environment.
+% Copyright (C) 2026 Colorado School of Mines
+% 1500 Illinois St., Golden, CO 80401
+% Contact: Douglas Nychka,  douglasnychka@gmail.com,
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% A copy of the GNU General Public License is included
+% along with the R software environment if not, write to the Free Software
+% Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+% or refer to  http://www.r-project.org/Licenses/GPL-2
+%
+%%END HEADER
 
 \name{LKrig Miscellaneous Matrix Functions}
 \alias{LKrig.rowshift.periodic}
@@ -75,7 +80,8 @@ this will be done column by column.}
 
 \item{nPad}{An array with the number of padding indices in each dimension.}
 
-\item{periodic}{  A vector of  logicals columns.TRUE indicates an index where the shift will be periodic --
+\item{periodic}{  A vector of  logicals columns.TRUE indicates an index where
+the shift will be periodic --
 entries shifted beyond the dimensions will be wrapped to the other
 side. e.g. for the matrix version c(FALSE, TRUE) indicates the 
 columns of the matrix will be shifted in a periodic way but not the 
@@ -98,13 +104,19 @@ the precision matrices.
 
 \strong{Expand related:}
 These functions are useful for creating a sets of covariance parameters that 
-follow a factorial pattern. For example repeating the rows of the "alpha" parameters
-as the "a.wght" parameters are varied. \code{expandMList} is particularly useful for creating
+follow a factorial pattern. For example repeating the rows of the "alpha" 
+parameters
+as the "a.wght" parameters are varied. \code{expandMList} is particularly 
+useful for creating
 a factorial design of parameters to pass to LKrig.MLE for searching the likelihood.
 
 \strong{Index related:}
-The function \code{convertIndexPeriodic} converts a  single index for a multidimensional array, into an index that reflects wrapping into a smaller grid to reflect the padding. 
-This is used in the \code{LKDistGrid} function to handle distances when the grid has periodic dimensions. The other two functions are used for checking and debugging of going back and
+The function \code{convertIndexPeriodic} converts a  single index for a 
+multidimensional array, into an index that reflects wrapping into a smaller 
+grid to reflect the padding. 
+This is used in the \code{LKDistGrid} function to handle distances when the 
+grid has periodic dimensions. The other two functions are used for checking
+and debugging of going back and
 forth between the multidimensional and single indexes.  
 
 }
@@ -139,8 +151,10 @@ LKrig.rowshift.periodic( A, 2)
 }
 
 \strong{Expand:}
-\code{ExpandMList} Returns a list of matrices where the original matrices are repeated so that
-combinations of rows are represented. The example below illustrates.  \code{byrow=FALSE} does the repetition
+\code{ExpandMList} Returns a list of matrices where the original matrices are 
+repeated so that
+combinations of rows are represented. The example below illustrates.  
+\code{byrow=FALSE} does the repetition
 by columns instead of rows.
 
 \preformatted{

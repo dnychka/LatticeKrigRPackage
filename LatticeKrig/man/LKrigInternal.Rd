@@ -1,23 +1,28 @@
-% # LatticeKrig  is a package for analysis of spatial data written for
-% # the R software environment .
-% # Copyright (C) 2024
-% # University Corporation for Atmospheric Research (UCAR)
-% # Contact: Douglas Nychka, nychka@ucar.edu,
-% # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
-% #
-% # This program is free software; you can redistribute it and/or modify
-% # it under the terms of the GNU General Public License as published by
-% # the Free Software Foundation; either version 2 of the License, or
-% # (at your option) any later version.
-% # This program is distributed in the hope that it will be useful,
-% # but WITHOUT ANY WARRANTY; without even the implied warranty of
-% # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% # GNU General Public License for more details.
+%%BEGIN HEADER
+%
+% LatticeKrig is a package for analysis of spatial data written for
+% the R software environment.
+% Copyright (C) 2026 Colorado School of Mines
+% 1500 Illinois St., Golden, CO 80401
+% Contact: Douglas Nychka,  douglasnychka@gmail.com,
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% A copy of the GNU General Public License is included
+% along with the R software environment if not, write to the Free Software
+% Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+% or refer to  http://www.r-project.org/Licenses/GPL-2
+%
+%%END HEADER
 
-% # Modified DH Dec 2013
-% Earlier modifications DH 2/06/2012
-
-\name{LKrig Internal}
+\name{LKrig utilities and low level functions}
 \alias{LKrig.coef}
 \alias{LKrig.lnPlike}
 
@@ -81,7 +86,8 @@ LKDefaultVarNames(A, tag)
 
 %   \item{residuals}{Residuals from fitting spatial process.}
    
-   \item{tag}{Text string to use as the column name. This will be followed  1, 2, ... for the names. E.g. X1 X2 X3. Default value will be the 
+   \item{tag}{Text string to use as the column name. This will be followed 
+   1, 2, ... for the names. E.g. X1 X2 X3. Default value will be the 
    name of A. }
 
 \item{verbose}{If TRUE intermediate debugging information is printed.}
@@ -91,8 +97,9 @@ LKDefaultVarNames(A, tag)
   with variances tau^2/weights. }
   
 \item{wU}{Weighted U matrix the fixed part of the model.}
-\item{wX}{Weighted X matrix (in spam format) related to nonparametric (stochastic) part of 
-	model. Here weights refer to the sqrt(weights).
+\item{wX}{Weighted X matrix (in spam format) related to nonparametric 
+(stochastic) part of 
+model. Here weights refer to the sqrt(weights).
 	
 	NOTE: predicted values are  U\%*\%d.coef + X\%*\%c.coef
 	
@@ -102,8 +109,8 @@ LKDefaultVarNames(A, tag)
   
   
 
-  \item{ZGrid}{A list or array with the covariates on the same grid as that specified by 
-the  grid.list argument. }
+  \item{ZGrid}{A list or array with the covariates on the same grid as that
+  specified by the  grid.list argument. }
 
 }
 \details{
@@ -112,12 +119,21 @@ The LatticeKrig article can be used as a reference for the matrix computations
 and the G matrix from those formulas figures prominently. The GCholesky object
 in these functions is the cholesky decomposition of this matrix. For
 compatibility with older version of this package this object may also be named
-as \code{Mc} ( Cholesky of the M  matrix) but the user should not identify this M with that in the article. Ideally all coding using Mc should be changed to GCholesky.
+as \code{Mc} ( Cholesky of the M  matrix) but the user should not identify this
+M with that in the article. Ideally all coding using Mc should be changed
+to GCholesky.
 
-\code{createLKrigObject} Based on the arguments passed into LKrig forms the prototype LKrig object. This object is added to as one computes additional steps in the LKrig function. The Names argument in the call is awkward device to pass the names of the original x, Z and U objects when substitued these names are used as the default prefixs for column names of these matrices. 
+\code{createLKrigObject} Based on the arguments passed into LKrig forms the
+prototype LKrig object. This object is added to as one computes additional 
+steps in the LKrig function. The Names argument in the call is awkward device 
+to pass the names of the original x, Z and U objects when substitued these 
+names are used as the default prefixs for column names of these matrices. 
 	
-\code{LKrigMakewU} and \code{LKrigMakewX}  construct the weighted U and X matrices from what is passed. In the case of observations that are point locations wU is found the weights and using the fixedFunction and wX is found from the weights and the multi-resolution basis functions. Note that X and wX are assumed to be in spam 
-sparse matrix format. 
+\code{LKrigMakewU} and \code{LKrigMakewX}  construct the weighted U and X 
+matrices from what is passed. In the case of observations that are point 
+locations wU is found the weights and using the fixedFunction and wX is 
+found from the weights and the multi-resolution basis functions. Note that X
+and wX are assumed to be in spam sparse matrix format. 
 
 \code{LKrig.coef} and \code{LKrig.lnPlike} are two low level functions
 to find the basis function coefficients and to evaluate the
@@ -149,7 +165,9 @@ cylinder.
 \code{LKrigDefaultFixedFunction} Is called to construct the fixed part of the 
 spatial model. The default is a polynomial of degree (m-1).
 
-\code{LKDefaultVarNames} A handyfunction to create  some simple column names to a matrix if they are missing. This is used so that the tables of parameter estimates will have labels. 
+\code{LKDefaultVarNames} A handyfunction to create  some simple column 
+names to a matrix if they are missing. This is used so that the tables of 
+parameter estimates will have labels. 
 }
 \value{
 \describe{
@@ -178,11 +196,14 @@ and a.wght}
 
 \item{LKrigDefaultFixedFunction}{A matrix with dimension nrow(x) and columns
 of the number of polynomial terms  and the number of columns of Z if given.}
-\item{LKDefaultVarNames}{The original column names ( e.g. the result of \code{colnames(A)} ) or some simple choices filled in. }
+\item{LKDefaultVarNames}{The original column names 
+( e.g. the result of \code{colnames(A)} ) or some simple choices filled in. }
 }
 }
 \references{
-Nychka, D., Bandyopadhyay, S., Hammerling, D., Lindgren, F., & Sain, S. (2015). A multi-resolution Gaussian process model for the analysis of large spatial datasets.{Journal of Computational and Graphical Statistics}, 24(2), 579-599.
+Nychka, D., Bandyopadhyay, S., Hammerling, D., Lindgren, F., & Sain, S. (2015).
+A multi-resolution Gaussian process model for the analysis of large spatial 
+datasets.{Journal of Computational and Graphical Statistics}, 24(2), 579-599.
 }
 \author{
 Doug Nychka

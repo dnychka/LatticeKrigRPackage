@@ -1,18 +1,26 @@
-% # LatticeKrig  is a package for analysis of spatial data written for
-% # the R software environment .
-% # Copyright (C) 2024
-% # University Corporation for Atmospheric Research (UCAR)
-% # Contact: Douglas Nychka, nychka@ucar.edu,
-% # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
-% #
-% # This program is free software; you can redistribute it and/or modify
-% # it under the terms of the GNU General Public License as published by
-% # the Free Software Foundation; either version 2 of the License, or
-% # (at your option) any later version.
-% # This program is distributed in the hope that it will be useful,
-% # but WITHOUT ANY WARRANTY; without even the implied warranty of
-% # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% # GNU General Public License for more details.
+%%BEGIN HEADER
+%
+% LatticeKrig is a package for analysis of spatial data written for
+% the R software environment.
+% Copyright (C) 2026 Colorado School of Mines
+% 1500 Illinois St., Golden, CO 80401
+% Contact: Douglas Nychka,  douglasnychka@gmail.com,
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% A copy of the GNU General Public License is included
+% along with the R software environment if not, write to the Free Software
+% Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+% or refer to  http://www.r-project.org/Licenses/GPL-2
+%
+%%END HEADER
 
 \name{LKrigSetup}
 \alias{LKrigSetup}
@@ -27,9 +35,12 @@ Create or update the LatticeKrig model object (LKinfo) for spatial fitting.
 This function combines some input arguments with defaults for other
 to create a list 
 describing the LatticeKrig spatial model. A key to specifying the LatticeKrig
-spatial model is specifying the geometry, e.g. LKRectangle for a 2-d rectangular
-domain. Each geometry has some parameters that control the basic model setup and
-these are included through the \dots arguments of  this function. See the help for
+spatial model is specifying the geometry, e.g. LKRectangle for a 2-d 
+rectangular
+domain. Each geometry has some parameters that control the basic model
+setup and
+these are included through the \dots arguments of  this function. See the help
+for
 this argument below for some examples.
 }
 \usage{
@@ -37,7 +48,8 @@ LKrigSetup(x = NULL, nlevel = NULL, alpha = NA, alphaObject =
                  NULL, nu = NULL, a.wght = NA, a.wghtObject = NULL, NC
                  = NULL, NC.buffer = NULL,delta = delta, normalize = TRUE,
                  normalizeMethod = 
-                 "exact", lambda = NA, tau = NA, sigma2 = NA, sigma2.object = NULL,
+                 "exact", lambda = NA, tau = NA, sigma2 = NA, 
+                 sigma2.object = NULL,
                  latticeInfo = NULL, basisInfo = NULL, LKGeometry =
                  "LKRectangle", distance.type = "Euclidean",
                  BasisFunction = "WendlandFunction", overlap = 2.5, V =
@@ -98,7 +110,8 @@ See \link{nonstationaryModels} for examples how to used option.
   	describe the multi-resolution basis.  Usually this will not be
   	needed for standard models. }
   	
-  \item{BasisType}{A character string indicating the type of basis function. Currently
+  \item{BasisType}{A character string indicating the type of basis function. 
+  Currently
   	this is either \code{"Radial"} or \code{"Tensor"}. }
 
 \item{choleskyMemory}{A list that will be used in the spam call to 
@@ -273,7 +286,8 @@ rbind( c( 0,0), c(1,1)) will set the domain to be the unit square.  }
   	\code{setupArgs} list and also passed to
   	\link{LKrigSetupLattice}
   	. For \link{LKinfoUpdate} these specify the components
-  	       of LKinfo to update. For example for a rectangular domain (the default)
+  	       of LKinfo to update. For example for a rectangular domain 
+  	       (the default)
   	       the argument \code{NC} is needed to specify the initial lattice size 
   	       \code{NC.buffer} sets the number of extra points included in the
   	       lattice and defaults to 5.  \code{NC} for the LKSphere geometry  
@@ -288,13 +302,16 @@ rbind( c( 0,0), c(1,1)) will set the domain to be the unit square.  }
 	the latticeKrig model is structured and what should be common
 	features independent of the geometry. The key components are:
 	
-	\code{basisInfo} used to specify the form of the  basis functions (see \link{LKrig.basis})
+	\code{basisInfo} used to specify the form of the  basis functions 
+	(see \link{LKrig.basis})
 
 	\code{latticeInfo} that contains the information used to generate the
 	spatial autoregressive matrix on the lattice.
-	See (\link{LKrigSetupLattice} for the top level function that sets up the lattice. 
+	See (\link{LKrigSetupLattice} for the top level function that sets up the 
+	lattice. 
 	
-	\code{a.wght} A component that specifies the weights in the SAR model. (See \link{LKrigSetupAwght})
+	\code{a.wght} A component that specifies the weights in the SAR model. 
+	(See \link{LKrigSetupAwght})
 	
 	\code{alpha} A component that gives the relative weights of the different
 	layers for a multiresolution model. (See
@@ -305,9 +322,11 @@ rbind( c( 0,0), c(1,1)) will set the domain to be the unit square.  }
 	find the distance
 	and 
 	\link{LKDist} for the lower level functions that actually do the work. 
-	To change the radius used for the spherical distances one can add a \code{Radius}
+	To change the radius used for the spherical distances one can add a 
+	\code{Radius}
 	attribute to the text string. 
-  For example to use kilometers  for great circle distance ( R approximately 6371)
+  For example to use kilometers  for great circle distance 
+  ( R is approximately 6371 km)
   
 \preformatted{
    dtype <- "GreatCircle" 
@@ -323,11 +342,13 @@ Now use \code{distance.type = dtype}for the distance type argument.
 
 	As example of how the computation is structured with the complete
 	\code{LKinfo} object 
-	\link{LKrigSAR} can be called to generate the sparse SAR matrix of the basis function coefficients at a given level of resolution:
+	\link{LKrigSAR} can be called to generate the sparse SAR matrix of the basis
+	function coefficients at a given level of resolution:
 	\preformatted{
   B1<- LKrigSAR(LKinfo, Level=1)
 	}
-	The basis function matrix can be evaluated at a matrix of locations $\code{x1} as 
+	The basis function matrix can be evaluated at a matrix of locations $\code{x1}
+	as 
 	\preformatted{
 	Phi<- LKrig.basis( x1,LKinfo)
 	}
@@ -346,8 +367,10 @@ Now use \code{distance.type = dtype}for the distance type argument.
 	LKGeometry. The required components are:
 \describe{
 	\item{nlevel}{ Number of levels}
-	\item{alpha}{alpha parameters as a list that has  nlevel components and possibly some attributes. }
-	\item{a.wght}{a.wght parameters as a list that has  nlevel components and possibly some attributes. }
+	\item{alpha}{alpha parameters as a list that has  nlevel components and 
+	possibly some attributes. }
+	\item{a.wght}{a.wght parameters as a list that has  nlevel components and 
+	possibly some attributes. }
 	\item{nu}{nu parameter}
 	\item{normalize}{A logical indicating whether to normalize.}
 	\item{normalizeMethod}{A string that determines the method for normalization.}

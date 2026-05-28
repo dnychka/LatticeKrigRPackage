@@ -1,21 +1,26 @@
-% # LatticeKrig  is a package for analysis of spatial data written for
-% # the R software environment .
-% # Copyright (C) 2024
-% # University Corporation for Atmospheric Research (UCAR)
-% # Contact: Douglas Nychka, nychka@ucar.edu,
-% # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
-% #
-% # This program is free software; you can redistribute it and/or modify
-% # it under the terms of the GNU General Public License as published by
-% # the Free Software Foundation; either version 2 of the License, or
-% # (at your option) any later version.
-% # This program is distributed in the hope that it will be useful,
-% # but WITHOUT ANY WARRANTY; without even the implied warranty of
-% # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% # GNU General Public License for more details.
-
-% # Modified DH Dec 2013
-% # Modified  NL Jan -> DWN Jan 2014
+%%BEGIN HEADER
+%
+% LatticeKrig is a package for analysis of spatial data written for
+% the R software environment.
+% Copyright (C) 2026 Colorado School of Mines
+% 1500 Illinois St., Golden, CO 80401
+% Contact: Douglas Nychka,  douglasnychka@gmail.com,
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% A copy of the GNU General Public License is included
+% along with the R software environment if not, write to the Free Software
+% Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+% or refer to  http://www.r-project.org/Licenses/GPL-2
+%
+%%END HEADER
 
 \name{LatticeKrig}
 \alias{LatticeKrig}
@@ -237,7 +242,7 @@ LKrig, LKrig.setup, LKrigFindLambda, LKinfo, LKrig.sim.conditional
 # and alpha.
 # Note that for small number of observations this is slower than
 # finding the exact estimate using say Tps pr spatialProcess in fields. 
-# n = 5e4 well that is a different manner ...
+# n = 5e4 well that is a different matter ...
 
 
   obj<- LatticeKrig( x, y)
@@ -335,9 +340,6 @@ out2<- LatticeKrig( X, Y, nlevel=1, NC=20, findAwght=TRUE,
 # nugget variance is nearly the same!
 out1$MLE$summary[1:7]                        
 out2$MLE$summary[1:7]
-                        
-
-
 }
 \dontrun{
 # Refit using the tensor product type of basis functions
@@ -389,7 +391,6 @@ xgrid<- make.surface.grid( glist)
 yhat<- predict( out1, xgrid)
 # compare yhat to true function created above
 image.plot( as.surface( glist, yhat))
-
 }
 #
 ###########################################################################

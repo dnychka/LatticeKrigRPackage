@@ -93,38 +93,14 @@ end
 rm temp.R
 rm temp2.R 
 
+############ Changing copyright date for docs 
 
-
-
-grep -L 'Copyright (C) 2026 Colorado School of Mines' *.R > noHeader.txt
-foreach fileString (`cat noHeader.txt`)
+# cat to top new copyright
+ls *.Rd > docfiles.txt
+foreach fileString (`cat docfiles.txt`)
     echo "Processing: $fileString"
     cp $fileString temp.R
- cat ../../CopyrightHeader.txt temp.R > $fileString
+ cat ../../CopyrightHeaderDoc.txt temp.R > $fileString
 end
-rm temp.R
-
-
-ls *.R | wc
-grep 'Copyright (C) 2026 Colorado School of Mines' *.R | wc
-grep -L 'Copyright (C) 2026 Colorado School of Mines' *.R 
-
-grep 'BEGIN HEADER' *.R | wc
-grep 'END HEADER' *.R | wc
-
-
-foreach fileString (`ls *.R`)
-    echo "Processing: $fileString"
-   head -23 $fileString | tail -1  
-
-end
-
-foreach fileString (`ls *.R`)
-echo " "
-echo " ------------------------------------------------ "
-echo " $fileString ------------------------------------------------ "
-head -25 $fileString | tail -3 
-end
-
 
 

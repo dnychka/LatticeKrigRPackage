@@ -1,18 +1,26 @@
-% # LatticeKrig  is a package for analysis of spatial data written for
-% # the R software environment .
-% # Copyright (C) 2024
-% # University Corporation for Atmospheric Research (UCAR)
-% # Contact: Douglas Nychka, nychka@ucar.edu,
-% # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
-% #
-% # This program is free software; you can redistribute it and/or modify
-% # it under the terms of the GNU General Public License as published by
-% # the Free Software Foundation; either version 2 of the License, or
-% # (at your option) any later version.
-% # This program is distributed in the hope that it will be useful,
-% # but WITHOUT ANY WARRANTY; without even the implied warranty of
-% # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% # GNU General Public License for more details.
+%%BEGIN HEADER
+%
+% LatticeKrig is a package for analysis of spatial data written for
+% the R software environment.
+% Copyright (C) 2026 Colorado School of Mines
+% 1500 Illinois St., Golden, CO 80401
+% Contact: Douglas Nychka,  douglasnychka@gmail.com,
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% A copy of the GNU General Public License is included
+% along with the R software environment if not, write to the Free Software
+% Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+% or refer to  http://www.r-project.org/Licenses/GPL-2
+%
+%%END HEADER
 
 \name{LKrigLatticeCenters}
 \alias{LKrigLatticeCenters}
@@ -26,14 +34,19 @@
 \alias{LKrigLatticeCenters.LKCylinder}
 \alias{LKrigLatticeCenters.LKSphere}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{Methods to report the locations  or scales associated with the lattice points.
+\title{Methods to report the locations  or scales associated with the lattice 
+points.
 %%  ~~function to do ... ~~
 }
-\description{These method takes the lattice information for a particular geometry 
-	from an LKinfo object and finds the locations or scales at each lattice points.
+\description{These method takes the lattice information for a particular 
+geometry 
+	from an LKinfo object and finds the locations or scales at each lattice 
+	points.
 	 These locations are the 
-	"nodes" or centers of the basis functions. The "scales" scales that distance function when the 
-	basis functions are evaluated and combine the spacing of lattice and the specified overlap. 
+	"nodes" or centers of the basis functions. The "scales" scales that distance 
+	function when the 
+	basis functions are evaluated and combine the spacing of lattice and the 
+	specified overlap. 
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
@@ -42,7 +55,8 @@ LKrigLatticeCenters(object, ...)
 \method{LKrigLatticeCenters}{LKInterval}(object, Level, ...)
 \method{LKrigLatticeCenters}{LKRectangle}(object, Level, ...)
 \method{LKrigLatticeCenters}{LKBox}(object, Level, ...)
-\method{LKrigLatticeCenters}{LKCylinder}(object, Level = 1, physicalCoordinates = FALSE, ...)
+\method{LKrigLatticeCenters}{LKCylinder}(object, Level = 1, 
+         physicalCoordinates = FALSE, ...)
 \method{LKrigLatticeCenters}{LKRing}(object, Level = 1, 
                     physicalCoordinates = FALSE, ...)
 \method{LKrigLatticeCenters}{LKSphere}(object, Level, ...)
@@ -65,7 +79,8 @@ other physical components of the problem.
 
 For example with the LKRing geometry 
 representing the equatorial slice of the solar atmosphere one observes a line of 
-sight integral through the domain. This integral is obvious found with respect to the physical coordinates and not the lattice points. 
+sight integral through the domain. This integral is obvious found with respect 
+to the physical coordinates and not the lattice points. 
 }
 
   \item{\dots}{
@@ -83,19 +98,22 @@ sight integral through the domain. This integral is obvious found with respect t
 	vector of the lattice spacings and overlap (default is 2.5) is the amount of 
 	overlap between basis functions. 
 	
-	See the source for the function \code{\link{LKrig.basis}} for how each of these
-	is used to evaluate the basis functions. 
+	See the source for the function \code{\link{LKrig.basis}}  how each of 
+	these is used to evaluate the basis functions. 
 	
 	
 %%  ~~ If necessary, more details than the description above ~~
 }
 \value{
-\strong{Centers} A matrix where the rows index the points and columns index dimension. 
+\strong{Centers} A matrix where the rows index the points and columns index 
+dimension. 
 In the case of the LKRectangle geometry attribute is added to indicate the
-grid points used to generate the lattice.  For LKSphere the centers are in lon/lat degrees.
+grid points used to generate the lattice.  For LKSphere the centers are in 
+lon/lat degrees.
 ( Use \code{directionCosines} to convert to 3-d coordinates from lon/lat.)
 
-\strong{Scales} The default method returns the vector  \code{delta*offset} with length being the
+\strong{Scales} The default method returns the vector  \code{delta*offset} with
+length being the
 number of multi-resolution levels. 
 }
 

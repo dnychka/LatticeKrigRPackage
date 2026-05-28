@@ -1,22 +1,27 @@
-% # LatticeKrig  is a package for analysis of spatial data written for
-% # the R software environment .
-% # Copyright (C) 2024
-% # University Corporation for Atmospheric Research (UCAR)
-% # Contact: Douglas Nychka, nychka@ucar.edu,
-% # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
-% #
-% # This program is free software; you can redistribute it and/or modify
-% # it under the terms of the GNU General Public License as published by
-% # the Free Software Foundation; either version 2 of the License, or
-% # (at your option) any later version.
-% # This program is distributed in the hope that it will be useful,
-% # but WITHOUT ANY WARRANTY; without even the implied warranty of
-% # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% # GNU General Public License for more details.
-
-% # Modified DH Dec 2013
-% Earlier modifications DH 2/06/2012
+%%BEGIN HEADER
 %
+% LatticeKrig is a package for analysis of spatial data written for
+% the R software environment.
+% Copyright (C) 2026 Colorado School of Mines
+% 1500 Illinois St., Golden, CO 80401
+% Contact: Douglas Nychka,  douglasnychka@gmail.com,
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% A copy of the GNU General Public License is included
+% along with the R software environment if not, write to the Free Software
+% Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+% or refer to  http://www.r-project.org/Licenses/GPL-2
+%
+%%END HEADER
+
 \name{Radial.basis}
 \alias{Radial.basis}
 \alias{LKrig.cyl}
@@ -29,7 +34,8 @@
 Two dimensional radial  and tensor basis functions 
 }
 \description{
-Two dimensional radial basis and tensor functions that are used as the building blocks for 
+Two dimensional radial basis and tensor functions that are used as the building
+blocks for 
 the LatticeKrig multiresolution sparse basis matrices. 
 }
 \usage{
@@ -39,7 +45,8 @@ Radial.basis(x1, centers, basis.delta, max.points = NULL,
                  verbose = FALSE)
 
 Tensor.basis(x1, centers, basis.delta, max.points = NULL, mean.neighbor = 50, 
-   BasisFunction = "WendlandFunction", distance.type = "Euclidean", verbose = FALSE) 
+   BasisFunction = "WendlandFunction", distance.type = "Euclidean",
+   verbose = FALSE) 
 
 WendlandFunction(d)    
 
@@ -76,7 +83,8 @@ of each x1 location. For centers on a regular grid this is often easy
 to estimate.}
 
 \item{BasisFunction}{  A function that will take a
-non-negative argument and be zero outside [0,1]. This is applied to distance(s) to generate the basis functions.  
+non-negative argument and be zero outside [0,1]. This is applied to distance(s)
+to generate the basis functions.  
 For tensor basis functions,
 the  function is applied to the distance components for each dimension.  }
 
@@ -85,7 +93,8 @@ the  function is applied to the distance components for each dimension.  }
 }
 \details{
 
-\strong{Radial.basis and Tensor.basis } These function finds the pairwise distances between the points x1 and
+\strong{Radial.basis and Tensor.basis } These function finds the pairwise 
+distances between the points x1 and
 centers and evaluates the function RadialBasisFunction at these
 distances scaled by delta. In most applications delta is constant, but
 a variable delta could be useful for lon/lat regular grids. The
@@ -93,7 +102,8 @@ Wendland function is for 2 dimensions and smoothness order 2. See
 \code{WendlandFunction} for the polynomial form. This code has a very
 similar function to the fields function \code{wendland.cov}.
 
-In pseudo R code for delta a scalar \code{Radial.basis} with the Wendland "shape" evaluates as
+In pseudo R code for delta a scalar \code{Radial.basis} with the Wendland 
+"shape" evaluates as
 
 \preformatted{
   BigD<- rdist( x1,centers)
@@ -106,8 +116,10 @@ and is comparable to
 The actual code uses a FORTRAN subroutine to search over distances
 less than delta and also returns the matrix in sparse format.
 
-	Part of the flexibility  in these function is to use different distance functions
-	(metrics). See help on \code{LKDistance} for the S4 method to find distance and 
+	Part of the flexibility  in these function is to use different distance 
+	functions
+	(metrics). See help on \code{LKDistance} for the S4 method to find distance
+	and 
 	\link{LKDist} for the lower level functions that actually do the work.  
 	To change the radius used for the spherical distances one add a \code{Radius}
 	attribute to the text string. For example to use kilometers for great circle 
@@ -117,7 +129,9 @@ less than delta and also returns the matrix in sparse format.
    dtype <- "GreatCircle" 
    attr( dtype, which="Radius") <- 6371 
    } 
-\code{dtype} is still a text string but has the extra bit of information attached to it. Now use \code{distance.type = dtype} for the distance type argument. 
+\code{dtype} is still a text string but has the extra bit of information 
+attached to it. Now use \code{distance.type = dtype} for the distance type 
+argument. 
 
 
 
@@ -134,15 +148,19 @@ for delta a scalar  and for just two dimensions  Tensor.basis  evaluates as
 
 The  higher level function 
 \link{LKrig.basis} paired with an LKinfo object to define the centers 
-returns a sparse matrix with the basis functions evaluated at a set of locations. 
+returns a sparse matrix with the basis functions evaluated at a set of 
+locations. 
 
-If  \code{normalize = FALSE} in the LKinfo object then the basis functions are evaluated exactly as described above. If 
-\code{normalize = TRUE} there is an additional set of weights that are computed so that the LatticeKrig model when viewed as 
+If  \code{normalize = FALSE} in the LKinfo object then the basis functions are 
+evaluated exactly as described above. If 
+\code{normalize = TRUE} there is an additional set of weights that are computed
+so that the LatticeKrig model when viewed as 
 a Gaussian process has constant marginal variances. 
 
 \strong{WendlandFunction,    
 triWeight,
-CubicBSpline} These functions have limited support and will be zero for \code{d} greater than one. 
+CubicBSpline} These functions have limited support and will be zero for \code{d}
+greater than one. 
 
 \strong{Wendland} (\eqn{\phi(d)}) for \eqn{ d \le 1}
 \deqn{ 
@@ -161,7 +179,8 @@ A piecewise cubic polynomial over the  four intervals
 \deqn{\{ [-1,-1/2],[-1/2,0],[0,-1/2],[1/2,1] \} }
 the individual cubic polynomials enforce zero boundary conditions for 
 the function, first and second derivaitves at 
--1 and 1 and continuity of the function, first and second derivatives at the  three interior
+-1 and 1 and continuity of the function, first and second derivatives at the
+three interior
 knot points (\eqn{\{} -1/2, 0, -1/2 \} )
 
 }
@@ -228,7 +247,8 @@ plot( centers, xlim=c(-180,180), ylim=c( -90, 90), pch=16)
 lonlat<- make.surface.grid( list( x= seq( -180,180,,80), y= seq( -90,90,,40)))
 delta<- 5000 # default distance is in miles 
 # evaluate all basis functions on the grid
-bigX<- Radial.basis( lonlat, centers, basis.delta= delta, distance.type="GreatCircle")
+bigX<- Radial.basis( lonlat, centers, basis.delta= delta, 
+distance.type="GreatCircle")
 # look at the 12th basis function 
 b12<- bigX[,12]
 image( as.surface( lonlat, b12), col=c( "white",tim.colors(256)), add=TRUE,

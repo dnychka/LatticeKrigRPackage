@@ -1,18 +1,26 @@
-% # LatticeKrig  is a package for analysis of spatial data written for
-% # the R software environment .
-% # Copyright (C) 2024
-% # University Corporation for Atmospheric Research (UCAR)
-% # Contact: Douglas Nychka, nychka@ucar.edu,
-% # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
-% #
-% # This program is free software; you can redistribute it and/or modify
-% # it under the terms of the GNU General Public License as published by
-% # the Free Software Foundation; either version 2 of the License, or
-% # (at your option) any later version.
-% # This program is distributed in the hope that it will be useful,
-% # but WITHOUT ANY WARRANTY; without even the implied warranty of
-% # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% # GNU General Public License for more details.
+%%BEGIN HEADER
+%
+% LatticeKrig is a package for analysis of spatial data written for
+% the R software environment.
+% Copyright (C) 2026 Colorado School of Mines
+% 1500 Illinois St., Golden, CO 80401
+% Contact: Douglas Nychka,  douglasnychka@gmail.com,
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% A copy of the GNU General Public License is included
+% along with the R software environment if not, write to the Free Software
+% Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+% or refer to  http://www.r-project.org/Licenses/GPL-2
+%
+%%END HEADER
 
 \name{setDefaultsLKinfo}
 \alias{setDefaultsLKinfo}
@@ -58,14 +66,17 @@ setDefaultsLKinfo(object, ...)
 \details{
 	This method is used to include some default settings or components  in the
 	 LKinfo  
-	object and is called from \code{LKrigSetup} with the initial (or partial) LKinfo list
+	object and is called from \code{LKrigSetup} with the initial (or partial)
+	LKinfo list
 	that is formed from the
 	information passed by the user to LKrigSetup.
 	
 	In creating a new geometry this method is not required but can be used to 
-	include convenient default values and also some checks on the arguments passed to  LKrigSetup.
-	Often there are several arguments for a geometry that make sense to set to simplify the use or
-	to avoid bad things .... 
+	include convenient default values and also some checks on the arguments
+	passed to  LKrigSetup.
+	Often there are several arguments for a geometry that make sense to set 
+	to simplify the use or
+	to avoid bad things from happening elsewhere ... . 
 	
 	For the LKRing geometry the defaults values follow the logic:
 \itemize{	
@@ -73,9 +84,11 @@ setDefaultsLKinfo(object, ...)
 	
 	\item a.wght set to 4.01 if not specified. 
 	
-     \item the fixed part of the model (fixedFunction) uses the function LKrigPeriodicFixedFunction which insures the first component is periodic.
+     \item the fixed part of the model (fixedFunction) uses the function 
+     LKrigPeriodicFixedFunction which insures the first component is periodic.
 
-     \item the transformation matrix, V has the default  diag( c(1,1)). Also in this
+     \item the transformation matrix, V has the default  diag( c(1,1)). Also 
+     in this
 	function if V[1,1] is not 1 then an error is given.
 	}
 	 	For the LKSphere geometry the defaults values follow the logic:
@@ -84,9 +97,11 @@ setDefaultsLKinfo(object, ...)
 	
 	\item a.wght set to 6.01 if not specified. 
 	
-     \item the fixed part of the model (fixedFunction) just includes a constant ( m=1)
+     \item the fixed part of the model (fixedFunction) just includes a constant
+     ( m=1)
 
-    \item Default distance function is great circle distance, with sphere radius of 1.0. 
+    \item Default distance function is great circle distance, with sphere 
+    radius of 1.0. 
 	}
 	 
 

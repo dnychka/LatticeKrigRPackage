@@ -32,7 +32,7 @@ LKrigSetupAwghtObject<- function( object){
     # if there is only one object use this for the a.wghts at
     # every level
     if (length(class(object$a.wghtObject)) == 1 &&
-        class(object$a.wghtObject) == "multivariateSurfaceGridList" ){
+        inherits(object$a.wghtObject, "multivariateSurfaceGridList") ){
       aTemp <- predict(object$a.wghtObject, latticeGrid, nLevel, k) 
     }else{
       aTemp <- predict(object$a.wghtObject, latticeGrid)
