@@ -1,9 +1,10 @@
-# LatticeKrig  is a package for analysis of spatial data written for
-# the R software environment .
-# Copyright (C) 2016
-# University Corporation for Atmospheric Research (UCAR)
-# Contact: Douglas Nychka, nychka@ucar.edu,
-# National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
+##BEGIN HEADER
+#
+# LatticeKrig is a package for analysis of spatial data written for
+# the R software environment.
+# Copyright (C) 2026 Colorado School of Mines
+# 1500 Illinois St., Golden, CO 80401
+# Contact: Douglas Nychka,  douglasnychka@gmail.com,
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -13,17 +14,30 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
+#
+# A copy of the GNU General Public License is included
+# along with the R software environment if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+# or refer to  http://www.r-project.org/Licenses/GPL-2
+#
+##END HEADER
 
-LatticeKrig<- function(x, y, Z=NULL,  nlevel=3, findAwght=FALSE, 
+LatticeKrig<- function(x, y, Z=NULL, weights=NULL,   nlevel=3, findAwght=FALSE, 
                         LKinfo=NULL, X=NULL, U=NULL, na.rm=TRUE,
                         tol=.005, verbose=FALSE, ...){
   # a crisp wrapper where many default values are exercised.
               x<- as.matrix(x)
+              y<- as.matrix(y)
+              if( is.null(weights)){
+                weights<- rep( 1, nrow( y))
+              }
+              # adjust for missing values
               ind<- is.na(y)
               if( any(ind)){
                 if( na.rm){
                   x<- x[!ind,]
                   y<- y[!ind]
+                  weights<- weights[!ind]
                   warning("NAs removed")
                   if( !is.null(Z)){
                     Z<- as.matrix( Z)[!ind,]
@@ -38,7 +52,8 @@ LatticeKrig<- function(x, y, Z=NULL,  nlevel=3, findAwght=FALSE,
             argList<-list( ...)
 # determine the geometry/dimension if not specified
 # set up some thin plate spline like default models for just Euclidean spatial domains
-# in 1,2 and 3 dimensions.              
+# in 1,2 and 3 dimensions.       
+            
             argList<- LatticeKrigEasyDefaults(argList,nlevel,x)
             if(verbose){
               cat("extra args:", fill=TRUE)
@@ -52,19 +67,21 @@ LatticeKrig<- function(x, y, Z=NULL,  nlevel=3, findAwght=FALSE,
             } 
  # find lambda and/ or Awght   
               if( !findAwght){
-                obj<- LKrigFindLambda( x=x,y=y, 
+                obj<- LKrigFindLambda( x=x,y=y, weights=weights,
                                        X=X, U=U, Z=Z, LKinfo=LKinfo,
                                        tol=tol,
                                        verbose=verbose)
                 LKinfo <- LKinfoUpdate( LKinfo, lambda= obj$lambda.MLE)
               }
               else{
-                obj<- LKrigFindLambdaAwght( x=x,y=y, X=X, U=U, Z=Z, LKinfo=LKinfo,
+                obj<- LKrigFindLambdaAwght( x=x,y=y, X=X, weights=weights, U=U, Z=Z, LKinfo=LKinfo,
                                             verbose=verbose)
                 LKinfo <- LKinfoUpdate( LKinfo, lambda= obj$lambda.MLE,
                                         a.wght=obj$a.wght.MLE)
-              }                
-              obj2<- c(  LKrig( x, y, Z=Z, X=X, U=U, LKinfo=LKinfo), list(MLE= obj) )             
+              }   
+              # final call to LKrig to get all the summary statistics 
+              obj2<- c(  LKrig( x, y, weights=weights, Z=Z, X=X, U=U, LKinfo=LKinfo), 
+                         list(MLE= obj) )             
               class( obj2)<- c(  "LatticeKrig", "LKrig")
               obj2$call<- match.call()
               obj2$findAwght<- findAwght

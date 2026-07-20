@@ -1,24 +1,33 @@
-% # LatticeKrig  is a package for analysis of spatial data written for
-% # the R software environment .
-% # Copyright (C) 2016
-% # University Corporation for Atmospheric Research (UCAR)
-% # Contact: Douglas Nychka, nychka@ucar.edu,
-% # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
-% #
-% # This program is free software; you can redistribute it and/or modify
-% # it under the terms of the GNU General Public License as published by
-% # the Free Software Foundation; either version 2 of the License, or
-% # (at your option) any later version.
-% # This program is distributed in the hope that it will be useful,
-% # but WITHOUT ANY WARRANTY; without even the implied warranty of
-% # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% # GNU General Public License for more details.
+%%BEGIN HEADER
+%
+% LatticeKrig is a package for analysis of spatial data written for
+% the R software environment.
+% Copyright (C) 2026 Colorado School of Mines
+% 1500 Illinois St., Golden, CO 80401
+% Contact: Douglas Nychka,  douglasnychka@gmail.com,
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% A copy of the GNU General Public License is included
+% along with the R software environment if not, write to the Free Software
+% Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+% or refer to  http://www.r-project.org/Licenses/GPL-2
+%
+%%END HEADER
 
 \name{LKrigSetupAwght}
 \alias{LKrigSetupAwght}
 \alias{LKrigSetupAwghtObject}
 \alias{LKrigSetupAwght.default}
 \alias{LKrigSetupAwght.LKRectangle}
+
 
 \title{Method to create a.wght component from the \code{LKinfo}
 	object.
@@ -56,7 +65,8 @@ LKrigSetupAwghtObject(object)
  	The function \code{LKrigSetupAwghtObject} uses the
  	a.wghtObject component  in the LKinfo object to fill
  	in a.wght parameters for the different
- 	levels. This is convenient because the lattice locations are different at each level. The parameters are filled in at level, \code{Level} according to 
+ 	levels. This is convenient because the lattice locations are different at
+ 	each level. The parameters are filled in at level, \code{Level} according to 
  	
  	\preformatted{
  	 latticeLocations<- make.surface.grid( 
@@ -68,7 +78,8 @@ LKrigSetupAwghtObject(object)
  	parameters will be in the format used internally a.wght here will be
  	a list with each component being a matrix. Number of rows are each to
  	the number of lattice points (or basis functions) at that level. 
- 	This is easier implement that it may seem and see the examples in \link{nonstationaryModels}.
+ 	This is easier implement that it may seem and see the examples in
+ 	\link{nonstationaryModels}.
  	
  	The attribute
  	\code{fastNormalize} (either TRUE or FALSE) is attached to this 
@@ -98,7 +109,8 @@ attr(,"fastNormalize")
  	 For the LKRectangle geometry, however, more complicated
 	anisotropic and non-stationary a.wght specifications are possible. 
 	See \code{\link{LKrig}} for details. Also in the case that the
-    fastNormalization is TRUE for rectangles several more attributes are added to the  \code{a.wght} list 	that precompute some matrices of the SAR. 
+    fastNormalization is TRUE for rectangles several more attributes are added 
+    to the  \code{a.wght} list 	that precompute some matrices of the SAR. 
 	
 %%  ~~ If necessary, more details than the description above ~~
 }

@@ -1,7 +1,7 @@
 
-R version 4.0.0 (2020-04-24) -- "Arbor Day"
-Copyright (C) 2020 The R Foundation for Statistical Computing
-Platform: x86_64-apple-darwin17.0 (64-bit)
+R version 4.6.0 (2026-04-24) -- "Because it was There"
+Copyright (C) 2026 The R Foundation for Statistical Computing
+Platform: aarch64-apple-darwin23
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -31,12 +31,12 @@ Testing:  cov matrix of parameters GLS from LatticeKrig
 PASSED test at tolerance  1e-08
 Testing:  testing quadratic form
 PASSED test at tolerance  1e-08
-Testing:  testing rho*N and GLS SS
+Testing:  testing sigma2*N and GLS SS
 PASSED test at tolerance  1e-08
-Testing:  Estimates of rho and from GLS
+Testing:  Estimates of sigma2 and from GLS
 PASSED test at tolerance  1e-08
 PASSED test at tolerance  1e-08
 PASSED test at tolerance  1e-08
 > proc.time()
    user  system elapsed 
-  2.204   0.058   2.263 
+  2.839   0.075   2.915 

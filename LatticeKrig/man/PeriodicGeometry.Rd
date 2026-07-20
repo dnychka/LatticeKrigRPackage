@@ -1,18 +1,26 @@
-% # LatticeKrig  is a package for analysis of spatial data written for
-% # the R software environment .
-% # Copyright (C) 2016
-% # University Corporation for Atmospheric Research (UCAR)
-% # Contact: Douglas Nychka, nychka@ucar.edu,
-% # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
-% #
-% # This program is free software; you can redistribute it and/or modify
-% # it under the terms of the GNU General Public License as published by
-% # the Free Software Foundation; either version 2 of the License, or
-% # (at your option) any later version.
-% # This program is distributed in the hope that it will be useful,
-% # but WITHOUT ANY WARRANTY; without even the implied warranty of
-% # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% # GNU General Public License for more details.
+%%BEGIN HEADER
+%
+% LatticeKrig is a package for analysis of spatial data written for
+% the R software environment.
+% Copyright (C) 2026 Colorado School of Mines
+% 1500 Illinois St., Golden, CO 80401
+% Contact: Douglas Nychka,  douglasnychka@gmail.com,
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% A copy of the GNU General Public License is included
+% along with the R software environment if not, write to the Free Software
+% Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+% or refer to  http://www.r-project.org/Licenses/GPL-2
+%
+%%END HEADER
 
 \name{Spatial models for data on spherical regions. } 
 \alias{LKRing}
@@ -21,10 +29,14 @@
 \title{Geometries to represent 
 	2-d and 3-d spherical data. 
 }
-\description{These models include  a completely spherical geometry based on a nearly regular node layout on the sphere. Also a simpler and perhaps more efficient 
+\description{These models include  a completely spherical geometry based on
+a nearly regular node layout on the sphere. Also a simpler and perhaps more
+efficient 
   versions are implemented where the first coordinate is 
-	periodic in the interval [0,360] and the remaining coordinates are regular (Euclidean).   
-	This might be used to approximate a section of spherical data that excludes the 
+	periodic in the interval [0,360] and the remaining coordinates are regular
+	(Euclidean).   
+	This might be used to approximate a section of spherical data that excludes
+	the 
 	polar caps. These approximations are useful because one can take advantage of
 	faster methods based on rectangular grids rather the more complex grids on a
 	sphere. The disadvantage is that the mapping from these coordinates to the
@@ -32,56 +44,81 @@
   }
 \section{Details}{
 		These geometries are specified with the \code{LKGeometry} argument either in 
-		LKrigSetup or LatticeKrig. The first coordinate is longitude either from [0,360]
+		LKrigSetup or LatticeKrig. The first coordinate is longitude either from
+		[0,360]
 		or [-180,180] and the second is latitude [-90, 90].
 		
 		They each have the four specific methods: \code{LKrigLatticeCenters},
 		\code{LKrigSAR}, \code{LKrigSetupLattice}, \code{setDefaultsLKinfo}
 		and the source code is consolidated in the source files ModelRing.R and 
-		ModelCylinder.R in the R sub-directory of this package source. For the spherical grid the
+		ModelCylinder.R in the R sub-directory of this package source. For the
+		spherical grid the
 		a.wght is handled a but differently please read the note below.
 		
-		\bold{\code{LKSphere}} Recall that the core of the LatticeKrig model is the placement of
-		the basis function centers and how the spatial autoregression is constructed from these
+		\bold{\code{LKSphere}} Recall that the core of the LatticeKrig model is the
+		placement of
+		the basis function centers and how the spatial autoregression is 
+		constructed from these
 		node
-		locations. Here the centers are generated according to a multi-resolution based on the
-		triangles from an icosahedron. \code{\link{IcosahedronGrid}} creates a grid by taking the
+		locations. Here the centers are generated according to a multi-resolution 
+		based on the
+		triangles from an icosahedron. \code{\link{IcosahedronGrid}} creates a grid 
+		by taking the
 		first
-		level as the 12 points from a regular icosahedron. The subsequent levels generate a finer
+		level as the 12 points from a regular icosahedron. The subsequent levels 
+		generate a finer
 		set
-		of points by subdividing each triangular face into 4 new triangles. The three new mid
+		of points by subdividing each triangular face into 4 new triangles. The 
+		three new mid
 		points
-		from the subdivision are added to the previous nodes to give the new level of resolution.
+		from the subdivision are added to the previous nodes to give the new level
+		of resolution.
 		The
-		triangles tend to roughly equilateral and so the nodes will tend to be roughly equally
-		spaced. This regularly improves for the finer generations of triangles, however,
-		the 12 original nodes from the icosahedron will have 5 nearest neighbors rather than 6. 
+		triangles tend to roughly equilateral and so the nodes will tend to be 
+		roughly equally
+		spaced. This regularly improves for the finer generations of triangles,
+		however,
+		the 12 original nodes from the icosahedron will have 5 nearest neighbors 
+		rather than 6. 
 		
-	  The setup argument \code{startingLevel} specifies the first level of the lattice and \code{nlevel} the
+	  The setup argument \code{startingLevel} specifies the first level of the 
+	  lattice and \code{nlevel} the
 	  total number. 
 	  
-		\strong{NOTE:} Because the distances between nodes are not perfectly equally spaced
+		\strong{NOTE:} Because the distances between nodes are not perfectly 
+		equally spaced
 		and nearest neighbors
 		can be either 5 or 6 some adjustment is made to the
-		weights when forming the SAR matrix. The net result is that it makes more sense to have the off
+		weights when forming the SAR matrix. The net result is that it makes more 
+		sense to have the off
 		diagonal rows sum to 1 and so 
 		\strong{ a.wght must be greater than 1.0 } for a stationary model.                
 		
 		See the help file on 
-		\code{link{IcosahedronFaces}} for code on visualizing these. The first 12 centers will
+		\code{link{IcosahedronFaces}} for code on visualizing these. The first 12 
+		centers will
 		have 5
-		close neighbors and remaining centers will have 6. Currently the SAR weights are
+		close neighbors and remaining centers will have 6. Currently the SAR 
+		weights are
 		roughly equal
 		among
-		all the neighbors but are adjusted so that a locally linear function will be in the
-		"null" space of these weights. For each node the neighbors are projected onto the tangent
-		plane to the sphere at this node location. Now consider a linear function on the coordinates
-		in this tangent plane. The idea is to find  weights applied to the neighbors that will give
-		a perfect linear prediction for the value at the node. The negatives of these values are
-		used as the SAR weights. Specifically let \eqn{w_k} be the weights and \eqn{Y_k} the values of the
-		field at the these locations, and \eqn{Y_0} the value at the node.  Then by construction
+		all the neighbors but are adjusted so that a locally linear function will 
+		be in the
+		"null" space of these weights. For each node the neighbors are projected 
+		onto the tangent
+		plane to the sphere at this node location. Now consider a linear function 
+		on the coordinates
+		in this tangent plane. The idea is to find  weights applied to the 
+		neighbors that will give
+		a perfect linear prediction for the value at the node. The negatives of 
+		these values are
+		used as the SAR weights. Specifically let \eqn{w_k} be the weights and 
+		\eqn{Y_k} the values of the
+		field at the these locations, and \eqn{Y_0} the value at the node.  
+		Then by construction
 \deqn{ Y_0 - sum w_k Y_k  = 0 }
-                for any field that is linear in the tangent plane to the node. Specifically in the function
+                for any field that is linear in the tangent plane to the node. 
+                Specifically in the function
 		\code{LKrigSAR.LKSphere} the weights follow the code fragment
 		
 		\preformatted{
@@ -101,10 +138,14 @@
 		 
 		
 		The basis functions have their 
-		default as using great circle distance to determine the values between the center and
+		default as using great circle distance to determine the values between 
+		the center and
 		other
-		points. See \link{Radial.basis} for an example of the basis functions. Because the distances between centers are not equal some adjustment is made to the
-		\code{delta} parameter for the basis function support. Currently the number of basis functions in
+		points. See \link{Radial.basis} for an example of the basis functions. 
+		Because the distances between centers are not equal some adjustment is made
+		to the
+		\code{delta} parameter for the basis function support. Currently the number
+		of basis functions in
 		each level are  
 		\tabular{lrrrrrrrr}{
 	  Level \tab   1 \tab     2   \tab   3  \tab    4  \tab    5  \tab
@@ -112,7 +153,8 @@
     Number Basis functions \tab  12 \tab    42 \tab   162 \tab   642 \tab 
     2562 \tab 10242  \tab 40962 \tab 163842 \cr
       }
-So if \code{startingLevel=2} and \code{nlevel=3} there will be a total of \code{42 + 162 + 642 = 846}
+So if \code{startingLevel=2} and \code{nlevel=3} there will be a total of 
+\code{42 + 162 + 642 = 846}
 basis functions in the model if the spatial domain includes the entire sphere. 
 		
 		\bold{\code{LKRing}}
@@ -121,20 +163,26 @@ basis functions in the model if the spatial domain includes the entire sphere.
 		longitude is periodic. So the actual coordinates represent the surface of 
 		 cylinder which is one way of visualizing the Mercator projection. 
 		To keep things simple the first coordinate is 
-		essentially hardwired to be in the scale of degrees (sorry for all you fans of radians)
+		essentially hardwired to be in the scale of degrees (sorry for all you 
+		fans of radians)
 		and wrapping 
-		0 to 360 ( or periodic in [-180,180]). It is important to scale the second coordinate in
+		0 to 360 ( or periodic in [-180,180]). It is important to scale the second
+		coordinate in
 		this
 		geometry to be comparable in spatial scale to degrees (use the \code{V}
-		argument in LKrigSetup). However, if the second coordinate can be interpreted as a
+		argument in LKrigSetup). However, if the second coordinate can be 
+		interpreted as a
 		latitude it
-		is often reasonable to assume the spatial scales are the same in these two coordinates. 
+		is often reasonable to assume the spatial scales are the same in these 
+		two coordinates. 
 		
-		Note this geometry can also be used to represent an equatorial section of a spherical
+		Note this geometry can also be used to represent an equatorial section of 
+		a spherical
 		volume.
 		Here the first coordinate is longitude but the second can be 
 		interpreted as a radius from the sphere's center. 
-		This is a case where care needs to taken to scale the radial component to make sense with
+		This is a case where care needs to taken to scale the radial component to 
+		make sense with
 		the degrees in the first.  
 		
 		\bold{\code{LKCylinder}}
@@ -146,17 +194,23 @@ basis functions in the model if the spatial domain includes the entire sphere.
 	First in setting up the spatial autoregression (SAR) weights, the weights
 	reflect the wrapping. Second in finding distances between coordinates the
 	nodes in the lattice has the first coordinate tagged as being periodic. 
-	Specifically in LKrigSetupLattice the gridList for each lattice has an attribute vector that
-	indicates which coordinates are periodic. This information is used in the distance function
+	Specifically in LKrigSetupLattice the gridList for each lattice has an 
+	attribute vector that
+	indicates which coordinates are periodic. This information is used in 
+	the distance function
 	LKrigDistance when called with arguments of a matrix and a gridList. 
 	
-	Why is this so complicated? This structure is designed around the fact that one 
-	can find the pairwise distance matrix quickly between an arbitrary set of locations and a
+	Why is this so complicated? This structure is designed around the fact 
+	that one 
+	can find the pairwise distance matrix quickly between an arbitrary set of 
+	locations and a
 	rectangular grid (a gridList object in this package).
-	The grid points within a delta radius of an arbitrary point can be found by simple
+	The grid points within a delta radius of an arbitrary point can be found 
+	by simple
 	arithmetic
 	and indexing.  Because these two geometries have regular 
-	lattice spacings is it useful to exploit this. See \code{ \link{LKrigDistance}}
+	lattice spacings is it useful to exploit this. 
+	See \code{ \link{LKrigDistance}}
 	for more details about the distance function. 
 	
 	Finally, we note that for just patches of the sphere one can use the usual
@@ -172,12 +226,13 @@ basis functions in the model if the spatial domain includes the entire sphere.
 \examples{
 # 	
 # fit the CO2 satellite data with a fixed lambda
-# (but use a very small, unrealistic number of basis functions and levels so example
-#  runs quickly)
+# (and also use a very small, unrealistic number of basis functions and levels 
+# so examples run quickly)
  data(CO2)
 # to look at raw data: quilt.plot(CO2$lon.lat, CO2$y, nx=288, ny=165)
-# Use two levels starting at the second generation of lattice points from the triangulation
-  LKinfo0<- LKrigSetup( CO2$lon.lat, startingLevel=1 ,nlevel=2,
+# Use two levels starting at the second generation of lattice points from the 
+# triangulation
+  LKinfo0<- LKrigSetup( CO2$lon.lat, startingLevel=2 ,nlevel=2,
                        a.wght=1.1, alpha=c(1,.25),
                        LKGeometry="LKSphere" )
 # Take a look at Model summary
@@ -280,8 +335,6 @@ surface( out)
 	\code{\link{LKrigSAR}},
 	\code{\link{LKrigLatticeCenters}}
 	}
-	
-
 
 \keyword{ spatial }
  

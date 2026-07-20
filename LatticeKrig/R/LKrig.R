@@ -1,9 +1,10 @@
-# LatticeKrig  is a package for analysis of spatial data written for
-# the R software environment .
-# Copyright (C) 2016
-# University Corporation for Atmospheric Research (UCAR)
-# Contact: Douglas Nychka, nychka@ucar.edu,
-# National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
+##BEGIN HEADER
+#
+# LatticeKrig is a package for analysis of spatial data written for
+# the R software environment.
+# Copyright (C) 2026 Colorado School of Mines
+# 1500 Illinois St., Golden, CO 80401
+# Contact: Douglas Nychka,  douglasnychka@gmail.com,
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,10 +15,12 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License
+# A copy of the GNU General Public License is included
 # along with the R software environment if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-# or see http://www.r-project.org/Licenses/GPL-2
+# or refer to  http://www.r-project.org/Licenses/GPL-2
+#
+##END HEADER
 
 LKrig <- function(x, y,
                  weights = NULL,
@@ -86,13 +89,17 @@ LKrig <- function(x, y,
 # NOTE default for weights are just 1's and filled in by 
 # the next call    
 
-    object<- createLKrigObject( x, y, weights, Z,
-                                X, U,  LKinfo,
+    object<- createLKrigObject( x, y, 
+                              weights = weights,
+                                    Z = Z,
+                                    X = X,
+                                    U = U, 
+                               LKinfo = LKinfo,
                                 xName = xName, 
                                 ZName = ZName,
                                 UName = UName, 
                               verbose = verbose)
-    
+  
     nObs <-  nrow( object$y )
     nReps <- ncol( object$y )
 # for readablity make a local copy of LKinfo
@@ -101,6 +108,7 @@ LKrig <- function(x, y,
 	# Begin computations ....
 	# weighted observation vector
     wy <- sqrt(object$weights) * object$y
+   
 # create matrix for fixed part of model    
 # Spatial drift matrix -- default is assumed to be linear in coordinates (m=2)
 # and includes possible covariate(s) -- the Z matrix.
@@ -108,7 +116,8 @@ LKrig <- function(x, y,
 # (see also LKrigSetup)
    if (is.null(wU)) {
    	wU<- LKrigMakewU( object,  verbose=verbose)
- 	 }
+   }
+   
 # some column indices to keep track of fixed part of the model	
 # NOTE nZ <= nt because Z is a subset of U
     object$nt <- ifelse( is.null(ncol(wU)), 0, ncol(wU))
@@ -123,7 +132,8 @@ if (is.null(wX)) {
 	}
 else{
 	timewX<- rep(0,5)
-	}		
+}	
+ 
  #   Precision matrix of the lattice process
 #   inverse of Q is proportional to the covariance matrix of the Markov Random Field
 timeQ<-system.time(

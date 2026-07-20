@@ -1,18 +1,26 @@
-% # LatticeKrig  is a package for analysis of spatial data written for
-% # the R software environment .
-% # Copyright (C) 2016
-% # University Corporation for Atmospheric Research (UCAR)
-% # Contact: Douglas Nychka, nychka@ucar.edu,
-% # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
-% #
-% # This program is free software; you can redistribute it and/or modify
-% # it under the terms of the GNU General Public License as published by
-% # the Free Software Foundation; either version 2 of the License, or
-% # (at your option) any later version.
-% # This program is distributed in the hope that it will be useful,
-% # but WITHOUT ANY WARRANTY; without even the implied warranty of
-% # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% # GNU General Public License for more details.
+%%BEGIN HEADER
+%
+% LatticeKrig is a package for analysis of spatial data written for
+% the R software environment.
+% Copyright (C) 2026 Colorado School of Mines
+% 1500 Illinois St., Golden, CO 80401
+% Contact: Douglas Nychka,  douglasnychka@gmail.com,
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% A copy of the GNU General Public License is included
+% along with the R software environment if not, write to the Free Software
+% Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+% or refer to  http://www.r-project.org/Licenses/GPL-2
+%
+%%END HEADER
 
 \name{LKrigSetupAlpha}
 \alias{LKrigSetupAlpha}
@@ -20,6 +28,7 @@
 \alias{LKrigSetupAlpha.LKInterval}
 \alias{LKrigSetupAlpha.LKRectangle}
 \alias{LKrigSetupAlpha.LKBox}
+\alias{LKFindAlphaVarianceWeights}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Creates the alpha parameter list in LatticeKrig covariance.
 %%  ~~function to do ... ~~
@@ -34,14 +43,20 @@
 LKrigSetupAlpha(object, ...)
 \method{LKrigSetupAlpha}{default}(object, ...)
 
-
+LKFindAlphaVarianceWeights(x1, LKinfo, level) 
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
+ \item{x1}{Locations to evaluate the  alpha weights.}
+ \item{LKinfo}{ An LKinfo object that is usually created by \link{LKrigSetup}.
+ }
+ \item{level}{Level of the multiresolution.}
+ 
   \item{object}{
   	The partial LKinfo object created within \code{LKrigSetup}
 %%     ~~Describe \code{object} here~~
 }
+
   \item{\dots}{
   	Any additional arguments to this method
 %%     ~~Describe \code{\dots} here~~
@@ -49,7 +64,9 @@ LKrigSetupAlpha(object, ...)
 }
 \details{
 	The main function of this method is to fill in the sequence of alpha values
-	for a parametric model and convert those values to a list instead of a  vector. In the case that the scalar \code{nu} is supplied it 	is used to create the list according to:
+	for a parametric model and convert those values to a list instead of a vector.
+	In the case that the scalar \code{nu} is supplied it 	is used to create the
+	list according to:
 \preformatted{	
 	alpha <- 2**(-2 * (1:nlevel) * nu)
     alpha <- alpha/sum(alpha)
@@ -73,6 +90,11 @@ a list.
 [[3]]
 [1] 0.01
 }
+
+The lower level function \code{LKFindAlphaVarianceWeights}
+is used to supply weights as in the default model but also evaluate the weights
+at arbitrary locations. This second role is part of specifying a nonstationary
+model where the weights vary over the spatial domain. 
 
 }
 \author{

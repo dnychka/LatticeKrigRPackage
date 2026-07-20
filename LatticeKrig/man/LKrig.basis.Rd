@@ -1,20 +1,26 @@
-  % # LatticeKrig  is a package for analysis of spatial data written for
-% # the R software environment .
-% # Copyright (C) 2016
-% # University Corporation for Atmospheric Research (UCAR)
-% # Contact: Douglas Nychka, nychka@ucar.edu,
-% # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
-% #
-% # This program is free software; you can redistribute it and/or modify
-% # it under the terms of the GNU General Public License as published by
-% # the Free Software Foundation; either version 2 of the License, or
-% # (at your option) any later version.
-% # This program is distributed in the hope that it will be useful,
-% # but WITHOUT ANY WARRANTY; without even the implied warranty of
-% # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% # GNU General Public License for more details.
-
-% # Modified DH Dec 2013
+%%BEGIN HEADER
+%
+% LatticeKrig is a package for analysis of spatial data written for
+% the R software environment.
+% Copyright (C) 2026 Colorado School of Mines
+% 1500 Illinois St., Golden, CO 80401
+% Contact: Douglas Nychka,  douglasnychka@gmail.com,
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% A copy of the GNU General Public License is included
+% along with the R software environment if not, write to the Free Software
+% Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+% or refer to  http://www.r-project.org/Licenses/GPL-2
+%
+%%END HEADER
 
 \name{LKrig.basis}
 \alias{LKrig.basis}
@@ -25,9 +31,10 @@
 \alias{LKrig.spind2spam}
 \alias{LKrigCovWeightedObs}
 \alias{LKrigMarginalVariance}
+\alias{LKFindSigma2VarianceWeights}
+
 \title{
-Functions for generating a multi-resolution, compactly supported basis,  
-multi-resolution covariance functions and simulating from these processes.
+High level functions for generating and simulating a basis function,Gaussian Process. 
 }
 \description{
 These functions support the \code{LKrig} function.  Their main
@@ -37,7 +44,7 @@ a multi-resolution basis.  The Gaussian process model is an expansion
 in these basis functions where the basis coefficients follow a Markov
 random field model for each resolution level.  This family of
 functions generate the basis using sparse matrices, evaluate the
-covariance function of the process and also simulate realizations of
+covariance function of the process, and also simulate realizations of
 the process. \code{LKrig.cov.plot} is a useful function to get a quick
 plot of the covariance function implied by a LatticeKrig
 specification.}
@@ -45,14 +52,16 @@ specification.}
 \usage{
 #
 LKrig.cov(x1, x2 = NULL, LKinfo, C = NA, marginal = FALSE,
-theta = NULL) 
+                 aRange = NA)
 LKrig.cov.plot( LKinfo, NP=200, center = NULL, xlim = NULL, ylim = NULL)
 LKrigCovWeightedObs(x1, wX, LKinfo) 
-LKrig.basis(x1, LKinfo, verbose = FALSE)
+
+LKrig.basis(x1, LKinfo, Level = NULL, raw = FALSE, verbose = FALSE)
 LKrig.precision(LKinfo, return.B = FALSE, verbose=FALSE)  
 LKrig.quadraticform( Q, PHI, choleskyMemory = NULL) 
 LKrig.spind2spam(obj, add.zero.rows=TRUE)
 LKrigMarginalVariance(x1, LKinfo, verbose = FALSE)
+LKFindSigma2VarianceWeights(x1, LKinfo) 
 }
 
 \arguments{
@@ -84,7 +93,7 @@ the covariance of the basis coefficients. This list is created in
 \code{LKrig} or by \code{LKrigSetup} and returned in the output
 object.  (See section on returned Value below for this list's
 description.)}
-
+\item{Level}{If NULL the entire basis is evaluated. If an integer just that level is evaluated.}
 \item{marginal}{If TRUE returns the marginal variance. Currently not
 implemented!}
 
@@ -97,15 +106,17 @@ row/column format passed to \code{LKrig.spind2spam}.}
 \item{PHI}{ A sparse matrix of basis functions (rows index points for
 evaluation, columns index basis functions).}
 
+\item{raw}{Do not normalize the basis functions even if it is indicated in the LKinfo object.}
+
 \item{return.B}{ If TRUE B is returned instead of the precision matrix
 t(B)\%*\%B.}
 
 \item{Q}{A sparse (spam format) precision matrix.}
 
-\item{theta}{Currently \code{theta} is a place holder argument
-    for future development. }
+\item{aRange}{Currently \code{aRange} is a place holder argument
+    for future development where the correlation range can be specified. }
 
-\item{wX}{The wX matrix constructed in the \code{\link{LKrig}} function.}
+\item{wX}{The wX matrix constructed in the \code{LKrig} function.}
 
 \item{x1}{A two column matrix of 2-dimension locations to evaluate
 basis functions or the first set of locations to evaluate the
@@ -184,12 +195,17 @@ compute the unnormalized process variance.  First the normalization
 can be done level by level rather than dealing with the entire
 multi-resolution process at once. Also it is important to work with the
 precision matrix rather than the covariance.  The function
-\code{LKrig.normalize.basis.slow} takes advantage of the sparsity of the
+\code{LKrigNormalizeBasis} takes advantage of the sparsity of the
 precision matrix for the coefficients.
-\code{LKrig.normalize.basis.fast} is even a more efficient version 
+\code{LKrigNormalizeBasisFast} is a more efficient version 
 for an isotropic type model when
 a.wght is constant for a given level and takes advantage of the
-Kronecker structure on the precision matrix at each level.
+Kronecker structure on the precision matrix at each level. 
+\code{LKrigNormalizeBasisFFTInterpolate} is the fastest method, which provides 
+an accurate but approximate method for the normalization, which takes advantage 
+of situations where the number of locations significantly exceeds the number of
+basis functions.
+
 
 The precision matrix for the basis coefficients at each resolution has
  the form \code{t(B)\%*\% B}. These matrices for the individual levels
@@ -260,9 +276,10 @@ LatticeKrig process at each level and at the locations in \code{x1}. Returned va
 \code{nlevel} columns indexing the levels and the number of rows equal to  \code{nrow(x1)}. 
 If  \code{varLevels} is a row of this matrix then  sum( varLevels* LKinfo$alpha) is the marginal variance
 for the full process when the different levels are weighted by alpha. This is weighted sum is the marginal
-variance returned by \code{LKrig.cov} and \code{ marginal=TRUE} ( Also assuming that \code{LKinfo$rho.object}
+variance returned by \code{LKrig.cov} and \code{ marginal=TRUE} ( Also assuming that \code{LKinfo$sigma2.object}
 is NULL, which it usually is.) . 
 
+\strong{LKFindSigma2VarianceWeights} Return either the marginal variance of the process as a scalar or the variance at arbitrary locations \code{x1}. This second role is part of a nonstationary specification of the model where the process marginal variance can vary over space.
 
 \strong{LKrig.sim:} A matrix with dimensions of \code{nrow(x1)} by
 \code{M}. Each column are vectors of simulated values at the locations
@@ -288,9 +305,9 @@ functions.  To plot the returned list use
  \code{diag(t(PHI)\%*\% solve(Q) \%*\% PHI))} closely related to the marginal
  variance of the process.
 
-\strong{LKrig.normalize.basis},
-\strong{LKrig.normalize.basis.fast}, 
-\strong{LKrig.normalize.basis.slow}: A vector of variances
+\strong{LKrigNormalizeBasis},
+\strong{LKrigNormalizeBasisFast}, 
+\strong{LKrigNormalizeBasisFFTInterpolate}: A vector of variances
 corresponding to the unnormalized process at the locations.
 
 
@@ -313,7 +330,7 @@ Doug Nychka
 }
 
 \seealso{
-\link{LKrig}, \link{mKrig}, \link{Krig}, \link{fastTps}, \link{Wendland}, 
+\link{LKrig}, \code{mKrig}, \code{Krig}, \code{fastTps}, \code{Wendland}, 
 \link{LKrigSAR}, \link{Radial.basis}
 }
 \examples{

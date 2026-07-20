@@ -1,9 +1,10 @@
-# LatticeKrig  is a package for analysis of spatial data written for
-# the R software environment .
-# Copyright (C) 2016
-# University Corporation for Atmospheric Research (UCAR)
-# Contact: Douglas Nychka, nychka@ucar.edu,
-# National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
+##BEGIN HEADER
+#
+# LatticeKrig is a package for analysis of spatial data written for
+# the R software environment.
+# Copyright (C) 2026 Colorado School of Mines
+# 1500 Illinois St., Golden, CO 80401
+# Contact: Douglas Nychka,  douglasnychka@gmail.com,
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,16 +15,18 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License
+# A copy of the GNU General Public License is included
 # along with the R software environment if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-# or see http://www.r-project.org/Licenses/GPL-2
-
-## LKrig model for 2-d data in ring
-#    (e.g longitude and height at a constant latitude)
-#    or longitude and latitude excluding the poles
+# or refer to  http://www.r-project.org/Licenses/GPL-2
 #
+##END HEADER
+
 setDefaultsLKinfo.LKRing <- function(object, ...) {
+  ## LKrig model for 2-d data in ring
+  #    (e.g longitude and height at a constant latitude)
+  #    or longitude and latitude excluding the poles
+  #
 	# object == LKinfo
   
   object$floorAwght<- 4
@@ -128,7 +131,7 @@ LKrigSetupLattice.LKRing <- function(object, verbose,  ...) {
   NC<- object$NC
   NC.buffer<- object$NC.buffer
 	#object is usually of class LKinfo
-	rangeLocations <- apply( object$x, 2, "range")
+	rangeDomain <- apply( object$x, 2, "range")
 	# range in transformed scale
 	  # find range of scaled locations
   	if( is.null(object$basisInfo$V[1])){
@@ -177,7 +180,7 @@ offset <- as.integer(c(0, cumsum(mLevel)))
 	mLevelDomain <- (mLevel - 2 * NC.buffer)
 # required arguments for latticeInfo 
 	out <- list(m = m, offset = offset, mLevel = mLevel, delta = delta.save, 
-		rangeLocations = rangeLocations)
+		rangeDomain = rangeDomain)
 	# specific arguments for LKRing Geometry 
 	out <- c(out, 
 	          list(mx = mx, mLevelDomain = mLevelDomain, mxDomain = mxDomain, 

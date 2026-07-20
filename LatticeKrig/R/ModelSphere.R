@@ -1,10 +1,10 @@
-
-# LatticeKrig  is a package for analysis of spatial data written for
-# the R software environment .
-# Copyright (C) 2012
-# University Corporation for Atmospheric Research (UCAR)
-# Contact: Douglas Nychka, nychka@ucar.edu,
-# National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
+##BEGIN HEADER
+#
+# LatticeKrig is a package for analysis of spatial data written for
+# the R software environment.
+# Copyright (C) 2026 Colorado School of Mines
+# 1500 Illinois St., Golden, CO 80401
+# Contact: Douglas Nychka,  douglasnychka@gmail.com,
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,22 +15,12 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License
+# A copy of the GNU General Public License is included
 # along with the R software environment if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-# or see http://www.r-project.org/Licenses/GPL-2
-
-###################################################################
-## LKrig model for data on Sphere using icosohedral grid.
-##  Zach Thomas and Doug Nychka authors
-####################################################################
-
-###### Geometry class of this method is LKSphere
-
-## These are obvious defaults for this model and saves
-## specifying them in LKrigSetup
-# This function is called in LKrigSetup before
-# creating the lattice
+# or refer to  http://www.r-project.org/Licenses/GPL-2
+#
+##END HEADER
 
 setDefaultsLKinfo.LKSphere <- function(object, ...) {
   object$floorAwght<- 1.0 
@@ -76,9 +66,21 @@ setDefaultsLKinfo.LKSphere <- function(object, ...) {
     stop("delta must be just one value")
   }
           
-  
   return(object)
-  }
+}
+
+###################################################################
+## LKrig model for data on Sphere using icosohedral grid.
+##  Zach Thomas and Doug Nychka authors
+####################################################################
+
+###### Geometry class of this method is LKSphere
+
+## These are obvious defaults for this model and saves
+## specifying them in LKrigSetup
+# This function is called in LKrigSetup before
+# creating the lattice
+
 
 # setup the lattice based on subdividing the faces of
 # an icosohedron. There are 12 points at first
@@ -98,7 +100,7 @@ setDefaultsLKinfo.LKSphere <- function(object, ...) {
     stop("object needs to an LKinfo object")
   }
   
-  rangeLocations<- apply( x,2, "range")
+  rangeDomain<- apply( x,2, "range")
   nlevel<- LKinfo$nlevel
 ###### end common operations  
 # if x not passed then  assume full Sphere
@@ -142,10 +144,10 @@ setDefaultsLKinfo.LKSphere <- function(object, ...) {
     grid3d<- MultiGrid[[ l + (startingLevel -1) ]]
     gridTemp<- toSphere( grid3d )
       # trim to range of locations (in lon/lat coordinates)
-    ind<-  gridTemp[,1] >= rangeLocations[1,1] &
-           gridTemp[,1] <= rangeLocations[2,1] &
-           gridTemp[,2] >= rangeLocations[1,2] &
-           gridTemp[,2] <= rangeLocations[2,2] 
+    ind<-  gridTemp[,1] >= rangeDomain[1,1] &
+           gridTemp[,1] <= rangeDomain[2,1] &
+           gridTemp[,2] >= rangeDomain[1,2] &
+           gridTemp[,2] <= rangeDomain[2,2] 
     ind2<-  (1:length( ind)) <= 12
 # first 12 coordinates are always the initial isocosohedron points    
     grid.all.levels[[l]]<-  gridTemp[ ind, ] 
@@ -169,7 +171,7 @@ setDefaultsLKinfo.LKSphere <- function(object, ...) {
               offset=offset,
               mLevel=mLevel, 
               delta=delta.save, 
-              rangeLocations=rangeLocations,
+              rangeDomain=rangeDomain,
 # specific arguments for LKSphere              
               startingLevel=startingLevel,
               grid=grid.all.levels,

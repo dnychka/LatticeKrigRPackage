@@ -1,20 +1,26 @@
-% # LatticeKrig  is a package for analysis of spatial data written for
-% # the R software environment .
-% # Copyright (C) 2016
-% # University Corporation for Atmospheric Research (UCAR)
-% # Contact: Douglas Nychka, nychka@ucar.edu,
-% # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
-% #
-% # This program is free software; you can redistribute it and/or modify
-% # it under the terms of the GNU General Public License as published by
-% # the Free Software Foundation; either version 2 of the License, or
-% # (at your option) any later version.
-% # This program is distributed in the hope that it will be useful,
-% # but WITHOUT ANY WARRANTY; without even the implied warranty of
-% # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% # GNU General Public License for more details.
-
-% # Modified DH Dec 2013
+%%BEGIN HEADER
+%
+% LatticeKrig is a package for analysis of spatial data written for
+% the R software environment.
+% Copyright (C) 2026 Colorado School of Mines
+% 1500 Illinois St., Golden, CO 80401
+% Contact: Douglas Nychka,  douglasnychka@gmail.com,
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% A copy of the GNU General Public License is included
+% along with the R software environment if not, write to the Free Software
+% Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+% or refer to  http://www.r-project.org/Licenses/GPL-2
+%
+%%END HEADER
 
 \name{LKrig.sim}
 
@@ -31,14 +37,13 @@ The fields are Gaussian and can be either simulated unconditionally or
 conditional on the field values and a set of irregular locations.  }
 
 \usage{
-#
-LKrig.sim(x1, LKinfo, M=1,just.coefficients = FALSE)
+LKrig.sim(x1, LKinfo, M = 1, just.coefficients = FALSE, timing = FALSE)
+
 LKrig.sim.conditional( LKrigObj, M=1, x.grid= NULL, grid.list=NULL,
                            nx=80, ny=80,...,Z.grid=NULL, seed=42, verbose=FALSE)
 
 simConditionalDraw(index = 1, LKrigObj, ghat, x.grid, Z.grid, PHIGrid,
                  seeds = 123, verbose = FALSE)
-
 }
 \arguments{
 
@@ -58,6 +63,9 @@ the covariance of the basis coefficients. This list is created in
 hands on manner directly using \code{LKrigSetup} (See section on
 returned value below for this list's description.)}
 
+\item{LKrigObj}{An \code{LKrig} object, i.e. the output list returned by
+\code{LKrig}.}
+
 
 \item{M}{Number of independent simulated fields.}
 
@@ -65,10 +73,10 @@ returned value below for this list's description.)}
 
 \item{ny}{Number of grid points in y coordinate for output grid.}
 
-\item{LKrigObj}{An \code{LKrig} object, i.e. the output list returned by
-\code{LKrig}.}
 
 \item{seed}{Seed to set random number generator.}
+
+\item{timing}{If true prints out intermedaite timing information for development.}
 
 \item{x1}{ A two column matrix of 2-dimension locations to evaluate
 basis functions or the first set of locations to evaluate the

@@ -1,9 +1,10 @@
-# LatticeKrig  is a package for analysis of spatial data written for
-# the R software environment .
-# Copyright (C) 2016
-# University Corporation for Atmospheric Research (UCAR)
-# Contact: Douglas Nychka, nychka@ucar.edu,
-# National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
+##BEGIN HEADER
+#
+# LatticeKrig is a package for analysis of spatial data written for
+# the R software environment.
+# Copyright (C) 2026 Colorado School of Mines
+# 1500 Illinois St., Golden, CO 80401
+# Contact: Douglas Nychka,  douglasnychka@gmail.com,
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -13,9 +14,15 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
+#
+# A copy of the GNU General Public License is included
+# along with the R software environment if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+# or refer to  http://www.r-project.org/Licenses/GPL-2
+#
+##END HEADER
 
-
-  LKrigNormalizeBasisFast.LKRectangle<- function( LKinfo, Level, x, ...){
+LKrigNormalizeBasisFast.LKRectangle<- function( LKinfo, Level, x1, ...){
 # some information about the rectangular lattice at level == Level  	
   mx1Level<- (LKinfo$latticeInfo$mx)[Level,1]
   mx2Level<- (LKinfo$latticeInfo$mx)[Level,2]
@@ -28,12 +35,15 @@
   setupList<- ( attr( LKinfo$a.wght,"fastNormDecomp"))[[Level]]
   # convert the locations to the integer scale of the lattice
   # at the level == Level          
-  xLocation<- scale( x, center= c( xmin, ymin), scale= c( dx, dy)) + 1
+  xLocation<- scale( x1, center= c( xmin, ymin), scale= c( dx, dy)) + 1
   nLocation<- nrow( xLocation)
 # solving linear system in based on writing as a Kronecker product
 # see setup function for LKrigSetupAwght.LKrectangle to see 
-                                        # definitions of the matrices below.
-      #     subroutine   findNorm(mx,my,offset,Ux,Dx,Uy,Dy,nLocations, xLocations, weights, Z)
+# definitions of the matrices below.
+# and the paper  Sikorski et. al (2024) STAT for the derivation.
+#   subroutine   findNorm(mx,my,offset,Ux,Dx,Uy,Dy,nLocations, xLocations, weights, Z)
+# yes this is FORTRAN!
+#
   return(
          .Fortran("findNorm",
                           mx = as.integer(mx1Level),

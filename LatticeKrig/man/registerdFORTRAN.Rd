@@ -1,3 +1,27 @@
+%%BEGIN HEADER
+%
+% LatticeKrig is a package for analysis of spatial data written for
+% the R software environment.
+% Copyright (C) 2026 Colorado School of Mines
+% 1500 Illinois St., Golden, CO 80401
+% Contact: Douglas Nychka,  douglasnychka@gmail.com,
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% A copy of the GNU General Public License is included
+% along with the R software environment if not, write to the Free Software
+% Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+% or refer to  http://www.r-project.org/Licenses/GPL-2
+%
+%%END HEADER
+
 \name{registeredFORTRAN}
 \alias{findnorm}
 \alias{lkdist}
@@ -34,16 +58,21 @@ package source (src) directory.
 \details{
 Registered routines are
 \describe{
- \item{findnorm}{Finds marginal variance quickly for the case of a rectangular lattice,
+ \item{findnorm}{Finds marginal variance quickly for the case of a rectangular
+ lattice,
  a specific Wendland basis, and constant a.wght at a given level. Called from 
  \code{LKRectangleFastNormalization}}
- \item{lkdist}{Euclidean distance between two sets of coordinates but restricted to a
+ \item{lkdist}{Euclidean distance between two sets of coordinates but 
+ restricted to a
  maximum distance.Called from \code{LKDist}.}
  \item{lkdistcomp}{Same as lkdist but returns the component distances for each
  coordinate.Called by \code{LKDistComponents}}
- \item{lkdistgrid}{Finds all distances in x1 that are within delta of a set of grid
- points. Results are returned in the row, column,  value sparse matrix format.called from \code{LKDistGrid}}
- \item{lkdistgridcomp}{Same as lkdistgrid but the component distances are found for
+ \item{lkdistgrid}{Finds all distances in x1 that are within delta of a set 
+ of grid
+ points. Results are returned in the row, column, value sparse matrix 
+ format called from \code{LKDistGrid}.}
+ \item{lkdistgridcomp}{Same as lkdistgrid but the component distances are found
+ for
  each coordinate.\code{LKDistGridComponents}}
   \item{lkdiag}{Fills in diagonal and off diagonal elements
   in sparse matrix format.}
@@ -56,7 +85,6 @@ utility used to create these data objects.
 \references{
 For background on registering C, C++ and Fortran functions see 5.4 of
 Writing R Extensions. 
-See \url{http://r.789695.n4.nabble.com/Registration-of-native-routines-td4728874.html} for additional discussion of code registration. 
 }
 \examples{
 print(lkdistgridcomp)

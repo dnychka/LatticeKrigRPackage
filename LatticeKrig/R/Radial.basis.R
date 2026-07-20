@@ -1,9 +1,10 @@
-# LatticeKrig  is a package for analysis of spatial data written for
-# the R software environment .
-# Copyright (C) 2016
-# University Corporation for Atmospheric Research (UCAR)
-# Contact: Douglas Nychka, nychka@ucar.edu,
-# National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
+##BEGIN HEADER
+#
+# LatticeKrig is a package for analysis of spatial data written for
+# the R software environment.
+# Copyright (C) 2026 Colorado School of Mines
+# 1500 Illinois St., Golden, CO 80401
+# Contact: Douglas Nychka,  douglasnychka@gmail.com,
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,17 +15,20 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License
+# A copy of the GNU General Public License is included
 # along with the R software environment if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-# or see http://www.r-project.org/Licenses/GPL-2
+# or refer to  http://www.r-project.org/Licenses/GPL-2
+#
+##END HEADER
 
 Radial.basis <- function(x1, centers, basis.delta,
                      max.points = NULL, 
                   mean.neighbor = 50,
                   BasisFunction = "WendlandFunction", 
                   distance.type = "Euclidean",
-                        verbose = FALSE)
+                        verbose = FALSE,
+                         timing = FALSE)
 {    
     d <- ncol(x1)
     n1 <- nrow(x1)
@@ -42,36 +46,16 @@ Radial.basis <- function(x1, centers, basis.delta,
     # nodes given by centers. Returned is a sparse matrix in
     # a simpler format than spam  (row/column indices and value)
     # returned values ind and rd below in 'out' object.
-    t1  <- system.time(  
     out <- LKrigDistance( x1, centers,
                              delta = basis.delta,
                         max.points = max.points,
                      mean.neighbor = mean.neighbor,
                      distance.type = distance.type,
                         components = FALSE)
-    )      
-    if( verbose){
-    	cat("time for LKDistance")
-    	print( t1)
-    }          
     # evaluate distance  with RBF ---  usually Wendland2.2 
-    t2  <- system.time(
     out$ra <- do.call(BasisFunction, list(d = out$ra/basis.delta) )
-    )
-    if( verbose){
-        cat("time for basis")
-        print( t2)
-    } 
+    out <- spind2spam(out)
     
-   
-    
-    t3A<- system.time(
-        out <- spind2spam(out)
-    )
-    if( verbose){
-    cat("time for spam conversion")
-    print( t3A)
-    }
     #
     # following code takes much longer
     # t3<- system.time(
@@ -79,11 +63,7 @@ Radial.basis <- function(x1, centers, basis.delta,
     #               nrow=out$da[1],
     #               ncol= out$da[2] )
     # )
-    # if( verbose){
-    #     cat("time for spam conversion")
-    #     
-    #     print( t3)
-    # }
+    
     return(out)
 }
 

@@ -5,7 +5,7 @@
 # Licensed under the GPL -- www.gpl.org/licenses/gpl.html
 
 suppressMessages(library( LatticeKrig))
-options( echo=FALSE)
+#options( echo=FALSE)
 
 ##########################################
   test.for.zero.flag<- 1
@@ -66,7 +66,8 @@ temp<- matrix( 1:m, mx[1,1],mx[1,2])
   set.seed(123)
   x1<- cbind( runif( 10), runif(10))
   LKinfo<- LKrigSetup( cbind( c( -1,1), c( -1,1) ),
-             nlevel=3, NC=4, a.wght=list(5,6,7), alpha=c(6,6,6) )
+             nlevel=3, NC=4, a.wght=list(5,6,7), 
+             alpha=c(6,6,6) )
   X<- LKrig.basis(x1, LKinfo)
   X<- as.matrix(X)
 # check on normalization to unit variance at each level

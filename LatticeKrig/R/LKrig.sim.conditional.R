@@ -1,9 +1,10 @@
-# LatticeKrig  is a package for analysis of spatial data written for
-# the R software environment .
-# Copyright (C) 2016
-# University Corporation for Atmospheric Research (UCAR)
-# Contact: Douglas Nychka, nychka@ucar.edu,
-# National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
+##BEGIN HEADER
+#
+# LatticeKrig is a package for analysis of spatial data written for
+# the R software environment.
+# Copyright (C) 2026 Colorado School of Mines
+# 1500 Illinois St., Golden, CO 80401
+# Contact: Douglas Nychka,  douglasnychka@gmail.com,
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,13 +15,16 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License
+# A copy of the GNU General Public License is included
 # along with the R software environment if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-# or see http://www.r-project.org/Licenses/GPL-2
+# or refer to  http://www.r-project.org/Licenses/GPL-2
+#
+##END HEADER
 
 LKrig.sim.conditional <- function(LKrigObj, M = 1, x.grid = NULL, 
-    grid.list = NULL, nx = 80, ny = 80, ..., Z.grid = NULL, seed=42, verbose=FALSE) {
+            grid.list = NULL, nx = 80, ny = 80, ..., Z.grid = NULL, seed=42,
+                                  verbose=FALSE) {
     # generate grid if not specified
     if (is.null(x.grid)) {
         if (is.null(grid.list)) {
@@ -82,16 +86,17 @@ LKrig.sim.conditional <- function(LKrigObj, M = 1, x.grid = NULL,
 
 simConditionalDraw <- function(index=1,  LKrigObj, ghat, x.grid, Z.grid,
                                PHIGrid, seeds= 123,  verbose=FALSE){
-require(LatticeKrig)
+#require(LatticeKrig)
+#require(spam64)
         set.seed( seeds[index] )
 # generate process at grid and also on the observation locations.
         simCoefficients<- LKrig.sim(LKinfo = LKrigObj$LKinfo, just.coefficients=TRUE)
         g.unconditional.data <-LKrigObj$wX %*%simCoefficients 
-        g.unconditional.data <- sqrt(LKrigObj$rho.MLE) * g.unconditional.data
-        g.unconditional.grid <-sqrt(LKrigObj$rho.MLE) *PHIGrid%*%simCoefficients 
+        g.unconditional.data <- sqrt(LKrigObj$sigma2.MLE) * g.unconditional.data
+        g.unconditional.grid <-sqrt(LKrigObj$sigma2.MLE) *PHIGrid%*%simCoefficients 
         # generate a synthetic data set with fixed part set to zero.
         N<- length( LKrigObj$y)
-        y.synthetic.data <- g.unconditional.data + LKrigObj$sigma.MLE * 
+        y.synthetic.data <- g.unconditional.data + LKrigObj$tau.MLE * 
             rnorm(N)
 # this may confusing. divide by  sqrt(weights) to cancel out this term in the
 # wX matrix for  g.unconditional.data and to adjust measurement error variance         
@@ -133,3 +138,4 @@ require(LatticeKrig)
 return(
        list( g.conditional = g.conditional, d.coef = d.coef) )
 }
+

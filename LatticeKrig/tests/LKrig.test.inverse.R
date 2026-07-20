@@ -31,7 +31,7 @@ c.true <- runif(LKinfo$latticeInfo$m)
 y <- X %*% c.true
 
 obj <- LKrig(x, y, LKinfo = LKinfo, X = X, U = U)
-rho<- obj$rho.MLE
+sigma2<- obj$sigma2.MLE
 
 Q <- LKrig.precision(LKinfo)
 Sigma <- solve(Q)
@@ -51,14 +51,14 @@ hold1<- AMatrix%*%y
 hold2<- predict( obj, xnew=x0)
 test.for.zero(hold1, hold2, tag = "checking A matrix coef with inverse X")
 
-rho<- obj$rho.MLE
-sigma<- obj$sigma.MLE
+sigma2<- obj$sigma2.MLE
+tau<- obj$tau.MLE
 
 Q <- LKrig.precision(LKinfo)
-S <- rho*solve(Q)
+S <- sigma2*solve(Q)
 temp0<- W0%*% (S)%*%t(W0)
 temp1<- W0%*% (S)%*% t( AMatrix%*%X)
-temp2<- AMatrix%*%( X%*%S%*%t(X) + diag( sigma^2 ,nObs) )%*%t(AMatrix)
+temp2<- AMatrix%*%( X%*%S%*%t(X) + diag( tau^2 ,nObs) )%*%t(AMatrix)
 covTest<- temp0 - temp1 - t(temp1) + temp2
 
 test1.se <- predictSE(obj, xnew = x0)

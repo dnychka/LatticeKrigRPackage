@@ -1,19 +1,26 @@
-
-% # LatticeKrig  is a package for analysis of spatial data written for
-% # the R software environment .
-% # Copyright (C) 2016
-% # University Corporation for Atmospheric Research (UCAR)
-% # Contact: Douglas Nychka, nychka@ucar.edu,
-% # National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
-% #
-% # This program is free software; you can redistribute it and/or modify
-% # it under the terms of the GNU General Public License as published by
-% # the Free Software Foundation; either version 2 of the License, or
-% # (at your option) any later version.
-% # This program is distributed in the hope that it will be useful,
-% # but WITHOUT ANY WARRANTY; without even the implied warranty of
-% # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% # GNU General Public License for more details.
+%%BEGIN HEADER
+%
+% LatticeKrig is a package for analysis of spatial data written for
+% the R software environment.
+% Copyright (C) 2026 Colorado School of Mines
+% 1500 Illinois St., Golden, CO 80401
+% Contact: Douglas Nychka,  douglasnychka@gmail.com,
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% A copy of the GNU General Public License is included
+% along with the R software environment if not, write to the Free Software
+% Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+% or refer to  http://www.r-project.org/Licenses/GPL-2
+%
+%%END HEADER
 
 \name{LKrigSetupLattice}
 \alias{LKrigSetupLattice}
@@ -24,14 +31,22 @@
 \alias{LKrigSetupLattice.LKRing}
 \alias{LKrigSetupLattice.LKCylinder}
 \alias{LKrigSetupLattice.LKSphere}
+\alias{LKIntervalCreateLattice}
+\alias{LKBoxCreateLattice}
+\alias{LKRectangleCreateLattice}
+
+
 
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Creates the lattice information for a specific geometry.
 %%  ~~function to do ... ~~
 }
-\description{Given a specific geometry and the initial information supplied in an 
-	LKinfo list create the information that is needed to define the lattice for a
-	given model. This function is required for any new geometry added to LatticeKrig.  
+\description{Given a specific geometry and the initial information 
+supplied in an 
+	LKinfo list create the information that is needed to define the lattice 
+	for a
+	given model. This function is required for any new geometry added to
+	LatticeKrig.  
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
@@ -39,10 +54,16 @@ LKrigSetupLattice(object, ...)
 \method{LKrigSetupLattice}{default}(object, ...)
 
 \method{LKrigSetupLattice}{LKBox}(object, verbose,...)
+
+LKBoxCreateLattice(LKinfo, verbose = FALSE)
  
 \method{LKrigSetupLattice}{LKRectangle}(object, verbose,...)
 
+LKRectangleCreateLattice(LKinfo, verbose = FALSE)
+
 \method{LKrigSetupLattice}{LKInterval}(object, verbose,...)
+
+LKIntervalCreateLattice(LKinfo, verbose = FALSE)
 
  \method{LKrigSetupLattice}{LKRing}(object, verbose,...)
  
@@ -54,13 +75,16 @@ LKrigSetupLattice(object, ...)
 
 \arguments{
 %\item{grid.info}{}
+\item{LKinfo}{The LKinfo object created by \code{LatticeKrig} or by 
+\code{LKrigSetup}. }
   \item{object}{ A list that is an LKinfo object.}
 
 
 \item{verbose}{If TRUE print out intermediate information for debugging.
 }
 
-\item{x}{Locations of the observations that define spatial domain. For LKSphere locations
+\item{x}{Locations of the observations that define spatial domain. For LKSphere 
+locations
 are in lon/lat degrees.}
 
 \item{\dots}{Any additional arguments. }
@@ -68,11 +92,20 @@ are in lon/lat degrees.}
 }
 \details{
 	This method takes the LKInfo object and the other arguments and computes the 
-	lattice information needed for a specific geometry. The functions are
-	 called from within LKrigSetup and the results are added as a component to\code{latticeInfo}
+	lattice information needed for a specific geometry. Three lower
+	level functions that actually create the lattices for regular grids in 1D, 2D,
+	and 3D
+	were written to make the code eaiser to follow and hanlde both the case when
+	the number of basis functions is specified (\code{NC}) or where the grid 
+	spacing is specified (\code{delta}). 
+	
+	These functions are
+	 called from within LKrigSetup and the results are added as a component 
+	 to\code{latticeInfo}
 	as part of the LKinfo object.  The  way 
 	to design  what should be in \code{latticeInfo} is to keep in mind that
-	creating the spatial AR matrix (LKrigSAR) and  determining the multi-resolution
+	creating the spatial AR matrix (LKrigSAR) and  determining the
+	multi-resolution
 	 lattice points (LKrigLatticeCenters) use the information in the LKinfo
 	  object. 
  
@@ -94,7 +127,8 @@ are in lon/lat degrees.}
 	   at a given level is also effected the size of NC.buffer (see below). 
 
   The number of lattice points to add to the margins beyond the
-  	 spatial domain is controlled by \code{NC.buffer}. Thus in the largest spatial dimension there are a total of 
+  	 spatial domain is controlled by \code{NC.buffer}. Thus in the largest 
+  	 spatial dimension there are a total of 
 		NC + NC.buffer*2 grid points. This is the number of lattice points for 
 		LKInterval.
 }
@@ -116,9 +150,11 @@ are in lon/lat degrees.}
 	}
 	
 	In addition, the methods for Cartesian and cartesian-like  spatial domains (
-	LKInterval, LKRectangle, LKBox, LKRing, LKCylinder, LKSphere) include the additional components:
+	LKInterval, LKRectangle, LKBox, LKRing, LKCylinder, LKSphere) include the
+	additional components:
 	\describe{	
-		\item{mx}{A matrix giving number of grid points at each level and for each dimension.}
+		\item{mx}{A matrix giving number of grid points at each level and for
+		each dimension.}
 		\item{mLevelDomain}{Same as mLevel but restricted to lattice points
 			 within the spatial domain.}
 		\item{mxDomain}{Same as mx but restricted to the points within the
@@ -126,14 +162,14 @@ are in lon/lat degrees.}
 		
 		\item{NC}{Passed value.}
 		\item{NC.buffer}{Passed value.}
-		\item{grid}{A list where each component is also list giving the grid points of the lattice in each coordinate. }
+		\item{grid}{A list where each component is also list giving the grid points
+		of the lattice in each coordinate. }
     }
     
-  LKSphere also returns the additional component \code{grid3d} -- the direction Cosines
+  LKSphere also returns the additional component \code{grid3d} -- the direction
+  cosines
   of the grid points. 
     
-    
-      
 
 }
 
@@ -143,6 +179,7 @@ are in lon/lat degrees.}
 }
 
 \seealso{
+  \code{LatticeKrig}
 	\code{\link{LKGeometry}}
     \code{\link{LKrigSetup}},
 	\code{\link{LKrigSAR}},

@@ -20,7 +20,8 @@ options( echo=FALSE)
   N<- length( y)
   a.wght<- 5
   lambda <-  1.5
-  obj<- LKrig( x,y,NC=16, lambda=lambda, a.wght=a.wght, alpha=1, nlevel=1, NtrA=5,iseed=122)
+  obj<- LKrig( x,y,NC=16, lambda=lambda, a.wght=a.wght,
+               alpha=1, nlevel=1, NtrA=5,iseed=122)
   LKinfo<- obj$LKinfo
   K<- LKrig.cov( x,x,LKinfo)
   tempM<-  K
@@ -70,6 +71,10 @@ options( echo=FALSE)
   test.for.zero( obj0$fitted.values, obj$fitted.values)
   test.for.zero( obj$d.coef, obj0$beta,
                  tag= "d.coef  from Lattice Krig and beta mKrig")
+  
+#### test with specifying grid directly  
+  
+  
 ###########################################################################
 ### test that code works with locations outside spatial domain.
   xTest<- rbind(x, c( -100,20) )
@@ -151,6 +156,7 @@ options( echo=FALSE)
 #
 ###### check of formula with weights
   set.seed(123)
+  nlevel<-3
   weights<- runif(N)
   W<- diag(weights)
   lambda<- .5
@@ -196,8 +202,8 @@ test.for.zero(  lnDet( B3) - lnDet(Q) - sum( log( weights))  + (N-N2)*log(lambda
 # recopy data to make reading easier
   rm( obj, obj0) # remove previous objects
   data( ozone2)
-  x<-ozone2$lon.lat[1:10,]
-  y<- ozone2$y[16,1:10]
+  x<-ozone2$lon.lat
+  y<- ozone2$y[16,]
   good <-  !is.na( y)
   x<- x[good,]
   y<- y[good]
@@ -205,7 +211,7 @@ test.for.zero(  lnDet( B3) - lnDet(Q) - sum( log( weights))  + (N-N2)*log(lambda
   N<- length( y)
   alpha<- c(1,.5,.25)
   nlevel<-3
-  a.wght<-  list(5, 5, 4.5)
+  a.wght<-  list(4.1, 4.1, 4.5)
   lambda <- .5
   N<- length(y)
   set.seed(243)
@@ -220,12 +226,19 @@ test.for.zero(  lnDet( B3) - lnDet(Q) - sum( log( weights))  + (N-N2)*log(lambda
  
   obj1<- Krig( x,y,weights=weights, lambda=lambda,GCV=TRUE, m=2,
                cov.function="LKrig.cov", cov.args=list(LKinfo=obj$LKinfo))
-            
- test.for.zero( obj0$fitted.values, obj1$fitted.values)
- test.for.zero( predict(obj0), predict(obj1), tag="predicted  values mKrig/Krig  w/weights")
- 
+  
+  obj2<-spatialProcess(x,y,weights, 
+                       lambda=lambda, 
+                       m=2, cov.function="LKrig.cov",
+                       cov.args=list(LKinfo=obj$LKinfo),
+                       aRange=NA)
+ test.for.zero( obj$fitted.values, obj0$fitted.values)
+ test.for.zero( obj$fitted.values, obj1$fitted.values)
+ test.for.zero( obj$fitted.values, obj2$fitted.values)
+ test.for.zero( predict(obj), predict(obj0), tag="predicted  values mKrig/Krig  w/weights")
+ test.for.zero( predict(obj), predict(obj1), tag="predicted  values mKrig/Krig  w/weights")
+ test.for.zero( predict(obj), predict(obj2), tag="predicted  values mKrig/Krig  w/weights")
 ############ now tests for LatticeKrig
-
  test.for.zero( obj$fitted.values, obj0$fitted.values)
  test.for.zero( obj$rho.MLE, obj0$summary["sigma2"])
  test.for.zero( obj$lnDetCov, obj0$lnDetCov)

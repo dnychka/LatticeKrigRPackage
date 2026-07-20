@@ -1,9 +1,10 @@
-# LatticeKrig  is a package for analysis of spatial data written for
-# the R software environment .
-# Copyright (C) 2016
-# University Corporation for Atmospheric Research (UCAR)
-# Contact: Douglas Nychka, nychka@ucar.edu,
-# National Center for Atmospheric Research, PO Box 3000, Boulder, CO 80307-3000
+##BEGIN HEADER
+#
+# LatticeKrig is a package for analysis of spatial data written for
+# the R software environment.
+# Copyright (C) 2026 Colorado School of Mines
+# 1500 Illinois St., Golden, CO 80401
+# Contact: Douglas Nychka,  douglasnychka@gmail.com,
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,10 +15,12 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License
+# A copy of the GNU General Public License is included
 # along with the R software environment if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-# or see http://www.r-project.org/Licenses/GPL-2
+# or refer to  http://www.r-project.org/Licenses/GPL-2
+#
+##END HEADER
 
 print.LKinfo <- function(x, ...) {
 #  print( x$call)
@@ -37,8 +40,8 @@ print.LKinfo <- function(x, ...) {
       cat("Hey! The dense flag is TRUE so computations will
           not be done using sparse matrices.", fill=TRUE)
     }
-    cat("Ranges of locations in raw scale:", fill=TRUE)
-    print(  LKinfo$latticeInfo$rangeLocations)
+    cat("Ranges of spatial domain in raw scale:", fill=TRUE)
+    print(  LKinfo$latticeInfo$rangeDomain)
     if( !is.null(LKinfo$basisInfo$V)){
     	cat("(inverse) linear transformation for lattice nodes:",fill=TRUE)
     	print(LKinfo$basisInfo$V )
@@ -87,7 +90,7 @@ print.LKinfo <- function(x, ...) {
        cat(" ", fill = TRUE)
   # Details on basis functions at each level
       bType <- LKinfo$basisInfo$BasisType
-      cat( "Basis  type:",
+      cat( "Basis  Type:",
            LKinfo$basisInfo$BasisType, 
            "using ",
            LKinfo$basisInfo$BasisFunction,
