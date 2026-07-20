@@ -42,22 +42,20 @@ Tensor.basis <- function(x1, centers, basis.delta,
     # matrix values 
     # This format is because a distance is required for each component
     # to evaluate the tensor product basis function
-    t1<- system.time(
     out<- LKrigDistance( x1, centers,
                              delta =  basis.delta,
                         max.points = max.points,
                      mean.neighbor = mean.neighbor,
                      distance.type = distance.type,
                         components = TRUE)    
-    )
     # evaluate distance  with tensor function on each coordinate
     # in this case ra is a matrix with each row being the componentwise
     # distances and with the maximum distance in any coordinate being
     # less than basis.delta.   
     out$ra <-  out$ra/basis.delta
-    t2<- system.time(
+    # 1D case 
     temp <- do.call( BasisFunction, list(d=out$ra[,1]))
-    )
+    # additional dimensions
     if (dimension > 1) {
         for (j in (2:dimension)) {
             temp <- temp * do.call( BasisFunction, list( d=out$ra[,j]))
@@ -65,8 +63,5 @@ Tensor.basis <- function(x1, centers, basis.delta,
     } 
     out$ra<- temp
     out <- spind2spam(out)
-    if (verbose){
-      print( rbind( t1,t2))
-    }
     return(out)
 }

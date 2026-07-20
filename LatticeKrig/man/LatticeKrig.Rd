@@ -246,19 +246,22 @@ LKrig, LKrig.setup, LKrigFindLambda, LKinfo, LKrig.sim.conditional
 
 
   obj<- LatticeKrig( x, y)
-  
-# It is all about the Lkinfo object!
+ 
+
+# It is all about the LKinfo object!
 # the LKrigSetup function gives more flexibility in the model, here is the 
 # same fit using setup to define the model using the defaults chosen in obj
 #
- LKinfo<- LKrigSetup( x,NC=4, a.wght=4.01, normalize=TRUE, nu=1.0, nlevel=3 )
- obj1<- LatticeKrig( x, y, LKinfo= LKinfo)
-#
-# A BUG ...
-#obj2<- LatticeKrig( x, y, LKinfo= obj1$LKinfo)
-#test.for.zero( obj1$fitted.values, obj1$fitted.values)
-
 \dontrun{
+
+LKinfo<- LKrigSetup( x,NC=4, a.wght=4.01, normalize=TRUE, nu=1.0, nlevel=3 )
+obj1<- LatticeKrig( x, y, LKinfo= LKinfo)
+
+
+ obj2<- LatticeKrig( x, y, LKinfo= obj1$LKinfo)
+ test.for.zero( obj1$fitted.values, obj1$fitted.values)
+
+
 # summary of fit and a plot of fitted surface
   print( obj)
   surface( obj )

@@ -27,7 +27,8 @@ Radial.basis <- function(x1, centers, basis.delta,
                   mean.neighbor = 50,
                   BasisFunction = "WendlandFunction", 
                   distance.type = "Euclidean",
-                        verbose = FALSE)
+                        verbose = FALSE,
+                         timing = FALSE)
 {    
     d <- ncol(x1)
     n1 <- nrow(x1)
@@ -45,36 +46,16 @@ Radial.basis <- function(x1, centers, basis.delta,
     # nodes given by centers. Returned is a sparse matrix in
     # a simpler format than spam  (row/column indices and value)
     # returned values ind and rd below in 'out' object.
-    t1  <- system.time(  
     out <- LKrigDistance( x1, centers,
                              delta = basis.delta,
                         max.points = max.points,
                      mean.neighbor = mean.neighbor,
                      distance.type = distance.type,
                         components = FALSE)
-    )      
-    if( verbose){
-    	cat("time for LKDistance")
-    	print( t1)
-    }          
     # evaluate distance  with RBF ---  usually Wendland2.2 
-    t2  <- system.time(
     out$ra <- do.call(BasisFunction, list(d = out$ra/basis.delta) )
-    )
-    if( verbose){
-        cat("time for basis")
-        print( t2)
-    } 
+    out <- spind2spam(out)
     
-   
-    
-    t3A<- system.time(
-        out <- spind2spam(out)
-    )
-    if( verbose){
-    cat("time for spam conversion")
-    print( t3A)
-    }
     #
     # following code takes much longer
     # t3<- system.time(
@@ -82,11 +63,7 @@ Radial.basis <- function(x1, centers, basis.delta,
     #               nrow=out$da[1],
     #               ncol= out$da[2] )
     # )
-    # if( verbose){
-    #     cat("time for spam conversion")
-    #     
-    #     print( t3)
-    # }
+    
     return(out)
 }
 

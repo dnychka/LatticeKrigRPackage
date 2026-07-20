@@ -23,7 +23,8 @@
 ##END HEADER
 
 LKrig.basis <- function(x1, LKinfo, Level= NULL, 
-                        raw = FALSE, verbose = FALSE)
+                        raw = FALSE, verbose = FALSE,
+                        timing=FALSE)
   {
     nlevel        <- LKinfo$nlevel
 #    delta         <- LKinfo$latticeInfo$delta
@@ -96,21 +97,25 @@ LKrig.basis <- function(x1, LKinfo, Level= NULL,
                              mean.neighbor = LKinfo$basisInfo$mean.neighbor, 
                              BasisFunction = get(LKinfo$basisInfo$BasisFunction),
                              distance.type = LKinfo$distance.type,
-                                   verbose = verbose)
+                                   verbose = verbose,
+                                    timing = FALSE)
                              )
                              }
         if(LKinfo$basisInfo$BasisType=="Tensor" ){  
           
-        	 t1<- system.time(            
+        	 t1<- system.time(
         PHItemp <- Tensor.basis(  x1, centers, basis.delta[l],
                                 max.points = LKinfo$basisInfo$max.points,
-                             mean.neighbor = LKinfo$basisInfo$mean.neighbor, 
+                             mean.neighbor = LKinfo$basisInfo$mean.neighbor,
                              BasisFunction = get(LKinfo$basisInfo$BasisFunction),
-                             distance.type = LKinfo$distance.type, verbose=verbose)
+                             distance.type = LKinfo$distance.type,
+                                   verbose = verbose)
                              )
                              }      	                            
         if( verbose){
           cat(" Dim PHI level", l, dim( PHItemp), fill=TRUE)
+        }
+        if(timing){
           cat("time for basis", fill=TRUE) 
           print( t1)
         }
@@ -130,7 +135,7 @@ LKrig.basis <- function(x1, LKinfo, Level= NULL,
         	      ) 
             	)
 
-            	if( verbose){
+            	if(timing){
             		cat("time for normalization", "Method=", normalizeMethod,  fill=TRUE)
             		print( t2)
             	}
@@ -172,13 +177,19 @@ wght<- LKFindAlphaVarianceWeights(x1,LKinfo, l)
           t3<- system.time(
             PHItemp <- diag.spam(sqrt(wght)) %*% PHItemp
             )
+          if(timing){
+            cat("time diag", t3, fill=TRUE)
+          }
           }
         else{
             PHItemp <-sqrt(wght)*PHItemp
         }
 # accumulate this level into growing basis matrix        
         PHI <- spam::cbind.spam(PHI, PHItemp)
+        
     }
+    
+    
 #   
 # finally multiply the basis functions by sqrt(sigma2) to give the right
 # marginal variances. This is either a function of the locations or constant.

@@ -267,7 +267,7 @@ set.seed(123)
 simField_alpha<- LKrig.sim( fineGrid, LKinfo_alpha)
 image.plot( as.surface( fineGrid, simField_alpha),
             main = "Spatially Varying Alpha Parameters (3 Levels)")
-
+\dontrun{
 ######################################################
 ##### Example 3: Spatially varying a.wght parameters 
 ##### See above comments and setup
@@ -294,6 +294,8 @@ set.seed(123)
 simField_awght<- LKrig.sim( fineGrid, LKinfo_awght)
 image.plot( as.surface( fineGrid, simField_awght),
             main = "Spatially Varying a.wght Parameters")
+}
+\dontrun{
 ##############################################
 ###### Example 4: 1-D example
 #############################################
@@ -313,6 +315,9 @@ simField_1d<- LKrig.sim( xFine_1d, LKinfo_1d, M=5)
 matplot( xFine_1d, simField_1d, type="l", lty=1, lwd = 1.5,
          main = "1-D LatticeKrig Simulation (5 Realizations)",
          xlab = "x", ylab = "Simulated Values")
+}
+
+\dontrun{
 ##################################################
 ######## Example 5: Anisotropy in a.wght
 ##################################################
@@ -332,6 +337,8 @@ set.seed(123)
 simField_aniso_stat<- LKrig.sim( fineGrid, LKinfo_aniso_stat)
 image.plot( as.surface( fineGrid, simField_aniso_stat),
             main = "Stationary Anisotropic Covariance")
+
+}
 
 \dontrun{
   
