@@ -29,8 +29,8 @@ R CMD INSTALL LatticeKrig_VERSION.tar.gz
 ```
 where VERSION are the correct version numbers in this file.
 
-LatticeKrig uses some fortran that will have to be compiled see as an
-example for macs
+LatticeKrig uses some fortran that will have to be compiled. See as an
+example for macs:
 
 https://cran.r-project.org/bin/macosx/toolsfor
 
