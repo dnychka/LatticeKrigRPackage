@@ -27,8 +27,8 @@ Radial.basis <- function(x1, centers, basis.delta,
                   mean.neighbor = 50,
                   BasisFunction = "WendlandFunction", 
                   distance.type = "Euclidean",
-                        verbose = FALSE,
-                         timing = FALSE)
+                        verbose = FALSE)
+                         
 {    
     d <- ncol(x1)
     n1 <- nrow(x1)

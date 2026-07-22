@@ -22,15 +22,13 @@
 #
 ##END HEADER
 
-LKrig.sim <- function(x1, LKinfo, M = 1, just.coefficients = FALSE,
-                      timing=FALSE) {
-	
-  t1<- system.time(
+LKrig.sim <- function(x1, LKinfo, M = 1, just.coefficients = FALSE)
+                      {
+#
     Q <- LKrig.precision(LKinfo)
-  )
-	#
-	#  Q is precision matrix of the coefficients -- not of the field
-#  last step does the multiplication to go from coefficients to evaluating
+#
+#  Note Q is the precision matrix of the coefficients -- not of the field
+#  last step in this function does the multiplication to go from coefficients to evaluating
 #  values at the field
 #  Q = t(H)%*%H = inv((Sigma)
 #  So   Sigma= Hi%*% t(Hi)
@@ -44,28 +42,17 @@ LKrig.sim <- function(x1, LKinfo, M = 1, just.coefficients = FALSE,
 #   E<- rnorm(20);  u1<- Hi%*% E ;   u2<-backsolve(Mc,E)
 #   test.for.zero(u1,u2)
 #
-  t2<- system.time(
-    Qc <- chol(Q, memory = LKinfo$choleskyMemory)
-  )
+  Qc <- chol(Q, memory = LKinfo$choleskyMemory)
 	m <- LKinfo$latticeInfo$m
 	E <- matrix(rnorm(M * m), nrow = m, ncol = M)
- t3<- system.time(
-   randomC <- backsolve(Qc, E)
- )
+  randomC <- backsolve(Qc, E)
 	if (just.coefficients) {
 		return(randomC)
 	} 
 	else {
-	  t4<- system.time(
+	  # simulate field from coefficients. 
 		PHI1 <- LKrig.basis(x1, LKinfo)
-	  )
-	  t5<- system.time(
-	    simFields<- PHI1 %*% randomC
-	  )
-	  if( timing){
-	    print( rbind(Q= t1, Chol= t2, backsolve= t3, PHI=t4, PhiC= t5))
-	  }
-	  
+	  simFields<- PHI1 %*% randomC
 		return(simFields)
 	}
 }	

@@ -95,6 +95,7 @@ LKrigFindLambda <- function(x, y, Z=NULL, U=NULL, X=NULL, ...,  LKinfo,
                                       wU = wU.save,
                                  verbose = FALSE,
                                   lambda = lambdaTemp
+                                  #NtrA=0 # dont find trace
                                   )
                        )
                        )[c( "sigma2.MLE.FULL", "tau.MLE.FULL", 

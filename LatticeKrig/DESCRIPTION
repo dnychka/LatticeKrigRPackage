@@ -1,5 +1,5 @@
 Package: LatticeKrig
-Version: 9.4.2
+Version: 9.4.3
 Date: 2026-05-29
 Title: Multi-Resolution Kriging Based on Markov Random Fields
 Authors@R: c( 

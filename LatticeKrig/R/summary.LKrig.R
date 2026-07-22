@@ -85,7 +85,6 @@ summary.LKrig <- function(object, digits = 4, stripAwght=TRUE, ...) {
   obj$call<-x$call 
   obj$inverseModel <- x$inverseModel
   obj$parameters<- summary
-  obj$timingLKrig <- x$timingLKrig
   # fastNormalization matrices will add to the size of LKinfo
   # just reset to message
   if( stripAwght){

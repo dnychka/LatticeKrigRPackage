@@ -22,17 +22,15 @@
 #
 ##END HEADER
 
+#LKrig.basisHardwired
 LKrig.basis <- function(x1, LKinfo, Level= NULL, 
-                        raw = FALSE, verbose = FALSE,
-                        timing=FALSE)
+                        raw = FALSE, verbose = FALSE)
   {
     nlevel        <- LKinfo$nlevel
-#    delta         <- LKinfo$latticeInfo$delta
-#    overlap       <- LKinfo$basisInfo$overlap
-
+    dimension <- ncol(x1)
+    n1 <- nrow(x1)
     # don't normalize if raw is TRUE
     normalize     <- LKinfo$normalize & !raw
-
     normalizeMethod <- LKinfo$normalizeMethod
     distance.type <- LKinfo$distance.type
     fast          <-  attr( LKinfo$a.wght,"fastNormalize")
@@ -61,6 +59,8 @@ LKrig.basis <- function(x1, LKinfo, Level= NULL,
     #
     # accumulate matrix column by column in PHI
     PHI <- NULL
+    #BasisFunction<- get(LKinfo$basisInfo$BasisFunction)
+    BasisFunction<- LKinfo$basisInfo$BasisFunction
     # transform locations if necessary (lattice centers already in 
     # transformed scale) 
     if( !is.null( V[1]) ){     
@@ -72,8 +72,8 @@ LKrig.basis <- function(x1, LKinfo, Level= NULL,
     basis.delta <- LKrigLatticeScales(LKinfo)
     
     # hook to just evaluate subset  of  levels
-    # if level argument in not NA
-    # if level is NA then evaluate all levels. 
+    # if level argument is not NULL
+    # if level is NULL then evaluate all levels. 
     if(is.null(Level) ){
       levelRange<-  1:nlevel
     }
@@ -81,47 +81,64 @@ LKrig.basis <- function(x1, LKinfo, Level= NULL,
       levelRange<- Level
     }
     for (l in levelRange) {
-        # Loop over levels and evaluate basis functions in that level.
-        # Note that all the center information based on the regualr grids is
-        # taken from the LKinfo object
-        #  set the range of basis functions, they are assumed to be zero outside
-        #  the radius basis.delta and according to the distance type.
-        # 
-        # There are two choices for the type of basis functions
-        # 
-        centers<- LKrigLatticeCenters( LKinfo,Level=l )
-        if(LKinfo$basisInfo$BasisType=="Radial" ){ 
-        	 t1<- system.time(
-        PHItemp <- Radial.basis(  x1, centers, basis.delta[l],
-                                max.points = LKinfo$basisInfo$max.points,
-                             mean.neighbor = LKinfo$basisInfo$mean.neighbor, 
-                             BasisFunction = get(LKinfo$basisInfo$BasisFunction),
-                             distance.type = LKinfo$distance.type,
-                                   verbose = verbose,
-                                    timing = FALSE)
-                             )
-                             }
-        if(LKinfo$basisInfo$BasisType=="Tensor" ){  
-          
-        	 t1<- system.time(
-        PHItemp <- Tensor.basis(  x1, centers, basis.delta[l],
-                                max.points = LKinfo$basisInfo$max.points,
-                             mean.neighbor = LKinfo$basisInfo$mean.neighbor,
-                             BasisFunction = get(LKinfo$basisInfo$BasisFunction),
-                             distance.type = LKinfo$distance.type,
-                                   verbose = verbose)
-                             )
-                             }      	                            
+      # Loop over levels and evaluate basis functions in that level.
+      # Note that all the center information based on the regualr grids is
+      # taken from the LKinfo object
+      #  set the range of basis functions, they are assumed to be zero outside
+      #  the radius basis.delta and according to the distance type.
+      #
+      # There are two choices for the type of basis functions
+      #
+      centers <- LKrigLatticeCenters(LKinfo, Level = l)
+      
+      if (LKinfo$basisInfo$BasisType == "Radial") {
+        out <- LKrigDistance(
+          x1,
+          centers,
+          delta = basis.delta[l],
+          max.points = LKinfo$basisInfo$max.points,
+          mean.neighbor = LKinfo$basisInfo$mean.neighbor,
+          distance.type = LKinfo$distance.type,
+          components = FALSE
+        )
+        out$ra <- do.call(BasisFunction, list(d = out$ra / basis.delta[l]))
+      }
+      if (LKinfo$basisInfo$BasisType == "Tensor") {
+        # evaluate distance  with tensor function on each coordinate
+        # in this case ra is a matrix with each row being the componentwise
+        # distances and with the maximum distance in any coordinate being
+        # less than basis.delta.
+        out <- LKrigDistance(
+          x1,
+          centers,
+          delta =  basis.delta[l],
+          max.points = LKinfo$basisInfo$max.points,
+          mean.neighbor = LKinfo$basisInfo$mean.neighbor,
+          distance.type = LKinfo$distance.type,
+          components = TRUE
+        )
+        
+        out$ra <-  out$ra / basis.delta[l]
+        
+        temp <- do.call(BasisFunction, list(d = out$ra[, 1]))
+        if (dimension > 1) {
+          for (j in (2:dimension)) {
+            temp <- temp * do.call(BasisFunction, list(d = out$ra[, j]))
+          }
+        }
+        out$ra <- temp
+      }
+      
+      # convert to sparse format
+      PHItemp <- spind2spam(out)
+      
         if( verbose){
           cat(" Dim PHI level", l, dim( PHItemp), fill=TRUE)
         }
-        if(timing){
-          cat("time for basis", fill=TRUE) 
-          print( t1)
-        }
+    
         if (normalize) { 
          #  cat("normalization method: ", normalizeMethod, fill=TRUE )
-        	t2<- system.time(
+        	
 # depending on option chosen, the basis functions will either be normalized by the default exact method, 
 # the fft interpolation alone, the kronecker alone, or both combined 
 # both will select fft for coarser levels, kronecker for levels where the number number of basis functions
@@ -130,15 +147,13 @@ LKrig.basis <- function(x1, LKinfo, Level= NULL,
         	    normalizeMethod,  
         	    "exact"= LKrigNormalizeBasis( LKinfo,  Level=l,  PHI=PHItemp),  
         	    "exactKronecker"= LKrigNormalizeBasisFast(LKinfo,  Level=l,  x=x1),  
-        	    "fftInterpolation"= LKrigNormalizeBasisFFTInterpolate(LKinfo, Level=l, x1=x1),
-        	    "both" = LKrigNormalizeBasisSelector(LKinfo, Level = l, x1 = x1, verbose = verbose)
+        	    "fftInterpolation"= 
+        	      LKrigNormalizeBasisFFTInterpolate(LKinfo, Level=l,
+        	                                             x1=x1),
+        	    "both" = LKrigNormalizeBasisSelector(LKinfo, Level = l, x1 = x1,
+        	                                         verbose = verbose)
         	      ) 
-            	)
-
-            	if(timing){
-            		cat("time for normalization", "Method=", normalizeMethod,  fill=TRUE)
-            		print( t2)
-            	}
+            	
 # now normalize the basis functions by the weights treat the case with one point separately
 # wghts are in scale of inverse marginal variance of process
 # the wght maybe zero if the x location does not overlap with nay basis function (e.g. x outside spatial
@@ -174,12 +189,9 @@ wght<- LKFindAlphaVarianceWeights(x1,LKinfo, l)
 
 #  spam does not handle diag of one element so do separately  
         if( length( wght)>1){
-          t3<- system.time(
+        
             PHItemp <- diag.spam(sqrt(wght)) %*% PHItemp
-            )
-          if(timing){
-            cat("time diag", t3, fill=TRUE)
-          }
+            
           }
         else{
             PHItemp <-sqrt(wght)*PHItemp
