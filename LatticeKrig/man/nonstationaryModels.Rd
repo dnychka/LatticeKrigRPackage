@@ -24,6 +24,9 @@
 
 \name{nonstationaryModels}
 \alias{nonstationaryModels}
+\alias{STUNtoAwghtObject}
+\alias{generate_param_field}
+\alias{plot_cov_surface}
 \title{Specifying non-stationary models}
 \description{An overview of specifying non-stationary 
 and anisotropic models with some specific examples showing how to vary the 
@@ -61,6 +64,36 @@ We describe the formatting for these features in the LKinfo object below.
 Essentially they involve specifying one or more of the arguments: 
 \code{a.wghtObject}, \code{sigma2.object} or \code{alphaObject}, in the call to 
 \code{LKrigSetup}. 
+
+\bold{Workflow and main functions.} Every model here is specified by
+building an \code{LKinfo} object with a single call to
+\code{\link{LKrigSetup}}; the non-stationary features are switched on
+through its arguments \code{a.wghtObject}, \code{sigma2.object} and
+\code{alphaObject}, so nothing else about the interface changes. Once an
+\code{LKinfo} object exists it can be used to simulate realizations with
+\code{\link{LKrig.sim}} (as in all the examples below), to fit the model to
+data and evaluate the likelihood with \code{\link{LKrig}}, and to predict at
+new locations with \code{\link{predict.LKrig}} or simulate conditionally with
+\code{\link{LKrig.sim.conditional}}. Internally \code{LKrigSetup} passes the
+\code{*.object} arguments to \code{\link{LKrigSetupAwght}} and
+\code{\link{LKrigSetupAlpha}}, which evaluate them at the lattice points and
+store the resulting per-lattice weights; these are the functions to look at if
+you want to confirm a parameter surface was interpreted as intended.
+
+\bold{The predict contract.} The only thing a parameter object must do is
+respond to \code{predict(object, x)} by returning the parameter value(s) at an
+arbitrary matrix of locations \code{x}. LatticeKrig does not care how; you
+supply an object whose class has a \code{predict} method, and
+\code{LKrigSetupAwght}/\code{LKrigSetupAlpha} call that method at the lattice
+points. The examples define three lightweight classes for this purpose --
+\code{constantValue}, \code{surfaceGrid} and \code{multivariateSurfaceGrid} --
+with matching \code{predict} methods; the two grid classes simply interpolate
+a stored image with \code{\link[fields]{interp.surface}}. Because the method is
+evaluated at every lattice point, the parameter surface must cover the entire
+lattice, which extends past \code{sDomain} by the buffer region set by
+\code{NC.buffer}. This is why the coarse parameter grid in the examples is
+deliberately larger than \code{sDomain}: evaluating outside it would return
+\code{NA} weights.
 
 \bold{a.wght}  The general form of this object is as a list of matrices.
 In this case
@@ -101,6 +134,29 @@ x. (See example below.). With this object, LKrigSetupAwght will
 evaluate the function at the lattice points and so create the correct
 list of matrices.
 
+\bold{Choosing an a.wght specification.} There is a natural progression from
+stationary to fully non-stationary, and the examples below walk through it:
+\itemize{
+\item a scalar \code{a.wght} (> 4 in two dimensions) -- stationary, isotropic;
+\item a length-9 stencil passed as \code{a.wght = list(stencil)} -- stationary
+but anisotropic (Example 5);
+\item a \code{constantValue} object holding that 9-vector -- the same
+anisotropic stencil supplied through the object interface, useful as a check
+(Example 6);
+\item a \code{surfaceGrid} object (one value per location) -- non-stationary,
+isotropic (Example 3);
+\item a \code{multivariateSurfaceGrid} object (nine values per location, stored
+as \code{z[,,1:9]}) -- fully non-stationary and anisotropic, applied to every
+level (Examples 7 and 8);
+\item a \code{multivariateSurfaceGridList}, a list of
+\code{multivariateSurfaceGrid} objects with one entry per level -- a different
+non-stationary anisotropic field at each resolution (Examples 9 and 10).
+}
+The list form is the only way to let a.wght differ by level; a single object is
+reused at every level. Its \code{predict} method takes an extra \code{level}
+argument so that \code{\link{LKrigSetupAwght}} can select the correct layer for
+each resolution.
+
 \bold{alpha}. To specify spatial varying alpha parameters one
 specifies \code{alphaObject} as a list of objects where the predict
 function works:
@@ -120,6 +176,14 @@ varying sigma2(x). Like alpha and a.wght this object must work with the
 predict function.
 
 \code{predict(sigma2.object, x)}
+
+\bold{What this enables.} Varying \code{alpha}, \code{sigma2} and \code{a.wght}
+independently across space and across levels yields covariance models well
+beyond the stationary default: locally varying range and marginal variance,
+direction-dependent correlation, resolution-dependent structure, and -- by
+combining a non-stationary \code{alphaObject} with level-specific a.wght --
+covariances that are not monotonically decreasing, including long-range
+"teleconnection" dependence between separated regions (Example 10).
 }
 
 \examples{
@@ -453,30 +517,35 @@ image.plot( as.surface( fineGrid, simField_aniso_stat),
   ######## Same for both levels
   #####################################################
   
-  # Create the a.wghts for the first level 
-  awghtObj_level1 <- create_awght_obj(
-    sidelen = sidelen_bf_1, 
-    awght_config = "constant",
-    awght_override = TRUE, 
-    awght_override_val = 0.01,
-    theta_config = "constant", 
-    theta_override = TRUE,
-    theta_override_val = -pi/4,
-    rho_config = "constant",
-    rho_override = TRUE,
-    rho_override_val = 5,
-    plotting = TRUE,
-    data_rows = nrows_advanced,
-    awghts = awghts,
-    low_awghts=low_awghts,
-    high_awghts=high_awghts
-    
+  # Create the a.wghts for the first level
+  gridList_bf1 <- list(x = seq(-1, 1, length.out = sidelen_bf_1),
+                       y = seq(-1, 1, length.out = sidelen_bf_1))
+  sGrid_bf1 <- make.surface.grid(gridList_bf1)
+  n_bf1 <- sidelen_bf_1^2
+  
+  kappa2_level1 <- generate_param_field("awght", "constant", sGrid_bf1,
+                                        sidelen_bf_1, sidelen_bf_1, n_bf1,
+                                        awghts, low_awghts, high_awghts) - 4
+  kappa2_level1[] <- 0.01   # awght override
+  
+  theta_level1 <- generate_param_field("theta", "constant", sGrid_bf1,
+                                       sidelen_bf_1, sidelen_bf_1, n_bf1,
+                                       awghts, low_awghts, high_awghts)
+  theta_level1[] <- -pi/4   # theta override
+  
+  rho_level1 <- generate_param_field("rho", "constant", sGrid_bf1,
+                                     sidelen_bf_1, sidelen_bf_1, n_bf1,
+                                     awghts, low_awghts, high_awghts)
+  rho_level1[] <- 5         # rho override
+  
+  awghtObject_level1 <- STUN_to_awght(
+    gridlist        = gridList_bf1,
+    kappa2          = kappa2_level1,
+    theta           = theta_level1,
+    rho             = rho_level1,
+    sanity_plotting = TRUE
   )
-  
-  # The type of object determines the predict function called
-  awghtObject_level1 <- awghtObj_level1$awght
-  class( awghtObject_level1)<- "multivariateSurfaceGrid"
-  
+
   LKinfo_ex8<- LKrigSetup(sGrid_advanced, NC = sidelen_bf_1, NC.buffer=0,
                           alpha = c(0.3, 0.7), 
                           nlevel = 2, 
@@ -493,32 +562,34 @@ image.plot( as.surface( fineGrid, simField_aniso_stat),
   ######## Different for each level
   #####################################################
   \dontrun{
-  # Create the a.wghts for the second level 
-  awghtObj_level2 <- create_awght_obj(
-    sidelen = sidelen_bf_2, 
-    awght_config = "constant",
-    awght_override = TRUE, 
-    awght_override_val = 4.0,
-    theta_config = "constant", 
-    theta_override = TRUE,
-    theta_override_val = pi/4,
-    rho_config = "constant",
-    rho_override = TRUE,
-    rho_override_val = 40,
-    plotting = TRUE,
-    data_rows = nrows_advanced,
-    awghts = awghts,
-    low_awghts=low_awghts,
-    high_awghts=high_awghts
+  # Create the a.wghts for the second level
+  gridList_bf2 <- list(x = seq(-1, 1, length.out = sidelen_bf_2),
+                       y = seq(-1, 1, length.out = sidelen_bf_2))
+  sGrid_bf2 <- make.surface.grid(gridList_bf2)
+  n_bf2 <- sidelen_bf_2^2
+  
+  kappa2_level2 <- generate_param_field("awght", "constant", sGrid_bf2,
+                                        sidelen_bf_2, sidelen_bf_2, n_bf2,
+                                        awghts, low_awghts, high_awghts) - 4
+  kappa2_level2[] <- 4.0    # awght override
+  
+  theta_level2 <- generate_param_field("theta", "constant", sGrid_bf2,
+                                       sidelen_bf_2, sidelen_bf_2, n_bf2,
+                                       awghts, low_awghts, high_awghts)
+  theta_level2[] <- pi/4    # theta override
+  
+  rho_level2 <- generate_param_field("rho", "constant", sGrid_bf2,
+                                     sidelen_bf_2, sidelen_bf_2, n_bf2,
+                                     awghts, low_awghts, high_awghts)
+  rho_level2[] <- 40        # rho override
+  
+  awghtObject_level2 <- STUN_to_awght(
+    gridlist        = gridList_bf2,
+    kappa2          = kappa2_level2,
+    theta           = theta_level2,
+    rho             = rho_level2,
+    sanity_plotting = TRUE
   )
-  
-  awghtObject_level2 <- awghtObj_level2$awght
-  class( awghtObject_level2)<- "multivariateSurfaceGrid"
-  
-  # Pack both multivariateSurfaceGrid objects into
-  # multivariateSurfaceGridList object (required for level-specific parameters)
-  awghtObjectList_ex9 <- list(awghtObject_level1, awghtObject_level2)
-  class(awghtObjectList_ex9) <- "multivariateSurfaceGridList"
   
   LKinfo_ex9<- LKrigSetup(sGrid_advanced, NC = sidelen_bf_1, NC.buffer=0,
                           alpha = c(0.3, 0.7), 
