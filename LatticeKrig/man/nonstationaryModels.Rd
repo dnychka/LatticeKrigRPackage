@@ -186,6 +186,10 @@ covariances that are not monotonically decreasing, including long-range
 "teleconnection" dependence between separated regions (Example 10).
 }
 
+\author{
+Antony Sikorski, Email: antony.sikorski@gmail.com
+}
+
 \examples{
 
 #######################################################
