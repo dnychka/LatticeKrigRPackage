@@ -14,7 +14,8 @@ plot_cov_surface <- function(
   cov_surface_calc <- matrix(cov_surface_calc, nrow = nrows_advanced, ncol = nrows_advanced)
   
   if (plotting == TRUE){
-    par(mfrow = c(1,2), mar =  c(5.1, 4.1, 4.1, 2.1))
+    # set this outside of function call 
+    # par(mfrow = c(1,2), mar =  c(5.1, 4.1, 4.1, 2.1))
     image.plot(as.surface(sGrid_advanced, cov_surface_calc), col = viridis(256), 
                main = "Covariance Function")
     if (cov_contour == TRUE){
@@ -34,7 +35,8 @@ plot_cov_surface <- function(
         add = TRUE, lwd = cov_lwd
       )
     }
-    par(mfrow = c(1,1))
+   # reset oiutside function call 
+   # par(mfrow = c(1,1))
   }
   invisible(cov_surface_calc)
 }

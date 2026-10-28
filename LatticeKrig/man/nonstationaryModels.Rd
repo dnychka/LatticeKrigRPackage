@@ -25,8 +25,7 @@
 \name{nonstationaryModels}
 \alias{nonstationaryModels}
 \alias{STUNtoAwghtObject}
-\alias{generate_param_field}
-\alias{plot_cov_surface}
+% \alias{plot_cov_surface}
 \title{Specifying non-stationary models}
 \description{An overview of specifying non-stationary 
 and anisotropic models with some specific examples showing how to vary the 
@@ -542,7 +541,7 @@ image.plot( as.surface( fineGrid, simField_aniso_stat),
                                      awghts, low_awghts, high_awghts)
   rho_level1[] <- 5         # rho override
   
-  awghtObject_level1 <- STUN_to_awght(
+  awghtObject_level1 <- STUNtoAwghtObject(
     gridlist        = gridList_bf1,
     kappa2          = kappa2_level1,
     theta           = theta_level1,
@@ -587,7 +586,7 @@ image.plot( as.surface( fineGrid, simField_aniso_stat),
                                      awghts, low_awghts, high_awghts)
   rho_level2[] <- 40        # rho override
   
-  awghtObject_level2 <- STUN_to_awght(
+  awghtObject_level2 <- STUNtoAwghtObject(
     gridlist        = gridList_bf2,
     kappa2          = kappa2_level2,
     theta           = theta_level2,
@@ -598,7 +597,7 @@ image.plot( as.surface( fineGrid, simField_aniso_stat),
   LKinfo_ex9<- LKrigSetup(sGrid_advanced, NC = sidelen_bf_1, NC.buffer=0,
                           alpha = c(0.3, 0.7), 
                           nlevel = 2, 
-                          a.wghtObject =  awghtObjectList_ex9)
+                          a.wghtObject =  awghtObject_level2)
   
   simField_ex9 <- LKrig.sim( sGrid_advanced, LKinfo_ex9)
   imagePlot(as.surface(sGrid_advanced, simField_ex9), col = turbo(256),
@@ -670,7 +669,7 @@ image.plot( as.surface( fineGrid, simField_aniso_stat),
                            alpha = c(1,1),
                            alphaObject = alphaObject_ex10, 
                            nlevel = 2, 
-                           a.wghtObject =  awghtObjectList_ex9)
+                           a.wghtObject = awghtObject_level2)
   
   simField_ex10 <- LKrig.sim( sGrid_advanced, LKinfo_ex10)
   imagePlot(as.surface(sGrid_advanced, simField_ex10), col = turbo(256), 
@@ -684,6 +683,7 @@ image.plot( as.surface( fineGrid, simField_aniso_stat),
   #####################################################
   
   \dontrun{
+  set.panel( 3,2)
   # Plot covariance for Example 8
   plot_cov_surface(
     LKinfo = LKinfo_ex8,
@@ -717,10 +717,11 @@ image.plot( as.surface( fineGrid, simField_aniso_stat),
     loc_x = 0,
     loc_y = 0,
     plotting = TRUE,
-    cov_contour = FALSE,
+    cov_contour = TRUE,
     nrows_advanced= nrows_advanced,
     sGrid_advanced= sGrid_advanced
   )
+  set.panel()
   }
 
 }

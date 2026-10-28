@@ -24,7 +24,7 @@
 
 \name{LatticeKrig internal}
 
-\alias{create_awght_obj}
+% \alias{create_awght_obj} omitted this entry as there is no R code!
 \alias{generate_param_field}
 \alias{plot_cov_surface}
 
@@ -46,23 +46,7 @@ plot_cov_surface(LKinfo,
     sGrid_advanced
 )
 
-create_awght_obj(
-    sidelen, 
-    awght_config,
-    awght_override = FALSE,
-    awght_override_val,
-    theta_config, 
-    theta_override = FALSE,
-    theta_override_val,
-    rho_config,
-    rho_override = FALSE,
-    rho_override_val,
-    plotting = FALSE,
-    data_rows,
-     awghts,
-    low_awghts,
-    high_awghts
-)
+
 
 generate_param_field(
     paramtype,
